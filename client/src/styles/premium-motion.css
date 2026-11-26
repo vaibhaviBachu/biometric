@@ -1,0 +1,450 @@
+/*
+  Premium motion layer, on top of theme.css and floating-glass.css. Colours stay the theme's own.
+  - Sidebar: collapses to an icon rail (width in --sb-w), a gliding active pill that stretches between rows,
+    a soft glass hover pill, glass tooltips on the rail, groups that fold open and shut.
+  - Pages: the old page blurs away and the new one comes into focus (DashboardGate), its sections rise in one
+    after another, and the title rises out of a clip.
+  - Tabs: a sliding indicator under every [role="tablist"] (components/motion/TabInk.tsx); the panel refocuses.
+  - Theme switch: the new theme opens out in a circle from the toggle (hooks/useTheme.ts).
+  Every entrance animation fills backwards only, so nothing keeps a transform or filter that would trap fixed dialogs.
+*/
+
+:root {
+  --sb-open: 204px;
+  --sb-rail: 84px;
+  --sb-w: var(--sb-open);
+  --sb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sb-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Sidebar width follows the rail state (desktop) ───────────────────────────── */
+@media (min-width: 1024px) {
+  html[data-sb="collapsed"] { --sb-w: var(--sb-rail); }
+  html:root .hub-sidebar.velvet-nav.hub-sb {
+    width: var(--sb-w);
+    transition: width 0.5s var(--sb-ease), transform 0.2s ease;
+  }
+  html:root .hub-app-content {
+    margin-left: calc(var(--sb-w) + var(--frame-gap) + 1px);
+    transition: margin-left 0.5s var(--sb-ease);
+  }
+}
+
+html:root .hub-sidebar.velvet-nav.hub-sb { overflow: visible; }
+
+/* ── Rows sit above the pills; the pills do the colouring ─────────────────────── */
+.hub-sb .hub-sb-row {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  transition: color 0.25s ease, padding 0.5s var(--sb-ease) !important;
+}
+html:root .velvet-nav.hub-sb .hub-sb-row,
+html:root .velvet-nav.hub-sb .hub-sb-row:hover,
+html:root .velvet-nav.hub-sb .hub-nav-active,
+html:root .velvet-nav.hub-sb .hub-nav-active:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html:root .velvet-nav.hub-sb .hub-sidebar-item--idle:hover { color: var(--ink) !important; }
+
+.hub-sb-pill,
+.hub-sb-hover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  border-radius: 12px;
+  pointer-events: none;
+}
+.hub-sb-pill {
+  background: var(--accent-grad);
+  box-shadow: var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -1px 0 rgba(0, 0, 0, 0.14);
+}
+.hub-sb-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 58%);
+}
+html:not(.dark) .hub-sb-hover {
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(16, 17, 20, 0.05), 0 8px 18px -12px rgba(30, 40, 60, 0.4);
+}
+html.dark .hub-sb-hover {
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Icons: a small springy lift on hover, a press on click */
+.hub-sb .hub-sb-icon { transition: transform 0.4s var(--sb-spring), opacity 0.2s ease; }
+.hub-sb .hub-sb-row:hover .hub-sb-icon { transform: scale(1.14); opacity: 1; }
+.hub-sb .hub-sb-row:active .hub-sb-icon { transform: scale(0.92); transition-duration: 0.1s; }
+
+.hub-sb .hub-sb-label,
+.hub-sb .hub-sb-fade { transition: opacity 0.24s ease 0.1s, transform 0.45s var(--sb-ease); }
+
+/* Group headings fold their group */
+.hub-sb .hub-sb-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 8px;
+  transition: color 0.2s ease, height 0.45s var(--sb-ease), padding 0.45s var(--sb-ease);
+}
+html:root .hub-sb .hub-sb-group:hover { color: var(--muted) !important; }
+.hub-sb .hub-sb-group:focus-visible { outline: 2px solid rgba(var(--blue-rgb), 0.5); outline-offset: -2px; }
+.hub-sb .hub-sb-chev { opacity: 0; transition: transform 0.35s var(--sb-ease), opacity 0.2s ease; }
+.hub-sb .hub-sb-group:hover .hub-sb-chev,
+.hub-sb .hub-sb-group:focus-visible .hub-sb-chev,
+.hub-sb .hub-sb-group[aria-expanded="false"] .hub-sb-chev { opacity: 0.8; }
+
+/* Account switcher and plan card fold away on the rail */
+.hub-sb .hub-sidebar-account,
+.hub-sb .hub-sidebar-footer {
+  max-height: 220px;
+  transition: max-height 0.5s var(--sb-ease), opacity 0.24s ease 0.1s, padding 0.5s var(--sb-ease), margin 0.5s var(--sb-ease);
+}
+
+/* Collapse button on the sidebar's edge */
+.hub-sb-toggle {
+  position: absolute;
+  top: 24px;
+  right: -13px;
+  z-index: 30;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--ink-2);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  transition: transform 0.35s var(--sb-spring), color 0.2s ease, box-shadow 0.2s ease;
+}
+html:not(.dark) .hub-sb-toggle {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(16, 17, 20, 0.06), 0 8px 18px -10px rgba(30, 40, 60, 0.45);
+}
+html.dark .hub-sb-toggle {
+  background: rgba(30, 33, 40, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 18px -10px rgba(0, 0, 0, 0.8);
+}
+.hub-sb-toggle:hover { color: var(--ink); transform: scale(1.1); }
+.hub-sb-toggle:active { transform: scale(0.94); }
+.hub-sb-toggle svg { transition: transform 0.5s var(--sb-ease); }
+html[data-sb="collapsed"] .hub-sb-toggle svg { transform: rotate(180deg); }
+
+/* Rail tooltips: a small glass label beside the icon */
+.hub-sb-tip {
+  position: absolute;
+  left: calc(100% + 14px);
+  z-index: 120;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
+.hub-sb-tip b { font-weight: 650; color: var(--ink); }
+.hub-sb-tip span { margin-left: 8px; font-size: 11px; color: var(--muted); }
+html:not(.dark) .hub-sb-tip {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(16, 17, 20, 0.06), 0 14px 30px -14px rgba(30, 40, 60, 0.45);
+}
+html.dark .hub-sb-tip {
+  background: rgba(24, 26, 32, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 14px 30px -14px rgba(0, 0, 0, 0.85);
+}
+
+/* ── The rail (desktop, collapsed) ────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  html[data-sb="collapsed"] .hub-sb .hub-sb-fade,
+  html[data-sb="collapsed"] .hub-sb .hub-sb-label {
+    opacity: 0;
+    pointer-events: none;
+    transition-delay: 0s;
+  }
+  html[data-sb="collapsed"] .hub-sb .hub-sb-label { transform: translateX(-6px); }
+  html[data-sb="collapsed"] .hub-sb .hub-sb-row { padding-left: 16px; }
+  html[data-sb="collapsed"] .hub-sb .hub-sb-tile { transform-origin: center; }
+  html[data-sb="collapsed"] .hub-sb .hub-sb-brandrow { padding-left: 12px; }
+  html[data-sb="collapsed"] .hub-sb .hub-sidebar-account,
+  html[data-sb="collapsed"] .hub-sb .hub-sidebar-footer {
+    max-height: 0;
+    overflow: hidden;
+    margin-top: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  /* group headings become hairlines between the icon groups */
+  html[data-sb="collapsed"] .hub-sb .hub-sb-group {
+    position: relative;
+    height: 17px;
+    padding: 0;
+    cursor: default;
+  }
+  html[data-sb="collapsed"] .hub-sb .hub-sb-group::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 8px;
+    height: 1px;
+    background: var(--edge-soft, rgba(127, 127, 127, 0.18));
+  }
+}
+
+/* ── Pages: sections rise in after the page comes into focus ──────────────────── */
+.hub-page { height: 100%; }
+.hub-page > * > *:nth-child(-n+12) { animation: hubRise 0.62s var(--sb-ease) backwards; }
+.hub-page > * > *:nth-child(1) { animation-delay: 60ms; }
+.hub-page > * > *:nth-child(2) { animation-delay: 110ms; }
+.hub-page > * > *:nth-child(3) { animation-delay: 160ms; }
+.hub-page > * > *:nth-child(4) { animation-delay: 210ms; }
+.hub-page > * > *:nth-child(5) { animation-delay: 255ms; }
+.hub-page > * > *:nth-child(6) { animation-delay: 300ms; }
+.hub-page > * > *:nth-child(7) { animation-delay: 340ms; }
+.hub-page > * > *:nth-child(8) { animation-delay: 380ms; }
+.hub-page > * > *:nth-child(n+9) { animation-delay: 420ms; }
+@keyframes hubRise {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+
+/* the page title rises out of a clip */
+.hub-page :is(h1, .hub-page-title):first-of-type { animation: hubTitle 0.72s var(--sb-ease) 40ms backwards; }
+@keyframes hubTitle {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(0.4em); }
+  to   { opacity: 1; clip-path: inset(-25% -5% -35% -5%); transform: none; }
+}
+
+/* ── Tabs: sliding indicator and a refocusing panel ───────────────────────────── */
+.hub-ink { position: relative; isolation: isolate; }
+.hub-ink > [role="tab"] { position: relative; z-index: 1; transition: color 0.25s ease !important; }
+.hub-ink-bar { position: absolute; z-index: 0; pointer-events: none; opacity: 0; }
+.hub-ink--pill .hub-ink-bar {
+  border-radius: 999px;
+  background: var(--accent-grad);
+  box-shadow: var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+.hub-ink--pill > [role="tab"][aria-selected="true"] {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+.hub-ink--line .hub-ink-bar {
+  border-radius: 2px;
+  background: var(--blue, #2f6bff);
+  box-shadow: 0 0 12px rgba(var(--blue-rgb, 47, 107, 255), 0.55);
+}
+.hub-ink--line > [role="tab"][aria-selected="true"] { border-bottom-color: transparent !important; }
+
+.hub-tab-swap { animation: hubFocusIn 0.42s var(--sb-ease) backwards; }
+@keyframes hubFocusIn {
+  from { opacity: 0; transform: translateY(6px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+
+/* ── Theme switch: the circle reveal draws the new snapshot only ──────────────── */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+
+/* ── Reduced motion: keep the layout, drop the movement ───────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .hub-page *, .hub-tab-swap { animation: none !important; }
+  html:root .hub-sidebar.velvet-nav.hub-sb,
+  html:root .hub-app-content,
+  .hub-ink-bar { transition: none !important; }
+}
+
+/* ══ Rich layer ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar: glossy icon tiles ───────────────────────────────────────────────── */
+.hub-sb-tile {
+  --mag: 1;
+  --hov: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  color: #fff;
+  overflow: hidden;
+  background: linear-gradient(150deg, hsl(var(--h) 92% 67%) 0%, hsl(var(--h) 80% 52%) 62%, hsl(var(--h) 82% 45%) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 5px 12px -5px hsl(var(--h) 80% 45% / 0.6);
+  transform: scale(calc(var(--mag) * var(--hov)));
+  transform-origin: left center;
+  transition: transform 0.34s var(--sb-spring), box-shadow 0.3s ease, background 0.3s ease;
+}
+.hub-sb-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 52%);
+  pointer-events: none;
+}
+.hub-sb-tile svg { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2)); }
+html.dark .hub-sb-tile {
+  background: linear-gradient(150deg, hsl(var(--h) 85% 62%) 0%, hsl(var(--h) 72% 46%) 62%, hsl(var(--h) 75% 38%) 100%);
+}
+.hub-sb .hub-sb-row:hover .hub-sb-tile { --hov: 1.1; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.16), 0 8px 18px -6px hsl(var(--h) 85% 50% / 0.75); }
+.hub-sb .hub-sb-row:active .hub-sb-tile { --hov: 0.92; transition-duration: 0.1s; }
+/* on the blue pill the tile turns to clear glass so the row reads as one piece */
+.hub-sb .hub-nav-active .hub-sb-tile {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+html:root .velvet-nav.hub-sb .hub-sb-row { font-weight: 550; }
+
+/* ── Sidebar: the active pill catches a sweep of light each time it lands ─────── */
+.hub-sb-pill { overflow: hidden; }
+.hub-sb-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 28%, rgba(255, 255, 255, 0.55) 47%, rgba(255, 255, 255, 0.1) 56%, transparent 68%);
+  transform: translateX(-130%);
+  animation: hubSheen 1.15s var(--sb-ease) 0.28s forwards;
+}
+@keyframes hubSheen { to { transform: translateX(130%); } }
+
+/* ── Sidebar: rows cascade in; opening the rail replays it for the labels ─────── */
+.hub-sb .hub-sb-row { animation: hubSbIn 0.6s var(--sb-ease) backwards; animation-delay: calc(140ms + var(--i, 0) * 26ms); }
+@keyframes hubSbIn {
+  from { opacity: 0; transform: translateX(-12px); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+.hub-sb.is-revealing .hub-sb-label,
+.hub-sb.is-revealing .hub-sb-group > span {
+  animation: hubLabelIn 0.5s var(--sb-ease) backwards;
+  animation-delay: calc(160ms + var(--i, 0) * 20ms);
+}
+@keyframes hubLabelIn {
+  from { opacity: 0; transform: translateX(-10px); filter: blur(3px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+@media (min-width: 1024px) {
+  .hub-sb { animation: hubAsideIn 0.75s var(--sb-ease) backwards; }
+  @keyframes hubAsideIn { from { opacity: 0; transform: translateX(-20px) scale(0.985); } }
+}
+
+/* ── Cards: a spotlight and a lit edge follow the cursor; stat tiles tilt ─────── */
+html:root .hub-main .fx-lit { position: relative; }
+html:root .hub-main .fx-lit::after,
+html:root .hub-main .fx-lit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+html:root .hub-main .fx-lit::after { animation: fxIn 0.35s ease backwards; }
+html:not(.dark) .hub-main .fx-lit::after {
+  background: radial-gradient(320px circle at var(--mx) var(--my), rgba(var(--blue-rgb, 47, 107, 255), 0.09), rgba(255, 255, 255, 0.28) 30%, transparent 70%);
+}
+html.dark .hub-main .fx-lit::after {
+  background: radial-gradient(320px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.075), rgba(var(--blue-rgb, 47, 107, 255), 0.05) 35%, transparent 72%);
+}
+html:root .hub-main .fx-lit::before {
+  padding: 1px;
+  /* the cursor light rides on top of the card's resting lit edge (styles/dashboard-frame.css) */
+  background: radial-gradient(200px circle at var(--mx) var(--my), rgba(var(--blue-rgb, 47, 107, 255), 0.85), rgba(var(--blue-rgb, 47, 107, 255), 0.25) 40%, transparent 72%), var(--lit-ring, none);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+@keyframes fxIn { from { opacity: 0; } }
+html:root .hub-main .fx-tilt.fx-lit,
+html:root .hub-main .fx-tilt.fx-lit:hover {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-4px) !important;
+  transition: transform 0.18s ease-out, box-shadow 0.3s ease, background-color 0.2s ease !important;
+}
+html:root .hub-main .fx-lit :is(.stat-icon, .gem) { transform: scale(1.1) rotate(-5deg); }
+html:root .hub-main :is(.stat-icon, .gem) { transition: transform 0.45s var(--sb-spring); }
+
+/* ── Bars and meters grow in ──────────────────────────────────────────────────── */
+.hub-page .meter > b,
+.hub-sb .meter > b,
+.hub-page [role="progressbar"] > div {
+  transform-origin: left center;
+  animation: hubGrow 1.2s var(--sb-ease) 0.3s backwards;
+}
+@keyframes hubGrow { from { transform: scaleX(0); } }
+
+/* ── Tabs: a hover pill, a glow as the indicator lands, a directional panel ───── */
+.hub-ink-hover { position: absolute; z-index: 0; pointer-events: none; opacity: 0; }
+html:not(.dark) .hub-ink-hover {
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(16, 17, 20, 0.06), 0 6px 14px -10px rgba(30, 40, 60, 0.45);
+}
+html.dark .hub-ink-hover {
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+.hub-ink--pill .hub-ink-bar {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 60%), var(--accent-grad);
+}
+.hub-ink--pill .hub-ink-bar.is-landing { animation: inkLand 0.6s var(--sb-ease); }
+.hub-ink--line .hub-ink-bar.is-landing { animation: inkLandLine 0.6s var(--sb-ease); }
+@keyframes inkLand {
+  from { box-shadow: var(--accent-glow), 0 0 0 0 rgba(var(--blue-rgb, 47, 107, 255), 0.5); }
+  to   { box-shadow: var(--accent-glow), 0 0 0 9px rgba(var(--blue-rgb, 47, 107, 255), 0); }
+}
+@keyframes inkLandLine {
+  from { box-shadow: 0 0 22px 2px rgba(var(--blue-rgb, 47, 107, 255), 0.9); }
+  to   { box-shadow: 0 0 12px rgba(var(--blue-rgb, 47, 107, 255), 0.55); }
+}
+.hub-tab-swap--r { animation-name: hubSwapR; }
+.hub-tab-swap--l { animation-name: hubSwapL; }
+.hub-tab-swap--r, .hub-tab-swap--l { animation-duration: 0.5s; animation-timing-function: var(--sb-ease); animation-fill-mode: backwards; }
+@keyframes hubSwapR { from { opacity: 0; transform: translateX(26px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes hubSwapL { from { opacity: 0; transform: translateX(-26px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+/* the panel's own items follow a beat later */
+.hub-tab-swap > * { animation: hubRise 0.55s var(--sb-ease) backwards; }
+.hub-tab-swap > *:nth-child(2) { animation-delay: 50ms; }
+.hub-tab-swap > *:nth-child(3) { animation-delay: 100ms; }
+.hub-tab-swap > *:nth-child(n+4) { animation-delay: 140ms; }
+
+/* ── Page change: a thin light runs across the top of the content ─────────────── */
+.hub-route-sweep {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: block;
+  height: 2px;
+  margin-bottom: -2px;
+  border-radius: 2px;
+  transform-origin: left center;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--blue-rgb, 47, 107, 255), 0), rgba(var(--blue-rgb, 47, 107, 255), 0.95) 45%, rgba(170, 200, 255, 1) 80%, rgba(255, 255, 255, 0));
+  box-shadow: 0 0 14px rgba(var(--blue-rgb, 47, 107, 255), 0.65);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-sb, .hub-sb *, .hub-ink-bar, .hub-route-sweep, .hub-main .fx-lit::before, .hub-main .fx-lit::after { animation: none !important; }
+  .hub-sb-tile { transition: none !important; }
+}

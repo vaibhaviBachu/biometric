@@ -1,0 +1,41 @@
+name: Dependency Review
+
+# Phase 8 — fails a PR if it introduces a new dependency with a known
+# vulnerability at or above the configured severity, using GitHub's own
+# free, native dependency-review-action (reads the PR's dependency diff via
+# the GitHub API — no external service, no extra cost beyond Actions
+# minutes, which this check uses very little of).
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+  pull-requests: write # required by the action to post its PR summary comment
+
+concurrency:
+  group: dependency-review-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1
+        with:
+          # Phase 6 already found 56 pre-existing advisories, the large
+          # majority in dev-only build/test tooling, at severities up to
+          # "high" (plus one "critical" confirmed this phase to be a
+          # transitive dev-only dependency of ts-jest, never shipped to
+          # production — see PHASE_6_DEPENDENCY_AND_SUPPLY_CHAIN_SECURITY).
+          # Gating a PR on every one of those would make this check
+          # permanently red for reasons unrelated to the PR's own change.
+          # This gate instead targets what it can actually act on: a *new*
+          # dependency a PR introduces that is itself already known-vulnerable
+          # at this severity or above — it compares the PR's dependency diff,
+          # not the whole existing tree.
+          fail-on-severity: high

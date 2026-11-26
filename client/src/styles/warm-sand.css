@@ -1,0 +1,333 @@
+/*
+  PINITHUB — Warm Sand: the chosen palette (2026-11-18).
+  Always on: <html data-palette="warm-sand"> in index.html. It re-points the tokens of forest-glass.css (which keeps the
+  structure: surfaces, type, semantics) and the few places that file hard-codes forest colours.
+  To fall back to Forest, remove data-palette from <html> in index.html.
+
+  Look: warm cream / sand surfaces, terracotta-peach accents, soft sage-teal, warm charcoal text (light is primary).
+  Roles: terracotta = primary actions · peach = highlights · sage-teal = DNA / forensic · muted violet = identity / AI ·
+         amber = provenance / pending · rose = biometric · green = success / verified · red = error.
+  The pale peach of the reference fails WCAG AA as text or under white text, so text and buttons use deeper shades.
+*/
+
+/* ═══ 1. Tokens ═══════════════════════════════════════════════════════════════ */
+/* Light — warm cream */
+html[data-palette="warm-sand"]:not(.dark) {
+  --pt-bg: #F5EFE7;
+  --pt-bg-2: #EEE5DA;
+  --pt-sidebar: rgba(252, 248, 243, 0.92);
+  --pt-card: rgba(255, 252, 248, 0.88);
+  --pt-card-2: rgba(253, 248, 242, 0.95);
+  --pt-inset: rgba(248, 241, 233, 0.92);
+  --pt-pop: rgba(255, 252, 248, 0.98);
+  --pt-input: #FFFDFA;
+  --pt-hover: rgba(120, 80, 50, 0.05);
+  --pt-ink: #2E2621;             /* warm charcoal */
+  --pt-ink-2: #5A4E46;
+  --pt-muted: #6C5F56;
+  --pt-faint: #74675D;
+  --pt-border: rgba(110, 80, 55, 0.14);
+  --pt-border-2: rgba(110, 80, 55, 0.22);
+  --pt-accent: #9C4723;          /* terracotta as text: 5.9:1 on cream, 4.9:1 on peach chips */
+  --pt-action: linear-gradient(180deg, #B05226 0%, #98431D 100%);   /* terracotta buttons, white text 5.0–6.4:1 */
+  --pt-action-solid: #B85428;
+  --pt-action-hover: linear-gradient(180deg, #B85A2C 0%, #A04A22 100%);
+  --pt-on-action: #FFFFFF;
+  --pt-peach: #F0A274;           /* highlight fills (reference peach) */
+  --pt-cyan: #3D706E;            /* sage-teal deepened for text */
+  --pt-ai: #6E54A8;
+  --pt-ai-solid: #6E54A8;
+  --pt-prov: #7E5614;            /* amber deepened: 4.9:1 on its tinted chips */
+  --pt-bio: #A44865;
+  --pt-err: #B23B3B;
+  --pt-success: #2F7346;
+  --pt-safe: var(--pt-success);
+  --pt-tint-accent: rgba(224, 128, 80, 0.12);
+  --pt-tint-cyan: rgba(127, 168, 166, 0.16);
+  --pt-tint-ai: rgba(110, 84, 168, 0.08);
+  --pt-tint-prov: rgba(196, 150, 70, 0.14);
+  --pt-tint-bio: rgba(164, 72, 101, 0.08);
+  --pt-tint-err: rgba(178, 59, 59, 0.08);
+  --pt-tint-success: rgba(47, 115, 70, 0.09);
+  --pt-line-accent: rgba(190, 90, 46, 0.30);
+  --pt-glow: 0 8px 20px -10px rgba(190, 90, 46, 0.45);
+  --pt-shadow: 0 1px 2px rgba(70, 45, 25, 0.05), 0 16px 36px -22px rgba(90, 55, 30, 0.30);
+  --pt-shadow-pop: 0 24px 60px -24px rgba(80, 50, 30, 0.32);
+  --pt-reflect: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --blue-rgb: 184, 84, 40;
+  --ink-rgb: 46, 38, 33;
+  --c-brand: 168 76 36;   --c-brand-press: 152 67 29;   --c-brand-soft: 156 71 35;
+  --c-bg-base: 245 239 231; --c-bg-surface: 238 229 218; --c-bg-card: 255 252 248; --c-bg-elevated: 253 248 242;
+  --c-fg: 46 38 33;       --c-fg-2: 90 78 70;           --c-fg-muted: 108 95 86;
+  --c-line: 230 220 207;  --c-line-control: 196 182 166;
+  --c-mint: 232 241 233;     --c-mint-ink: 40 100 60;
+  --c-powder: 230 240 239;   --c-powder-ink: 52 98 96;
+  --c-lavender: 239 234 247; --c-lavender-ink: 98 74 152;
+  --c-periwinkle: 251 235 225; --c-periwinkle-ink: 150 70 36;
+  --c-peach: 251 235 222;    --c-peach-ink: 150 70 36;
+  --c-cream: 247 238 220;    --c-cream-ink: 124 86 22;
+  --c-rose: 249 235 238;     --c-rose-ink: 150 60 88;
+  --c-danger: 250 234 232;   --c-danger-ink: 170 52 52;
+  --scroll-thumb: rgba(110, 80, 55, 0.22);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(240, 162, 116, 0.07) 0%, rgba(240, 162, 116, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(127, 168, 166, 0.06) 0%, rgba(127, 168, 166, 0) 60%);
+  --lit-ring: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(110, 80, 55, 0.10) 40%, rgba(110, 80, 55, 0.10) 70%, rgba(240, 162, 116, 0.25) 100%);
+}
+
+/* Dark — warm espresso */
+html[data-palette="warm-sand"].dark {
+  --pt-bg: #15100D;
+  --pt-bg-2: #1E1713;
+  --pt-sidebar: rgba(28, 21, 17, 0.88);
+  --pt-card: rgba(44, 34, 28, 0.76);
+  --pt-card-2: rgba(56, 44, 36, 0.84);
+  --pt-inset: rgba(255, 220, 190, 0.05);
+  --pt-pop: rgba(38, 29, 24, 0.97);
+  --pt-input: rgba(14, 10, 8, 0.5);
+  --pt-hover: rgba(255, 210, 175, 0.07);
+  --pt-ink: #F7EFE7;
+  --pt-ink-2: #D6C8BC;
+  --pt-muted: #AE9F92;
+  --pt-faint: #9F9083;
+  --pt-border: rgba(240, 205, 175, 0.15);
+  --pt-border-2: rgba(240, 205, 175, 0.24);
+  --pt-accent: #F4AC82;          /* peach as text on espresso */
+  --pt-action: linear-gradient(180deg, #F6B28A 0%, #E8895A 100%);   /* peach buttons, dark text */
+  --pt-action-solid: #EE9A6C;
+  --pt-action-hover: linear-gradient(180deg, #F9BE9A 0%, #EE9466 100%);
+  --pt-on-action: #2A1308;
+  --pt-peach: #F0A274;
+  --pt-cyan: #93C6C2;
+  --pt-ai: #BBA6F0;
+  --pt-ai-solid: #7A5FC4;
+  --pt-prov: #E9C27E;
+  --pt-bio: #F39BB4;
+  --pt-err: #F48A84;
+  --pt-success: #7FD49B;
+  --pt-safe: var(--pt-success);
+  --pt-tint-accent: rgba(244, 172, 130, 0.13);
+  --pt-tint-cyan: rgba(147, 198, 194, 0.12);
+  --pt-tint-ai: rgba(187, 166, 240, 0.12);
+  --pt-tint-prov: rgba(233, 194, 126, 0.13);
+  --pt-tint-bio: rgba(243, 155, 180, 0.12);
+  --pt-tint-err: rgba(244, 138, 132, 0.13);
+  --pt-tint-success: rgba(127, 212, 155, 0.12);
+  --pt-line-accent: rgba(244, 172, 130, 0.36);
+  --pt-glow: 0 10px 26px -12px rgba(240, 150, 100, 0.6);
+  --pt-shadow: 0 24px 54px -30px rgba(0, 0, 0, 0.75);
+  --pt-shadow-pop: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
+  --pt-reflect: inset 0 1px 0 rgba(255, 225, 200, 0.10);
+
+  --blue-rgb: 238, 154, 108;
+  --ink-rgb: 247, 239, 231;
+  --edge-top: rgba(255, 225, 200, 0.12);
+  --c-brand: 238 154 108; --c-brand-press: 232 137 90;  --c-brand-soft: 244 172 130;
+  --c-bg-base: 21 16 13;  --c-bg-surface: 30 23 19;     --c-bg-card: 44 34 28;   --c-bg-elevated: 56 44 36;
+  --c-fg: 247 239 231;    --c-fg-2: 214 200 188;        --c-fg-muted: 174 159 146;
+  --c-line: 64 50 42;     --c-line-control: 100 82 70;
+  --c-mint: 26 44 32;        --c-mint-ink: 127 212 155;
+  --c-powder: 26 40 40;      --c-powder-ink: 147 198 194;
+  --c-lavender: 38 32 54;    --c-lavender-ink: 187 166 240;
+  --c-periwinkle: 56 36 26;  --c-periwinkle-ink: 244 172 130;
+  --c-peach: 56 36 26;       --c-peach-ink: 244 172 130;
+  --c-cream: 52 42 26;       --c-cream-ink: 233 194 126;
+  --c-rose: 54 30 38;        --c-rose-ink: 243 155 180;
+  --c-danger: 56 28 28;      --c-danger-ink: 244 138 132;
+  --scroll-thumb: rgba(240, 205, 175, 0.2);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(244, 172, 130, 0.09) 0%, rgba(244, 172, 130, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(147, 198, 194, 0.06) 0%, rgba(147, 198, 194, 0) 60%);
+  --lit-ring: linear-gradient(135deg, rgba(255, 205, 170, 0.38) 0%, rgba(240, 205, 175, 0.10) 32%, rgba(240, 205, 175, 0.07) 64%, rgba(147, 198, 194, 0.26) 100%);
+}
+
+/* ═══ 2. Background: the helix artwork, prerendered in Warm Sand tones (2026-11-19)
+   dna-helix-light.webp = soft copper lines on sand; dna-helix-dark.webp = copper and cream on espresso.
+   Made from the source in docs/backups/2026-11-19-helix-bg/ by mapping its light through a warm ramp. ═══ */
+html[data-palette="warm-sand"]:not(.dark) .dna-backdrop {
+  background:
+    radial-gradient(55% 45% at 30% 20%, rgba(255, 236, 214, 0.9) 0%, transparent 70%),
+    radial-gradient(40% 40% at 92% 10%, rgba(240, 162, 116, 0.12) 0%, transparent 70%),
+    radial-gradient(45% 40% at 8% 92%, rgba(127, 168, 166, 0.10) 0%, transparent 70%),
+    linear-gradient(170deg, #F8F2EA 0%, #F2EADF 55%, #F5EFE7 100%);
+}
+html[data-palette="warm-sand"]:not(.dark) .dna-backdrop::before {
+  background: url('/bg/dna-helix-light.webp') 70% center / cover no-repeat;
+  filter: none;
+  opacity: 0.62;
+  mix-blend-mode: multiply;
+}
+html[data-palette="warm-sand"]:not(.dark) .dna-backdrop::after {
+  background: radial-gradient(75% 65% at 52% 48%, rgba(245, 239, 231, 0.72) 0%, rgba(245, 239, 231, 0.35) 70%, rgba(245, 239, 231, 0) 100%);
+}
+html[data-palette="warm-sand"].dark .dna-backdrop {
+  background: linear-gradient(170deg, #1A130F 0%, #15100D 60%, #110D0A 100%);
+}
+html[data-palette="warm-sand"].dark .dna-backdrop::before {
+  content: ""; display: block; position: absolute; inset: 0;
+  background: url('/bg/dna-helix-dark.webp') 70% center / cover no-repeat;
+  filter: saturate(0.88) brightness(0.8);
+  /* theme.css gives this layer opacity: var(--smoke-opacity), which is 0 in dark: the artwork never showed. */
+  opacity: 1;
+  inset: 0;
+}
+html[data-palette="warm-sand"].dark .dna-backdrop::after {
+  content: ""; display: block; position: absolute; inset: 0;
+  background:
+    radial-gradient(55% 45% at 50% 30%, rgba(240, 150, 100, 0.08) 0%, rgba(240, 150, 100, 0) 70%),
+    radial-gradient(30% 34% at 94% 14%, rgba(12, 8, 6, 0.45) 0%, rgba(12, 8, 6, 0) 100%),
+    radial-gradient(70% 62% at 52% 48%, rgba(14, 10, 8, 0.26) 0%, rgba(14, 10, 8, 0.08) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(10, 7, 5, 0.04) 50%, rgba(8, 5, 4, 0.5) 100%);
+}
+@media (max-aspect-ratio: 4/5) {
+  /* Phones: keep the main helix (top right of the artwork) in view. */
+  html[data-palette="warm-sand"] .dna-backdrop::before { background-position: 78% top; }
+}
+
+/* PINIT Scan stays a dark camera screen in both themes, on the warm helix. */
+html[data-palette="warm-sand"] .pinit-scan-shell {
+  background:
+    radial-gradient(70% 62% at 50% 45%, rgba(12, 8, 6, 0.42) 0%, rgba(12, 8, 6, 0.2) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(10, 7, 5, 0.1) 45%, rgba(6, 4, 3, 0.62) 100%),
+    url('/bg/dna-helix-dark.webp') 70% center / cover no-repeat, #0F0B09 !important;
+}
+html[data-palette="warm-sand"] .pinit-scan { background: rgba(16, 11, 8, 0.55) !important; }
+@media (min-width: 1024px) {
+  html[data-palette="warm-sand"].dark .hub-app::before { background: rgba(20, 14, 10, 0.22); }
+}
+
+/* ═══ 3. Places the Forest file hard-codes green ═══════════════════════════════════ */
+html[data-palette="warm-sand"].dark .hub-sb-pill { box-shadow: inset 0 0 0 1px var(--pt-line-accent), inset 3px 0 0 var(--pt-accent), 0 0 22px -8px rgba(244, 172, 130, 0.45) !important; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html[data-palette="warm-sand"].dark .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(255, 200, 165, 0.6) 335deg, transparent 360deg), var(--lit-ring);
+  }
+}
+html[data-palette="warm-sand"] .hub-route-sweep {
+  background: linear-gradient(90deg, rgba(190, 90, 46, 0), rgba(190, 90, 46, 0.9) 45%, rgba(255, 210, 180, 1) 80%, rgba(255, 255, 255, 0)) !important;
+  box-shadow: 0 0 10px rgba(190, 90, 46, 0.4) !important;
+}
+/* identity graph card on Home: warm espresso panel; its lines, centre and labels follow */
+html[data-palette="warm-sand"] .hub-main :is(.pulse-web, section.pulse-dark) {
+  background: radial-gradient(700px 300px at 50% 45%, #4A3428 0%, #1C1410 72%) !important;
+  border-color: rgba(244, 172, 130, 0.18) !important;
+}
+html[data-palette="warm-sand"] .hub-main .pulse-dark #pulse-center stop:first-child { stop-color: #E8895A; }
+html[data-palette="warm-sand"] .hub-main .pulse-dark #pulse-center stop:last-child { stop-color: #8A4424; }
+html[data-palette="warm-sand"] .hub-main .pulse-dark line { stroke: rgba(255, 215, 185, 0.26); }
+html[data-palette="warm-sand"] .hub-main .pulse-dark circle[fill="rgba(46,170,115,.12)"] { fill: rgba(240, 150, 100, 0.14); }
+html[data-palette="warm-sand"] .hub-main .pulse-dark :is(text[fill="#8FB5A2"], [class*="text-[#8FB5A2]"]) { fill: #CDB8A8; color: #CDB8A8 !important; }
+html[data-palette="warm-sand"] .hub-main .pulse-dark [class*="text-[#B9CEC2]"] { color: #DCCBBE !important; }
+html[data-palette="warm-sand"] .hub-main .pulse-dark [class*="text-[#6FE0A8]"] { color: #F4AC82 !important; }
+html[data-palette="warm-sand"] .hub-main .pulse-dark [class*="bg-[#1E9B68]"] { background-color: rgba(232, 137, 90, 0.30) !important; border-color: rgba(244, 172, 130, 0.4) !important; }
+/* Shared Links hero */
+html[data-palette="warm-sand"] .sl-pulse-main { background: radial-gradient(120% 120% at 100% 0%, rgba(232, 137, 90, 0.30) 0%, transparent 55%), linear-gradient(135deg, #1E1612 0%, #2C2019 55%, #4A2C1D 100%) !important; border-color: rgba(244, 172, 130, 0.18); }
+html[data-palette="warm-sand"] .sl-pulse-main h2 em { color: #F8C4A2 !important; }
+html[data-palette="warm-sand"] .sl-pulse-main :is(.sl-live, .sl-fact span) { color: #EBD3C2 !important; }
+/* Reports count pill: this palette's own accent */
+html[data-palette="warm-sand"] .evi-count-pill { filter: hue-rotate(160deg) saturate(0.8); }
+/* PINIT Scan (camera app) */
+html[data-palette="warm-sand"] .pinit-scan-shell { background: radial-gradient(125% 100% at 50% 45%, rgba(10, 7, 5, 0.1) 45%, rgba(8, 5, 4, 0.6) 100%), #15100D !important; }
+html[data-palette="warm-sand"] .pinit-scan { background: rgba(21, 16, 13, 0.6) !important; }
+html[data-palette="warm-sand"] .pinit-scan.s-open { background: radial-gradient(120% 70% at 50% 0%, rgba(232, 137, 90, 0.30) 0%, rgba(21, 16, 13, 0.6) 62%) !important; }
+html[data-palette="warm-sand"] .pinit-scan .btn.primary { background: #B85428 !important; box-shadow: 0 8px 22px -10px rgba(190, 90, 46, 0.8) !important; }
+html[data-palette="warm-sand"] .pinit-scan .btn.text { color: #F8C4A2 !important; }
+html[data-palette="warm-sand"] .pinit-scan .btn.light { color: #A9502A !important; }
+html[data-palette="warm-sand"] .pinit-scan .viewport { border-color: rgba(244, 172, 130, 0.22) !important; }
+html[data-palette="warm-sand"].pinit-scan-lock, html[data-palette="warm-sand"].pinit-scan-lock body, html[data-palette="warm-sand"].pinit-scan-lock #root { background: #15100D !important; }
+/* sign-in face scan */
+html[data-palette="warm-sand"] .pinit-auth .pa-cam { box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 18px 50px -18px rgba(190, 90, 46, 0.45); }
+html[data-palette="warm-sand"] .pinit-auth .pa-cam.ok { box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 0 34px rgba(244, 172, 130, 0.4); }
+html[data-palette="warm-sand"] .pinit-auth .pa-cam-scan { background: linear-gradient(90deg, transparent, #F4AC82, transparent) !important; box-shadow: 0 0 12px rgba(232, 137, 90, 0.8); }
+
+/* ═══ 4. Semantics: green stays for success / verified (generated below) ═════════════ */
+html[data-palette="warm-sand"] :is([class^="text-emerald-"], [class*=" text-emerald-"], [class^="text-green-"], [class*=" text-green-"]) { color: var(--pt-success) !important; }
+html[data-palette="warm-sand"].dark :is([class*="dark:text-emerald-"], [class*="dark:text-green-"]) { color: var(--pt-success) !important; }
+html[data-palette="warm-sand"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) { background: #2F7346 !important; }
+html[data-palette="warm-sand"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]), html[data-palette="warm-sand"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) * { color: #FFFFFF !important; }
+html[data-palette="warm-sand"] :is([class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-green-50"], [class~="bg-green-100"], [class^="bg-emerald-50/"], [class*=" bg-emerald-50/"], [class^="bg-emerald-100/"], [class*=" bg-emerald-100/"], [class^="bg-green-50/"], [class*=" bg-green-50/"], [class^="bg-green-100/"], [class*=" bg-green-100/"], [class^="bg-emerald-500/"], [class*=" bg-emerald-500/"]) { background-color: var(--pt-tint-success) !important; }
+html[data-palette="warm-sand"] :is([class^="border-emerald-"], [class*=" border-emerald-"], [class^="border-green-"], [class*=" border-green-"]) { border-color: color-mix(in srgb, var(--pt-success) 34%, transparent) !important; }
+
+/* white sub-labels inside the solid terracotta (active tabs) stay fully white for contrast */
+html[data-palette="warm-sand"]:not(.dark) :is([class~="bg-dna-500"],[class~="bg-dna-600"],[class~="bg-blue-600"]) [class*="text-white"] { color: #FFFFFF !important; }
+
+/* old brand gradient (Upgrade "Most popular", certificate seals, profile ring) follows the terracotta action colour */
+html[data-palette="warm-sand"] :is([class^="from-[#1755F3]"], [class*=" from-[#1755F3]"], [class^="from-blue-"], [class*=" from-blue-"], [class^="from-dna-"], [class*=" from-dna-"], [class^="from-indigo-"], [class*=" from-indigo-"]) { --tw-gradient-from: #A84C23 var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(168 76 35 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html[data-palette="warm-sand"] :is([class^="to-[#0A40C7]"], [class*=" to-[#0A40C7]"], [class^="to-blue-"], [class*=" to-blue-"], [class^="to-dna-"], [class*=" to-dna-"], [class^="to-indigo-"], [class*=" to-indigo-"]) { --tw-gradient-to: #8A3C1A var(--tw-gradient-to-position) !important; }
+
+/* Shared Links buttons read their own --sl-blue: follow the action colour and its text colour */
+html[data-palette="warm-sand"] .sl-btn.primary { background: var(--pt-action) !important; border-color: transparent !important; color: var(--pt-on-action) !important; box-shadow: var(--pt-glow); }
+html[data-palette="warm-sand"] .sl-btn.primary:hover:not(:disabled) { background: var(--pt-action-hover) !important; }
+html[data-palette="warm-sand"] .sl-btn.primary * { color: inherit !important; }
+/* white text on the brand gradient (badges, seals) stays white; the old light theme turns .text-white near-black */
+html:root:not(.dark) :is([class*="from-[#1755F3]"], [class*="from-blue-"], [class*="from-dna-"], [class*="from-indigo-"]):is([class*="text-white"]),
+html:root:not(.dark) :is([class*="from-[#1755F3]"], [class*="from-blue-"], [class*="from-dna-"], [class*="from-indigo-"]) [class*="text-white"] { color: #FFFFFF !important; }
+
+/* Highlighted card borders: a fine lit rim (terracotta-peach → warm sand → sage) on every card, always on */
+html[data-palette="warm-sand"]:not(.dark) {
+  --lit-ring: linear-gradient(135deg, rgba(214, 112, 62, 0.62) 0%, rgba(205, 160, 120, 0.34) 30%, rgba(190, 165, 140, 0.30) 62%, rgba(110, 160, 156, 0.55) 100%);
+}
+html[data-palette="warm-sand"].dark {
+  --lit-ring: linear-gradient(135deg, rgba(246, 170, 125, 0.62) 0%, rgba(240, 205, 175, 0.20) 30%, rgba(240, 205, 175, 0.16) 62%, rgba(147, 198, 194, 0.48) 100%);
+}
+/* top-level cards: 1.5px rim; tiles inside cards: same rim, a little quieter */
+html[data-palette="warm-sand"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky)::before { padding: 1.5px !important; opacity: 1; }
+html[data-palette="warm-sand"] .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card) :is(.pulse-tile, .card-sm, .glass-in, [class*="rounded-xl"], [class*="rounded-2xl"])::before { opacity: 0.85 !important; }
+/* the dark graph panel gets its own warm rim */
+html[data-palette="warm-sand"] .hub-main :is(.pulse-web, section.pulse-dark) { border-color: rgba(244, 172, 130, 0.32) !important; }
+
+/* ═══ Depth + float ═══════════════════════════════════════════════════════════════
+   --pt-lift (0 → 1) drives both the float and the shadow, so a card's shadow grows as it rises.
+   Light: layered warm-brown shadows. Dark: black shadows barely show on espresso, so depth comes from a warm
+   under-glow beneath the card and a lit top edge. */
+@property --pt-lift { syntax: '<number>'; inherits: false; initial-value: 0; }
+
+html[data-palette="warm-sand"]:not(.dark) .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(70, 45, 25, 0.08),
+    0 calc(10px + 8px * var(--pt-lift)) calc(22px + 12px * var(--pt-lift)) -12px rgba(90, 55, 30, calc(0.22 + 0.06 * var(--pt-lift))),
+    0 calc(32px + 22px * var(--pt-lift)) calc(64px + 34px * var(--pt-lift)) -28px rgba(90, 55, 30, calc(0.42 + 0.10 * var(--pt-lift))) !important;
+}
+html[data-palette="warm-sand"].dark .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 225, 200, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 calc(14px + 8px * var(--pt-lift)) calc(30px + 14px * var(--pt-lift)) -12px rgba(0, 0, 0, 0.65),
+    0 calc(36px + 22px * var(--pt-lift)) calc(74px + 32px * var(--pt-lift)) -26px rgba(0, 0, 0, 0.9),
+    0 calc(28px + 16px * var(--pt-lift)) calc(70px + 20px * var(--pt-lift)) -30px rgba(240, 150, 100, calc(0.16 + 0.16 * var(--pt-lift))) !important;
+}
+
+/* Float: Home's main cards rise ~7px and settle, slowly and out of step; the shadow grows with them.
+   Moved with `top` (cards are position:relative), not transform, so dropdowns inside keep their place.
+   Pauses while the pointer is on a card; desktop with a mouse only; off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  html[data-palette="warm-sand"] .hub-main:not(#pt-x) :is(.pulse-hero, .pulse-card, .pulse-web, section.pulse-dark) { animation: pt-float 7s ease-in-out infinite; }
+  html[data-palette="warm-sand"] .hub-main:not(#pt-x) :is(.pulse-web, section.pulse-dark) { animation-duration: 8s; animation-delay: -2.5s; }
+  html[data-palette="warm-sand"] .hub-main:not(#pt-x) .pulse-card:nth-of-type(2n) { animation-duration: 6.5s; animation-delay: -4s; }
+  html[data-palette="warm-sand"] .hub-main:not(#pt-x) .pulse-card:nth-of-type(3n) { animation-duration: 7.5s; animation-delay: -5.5s; }
+}
+@keyframes pt-float {
+  0%, 100% { top: 0; --pt-lift: 0; }
+  50% { top: -7px; --pt-lift: 1; }
+}
+
+/* Hover: the card is "picked up". It stops floating and lifts ~6px, its shadow (or warm under-glow) grows, its edge
+   warms, and a soft band of light travels around its border. Settles back when the pointer leaves.
+   (top and --pt-lift are transitioned; --pt-lift is a registered number so it animates smoothly.) */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  html[data-palette="warm-sand"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+    transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), --pt-lift 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+  html[data-palette="warm-sand"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):is(:hover, :focus-within) {
+    animation: none; top: -6px; --pt-lift: 1.25;
+    border-color: var(--pt-line-accent) !important;
+  }
+  /* light travelling around the border (light mode: terracotta; dark mode keeps its peach band) */
+  html[data-palette="warm-sand"]:not(.dark) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 290deg, rgba(214, 112, 62, 0.85) 330deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 2.8s linear infinite;
+    padding: 1.5px !important;
+  }
+  html[data-palette="warm-sand"].dark .hub-main :is(.card-hover):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(255, 200, 165, 0.7) 335deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 2.8s linear infinite;
+  }
+}

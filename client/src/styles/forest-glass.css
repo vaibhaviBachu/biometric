@@ -1,0 +1,731 @@
+/*
+  PINITHUB — Forest Intelligence (dark, primary) + Premium Titanium (light).
+  Colours, backgrounds, surfaces, borders and type ONLY. Loaded last (main.tsx), so it sits over theme.css,
+  floating-glass.css, dashboard-frame.css and sidebar-glass.css. No layout, names or behaviour change.
+
+  How it is built:
+    1. Tokens       — every colour lives here once per theme (--pt-*). Nothing below invents a colour.
+    2. Bridge       — the older theme variables (--bg, --ink, --c-*, --fill-*, …) are pointed at the tokens.
+    3. Background   — dark: the forest artwork under a controlled veil. Light: titanium base with a pale,
+                      re-toned version of the same artwork (never the dark image behind light content).
+    4. Surfaces     — one glass recipe for cards, one for the sidebar, one for popovers and inputs.
+    5. Type         — Geist Sans everywhere, Geist Mono for IDs/hashes/references; one weight scale.
+    6. Semantics    — emerald protected/verified · cyan DNA/forensic · violet identity/AI ·
+                      amber provenance/pending · rose biometric/sensitive · red error.
+    7. Component and page fixes that hard-code old colours.
+  Remove the import in main.tsx to switch the whole theme off. Fonts load from the Google Fonts link in index.html.
+*/
+
+/* ═══ 1. Tokens ══════════════════════════════════════════════════════════════════ */
+:root {
+  --f: 'Geist', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  /* type scale */
+  --pt-fs-title: 28px;   --pt-fw-title: 680;
+  --pt-fs-section: 21px; --pt-fw-section: 600;
+  --pt-fs-card: 16px;    --pt-fw-card: 600;
+  --pt-fs-body: 14px;    --pt-fw-body: 420;
+  --pt-fs-nav: 14px;     --pt-fw-nav: 500;
+  --pt-fs-support: 12.5px;
+  --pt-fs-tech: 12.5px;  --pt-fw-tech: 500;
+}
+
+/* Dark — Forest Intelligence (brightened 2026-11-18: richer emerald glass, white headings, vibrant mint actions) */
+html.dark {
+  --pt-bg: #08100C;
+  --pt-bg-2: #0E1B15;
+  --pt-sidebar: rgba(14, 30, 23, 0.86);          /* deep forest, a step darker than cards */
+  --pt-card: rgba(22, 46, 35, 0.72);             /* richer evergreen glass (#162E23) */
+  --pt-card-2: rgba(30, 58, 45, 0.80);           /* elevated */
+  --pt-inset: rgba(160, 240, 205, 0.045);        /* tiles inside cards: a lit wash, not a dark hole */
+  --pt-pop: rgba(18, 38, 29, 0.97);              /* menus, popovers, modals */
+  --pt-input: rgba(4, 14, 10, 0.50);
+  --pt-hover: rgba(150, 235, 200, 0.08);
+  --pt-ink: #F7FCF9;             /* headings and primary text: bright white */
+  --pt-ink-2: #C3D6CA;           /* supporting text, clearer */
+  --pt-muted: #9DB3A5;
+  --pt-faint: #8AA294;
+  --pt-border: rgba(170, 240, 205, 0.16);
+  --pt-border-2: rgba(170, 240, 205, 0.26);
+  --pt-accent: #7BE8B7;          /* brighter mint for text, icons, highlights */
+  --pt-action: linear-gradient(180deg, #6AE9AF 0%, #34C987 100%);   /* vibrant emerald-mint buttons */
+  --pt-action-solid: #43D193;
+  --pt-action-hover: linear-gradient(180deg, #7DF0BC 0%, #3FD592 100%);
+  --pt-on-action: #04291A;       /* deep forest text on mint: 9:1 */
+  --pt-cyan: #5ED8D2;
+  --pt-ai: #B39CFC;
+  --pt-ai-solid: #7457E0;
+  --pt-prov: #F0C077;
+  --pt-bio: #F596B2;
+  --pt-err: #F58585;
+  --pt-tint-accent: rgba(123, 232, 183, 0.13);
+  --pt-tint-cyan: rgba(94, 216, 210, 0.12);
+  --pt-tint-ai: rgba(179, 156, 252, 0.13);
+  --pt-tint-prov: rgba(240, 192, 119, 0.13);
+  --pt-tint-bio: rgba(245, 150, 178, 0.13);
+  --pt-tint-err: rgba(245, 133, 133, 0.14);
+  --pt-line-accent: rgba(123, 232, 183, 0.38);
+  --pt-glow: 0 10px 26px -12px rgba(90, 225, 165, 0.65);
+  --pt-shadow: 0 24px 54px -30px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(120, 230, 180, 0.03);
+  --pt-shadow-pop: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
+  --pt-reflect: inset 0 1px 0 rgba(190, 255, 225, 0.12);
+  --pt-blur: 16px;
+}
+
+/* Light — Premium Titanium */
+html:not(.dark) {
+  --pt-bg: #F3F6F4;
+  --pt-bg-2: #E9EFEB;
+  --pt-sidebar: rgba(248, 250, 249, 0.94);
+  --pt-card: rgba(255, 255, 255, 0.92);
+  --pt-card-2: rgba(247, 250, 248, 0.96);
+  --pt-inset: rgba(246, 249, 247, 0.9);
+  --pt-pop: rgba(255, 255, 255, 0.98);
+  --pt-input: #FFFFFF;
+  --pt-hover: rgba(32, 65, 45, 0.05);
+  --pt-ink: #17231C;
+  --pt-ink-2: #53635A;
+  --pt-muted: #5F6F65;          /* spec #68786E, deepened to hold 4.5:1 on tinted surfaces */
+  --pt-faint: #66766C;
+  --pt-border: rgba(32, 65, 45, 0.13);
+  --pt-border-2: rgba(32, 65, 45, 0.2);
+  --pt-accent: #137A51;          /* text accent: #16865A deepened to hold 4.5:1 on tinted chips */
+  --pt-action: linear-gradient(180deg, #157F55 0%, #0F6B45 100%);   /* white text 4.9-6.3:1 */
+  --pt-action-solid: #147A52;
+  --pt-action-hover: linear-gradient(180deg, #17895C 0%, #11744B 100%);
+  --pt-on-action: #FFFFFF;
+  --pt-cyan: #12797C;            /* spec #168E91, deepened for 4.5:1 on white */
+  --pt-ai: #6A4ABD;             /* spec #7655C8; deepened for small text on tints */
+  --pt-ai-solid: #7655C8;
+  --pt-prov: #8E5C14;           /* spec #A66C20 is 4.4:1 on white; deepened for AA */
+  --pt-bio: #A9466A;            /* spec #BD5475, deepened for 4.5:1 on white */
+  --pt-err: #B83C3C;            /* spec #C44444; deepened for small text on tints */
+  --pt-tint-accent: rgba(22, 134, 90, 0.08);
+  --pt-tint-cyan: rgba(22, 142, 145, 0.08);
+  --pt-tint-ai: rgba(118, 85, 200, 0.08);
+  --pt-tint-prov: rgba(166, 108, 32, 0.09);
+  --pt-tint-bio: rgba(189, 84, 117, 0.08);
+  --pt-tint-err: rgba(196, 68, 68, 0.08);
+  --pt-line-accent: rgba(22, 134, 90, 0.28);
+  --pt-glow: 0 8px 20px -10px rgba(20, 122, 82, 0.5);
+  --pt-shadow: 0 1px 2px rgba(23, 45, 33, 0.05), 0 14px 34px -22px rgba(23, 55, 38, 0.30);
+  --pt-shadow-pop: 0 24px 60px -24px rgba(23, 55, 38, 0.35);
+  --pt-reflect: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --pt-blur: 14px;
+}
+
+/* ═══ 2. Bridge: older theme variables → tokens ══════════════════════════════════ */
+html:root {
+  --bg: var(--pt-bg);
+  --bg2: var(--pt-bg-2);
+  --page-bg: var(--pt-bg);
+  --glass: var(--pt-card);
+  --glass-in: var(--pt-inset);
+  --glass-panel: var(--pt-card);
+  --glass-edge: var(--pt-border);
+  --edge: var(--pt-border);
+  --edge-soft: var(--pt-border);
+  --card-edge: var(--pt-border);
+  --line: var(--pt-border);
+  --line-strong: var(--pt-border-2);
+  --ink: var(--pt-ink);
+  --ink-2: var(--pt-ink-2);
+  --ink-muted: var(--pt-muted);
+  --muted: var(--pt-muted);
+  --faint: var(--pt-faint);
+  --alert: var(--pt-err);
+  --blue: var(--pt-action-solid);
+  --blue-2: var(--pt-action-solid);
+  --blue-hi: var(--pt-accent);
+  --accent: var(--pt-action-solid);
+  --accent-ink: var(--pt-accent);
+  --accent-grad: var(--pt-action);
+  --accent-grad-hover: var(--pt-action-hover);
+  --fill-card: var(--pt-inset);
+  --fill-card-hover: var(--pt-hover);
+  --fill-elevated: var(--pt-card-2);
+  --fill-surface: var(--pt-inset);
+  --fill-input: var(--pt-input);
+  --fill-solid: var(--pt-pop);
+  --fill-hover: var(--pt-hover);
+  --shadow: var(--pt-shadow);
+  --shadow-e1: var(--pt-reflect);
+  --shadow-e2: var(--pt-reflect), var(--pt-shadow);
+  --shadow-e3: var(--pt-reflect), var(--pt-shadow-pop);
+  --fg-card-bg: var(--pt-card);
+  --pt-safe: var(--pt-accent);     /* 'safe / protected' colour; a palette may point it elsewhere */
+  --blur: var(--pt-blur);
+  --glass-blur: blur(var(--pt-blur)) saturate(1.1);
+  --smoke-opacity: 0;
+}
+html.dark {
+  --blue-rgb: 22, 134, 90;
+  --ink-rgb: 241, 247, 243;
+  --accent-glow: var(--pt-glow);
+  --edge-top: rgba(180, 235, 205, 0.12);
+  --c-brand: 67 209 147;  --c-brand-press: 52 201 135;  --c-brand-soft: 123 232 183;
+  --c-bg-base: 8 16 12;   --c-bg-surface: 14 27 21;     --c-bg-card: 22 46 35;   --c-bg-elevated: 30 58 45;
+  --c-fg: 247 252 249;    --c-fg-2: 195 214 202;        --c-fg-muted: 157 179 165;
+  --c-line: 36 54 44;     --c-line-control: 70 92 80;
+  --c-mint: 22 44 33;        --c-mint-ink: 112 221 170;
+  --c-powder: 18 40 40;      --c-powder-ink: 80 201 196;
+  --c-lavender: 34 30 52;    --c-lavender-ink: 196 181 253;
+  --c-periwinkle: 34 30 52;  --c-periwinkle-ink: 196 181 253;
+  --c-peach: 48 38 22;       --c-peach-ink: 232 181 104;
+  --c-cream: 48 38 22;       --c-cream-ink: 232 181 104;
+  --c-rose: 52 28 36;        --c-rose-ink: 241 138 168;
+  --c-danger: 54 26 26;      --c-danger-ink: 240 120 120;
+  --scroll-thumb: rgba(180, 220, 195, 0.2);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(110, 230, 175, 0.10) 0%, rgba(110, 230, 175, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(80, 210, 205, 0.07) 0%, rgba(80, 210, 205, 0) 60%);
+  --lit-ring: linear-gradient(135deg, rgba(150, 245, 200, 0.42) 0%, rgba(170, 240, 205, 0.10) 32%, rgba(170, 240, 205, 0.07) 64%, rgba(90, 220, 215, 0.30) 100%);
+  --lit-glow: none;
+}
+html:not(.dark) {
+  --blue-rgb: 22, 134, 90;
+  --ink-rgb: 23, 35, 28;
+  --accent-glow: var(--pt-glow);
+  --edge-top: rgba(255, 255, 255, 0.9);
+  --c-brand: 20 122 82;   --c-brand-press: 16 106 71;   --c-brand-soft: 19 122 81;
+  --c-bg-base: 243 246 244; --c-bg-surface: 233 239 235; --c-bg-card: 255 255 255; --c-bg-elevated: 247 250 248;
+  --c-fg: 23 35 28;       --c-fg-2: 83 99 90;           --c-fg-muted: 104 120 110;
+  --c-line: 214 224 218;  --c-line-control: 176 192 183;
+  --c-mint: 230 243 236;     --c-mint-ink: 17 112 74;
+  --c-powder: 228 242 242;   --c-powder-ink: 16 110 113;
+  --c-lavender: 239 235 250; --c-lavender-ink: 104 72 186;
+  --c-periwinkle: 239 235 250; --c-periwinkle-ink: 104 72 186;
+  --c-peach: 248 240 228;    --c-peach-ink: 130 84 18;
+  --c-cream: 248 240 228;    --c-cream-ink: 130 84 18;
+  --c-rose: 249 235 240;     --c-rose-ink: 158 62 98;
+  --c-danger: 250 234 234;   --c-danger-ink: 176 56 56;
+  --scroll-thumb: rgba(32, 65, 45, 0.22);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(30, 160, 105, 0.05) 0%, rgba(30, 160, 105, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(22, 142, 145, 0.045) 0%, rgba(22, 142, 145, 0) 60%);
+  --lit-ring: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(32, 65, 45, 0.10) 40%, rgba(32, 65, 45, 0.10) 70%, rgba(22, 142, 145, 0.18) 100%);
+  --lit-glow: none;
+}
+
+/* ═══ 3. Background ═════════════════════════════════════════════════════════════
+   One fixed layer behind the whole app, no animation. */
+html:root .dna-backdrop .fg-orbs,
+html:root .dna-backdrop .fg-smoke,
+html:root .dna-backdrop .fg-helix { display: none; }
+
+/* Dark: the artwork, a charcoal veil over the content area, the fingerprint dimmed to a quiet corner signature */
+html.dark .dna-backdrop {
+  background:
+    radial-gradient(30% 34% at 94% 14%, rgba(4, 8, 6, 0.45) 0%, rgba(4, 8, 6, 0) 100%),
+    radial-gradient(55% 45% at 50% 30%, rgba(60, 210, 145, 0.10) 0%, rgba(60, 210, 145, 0) 70%),
+    radial-gradient(70% 62% at 52% 48%, rgba(5, 12, 9, 0.22) 0%, rgba(5, 12, 9, 0.08) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(4, 9, 7, 0.04) 50%, rgba(2, 6, 4, 0.48) 100%),
+    url('/bg/forest-dna.webp') center / cover no-repeat,
+    #080D0B;
+}
+html.dark .dna-backdrop::before, html.dark .dna-backdrop::after { display: none; }
+
+/* Light: titanium base; the same artwork re-toned (inverted + hue-turned) into pale emerald/teal lines, kept faint */
+html:not(.dark) .dna-backdrop {
+  background:
+    radial-gradient(60% 50% at 50% 12%, rgba(22, 134, 90, 0.06) 0%, transparent 70%),
+    radial-gradient(40% 40% at 96% 6%, rgba(22, 142, 145, 0.06) 0%, transparent 70%),
+    linear-gradient(170deg, #F5F8F6 0%, #EEF3F0 55%, #F3F6F4 100%);
+}
+html:not(.dark) .dna-backdrop::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: url('/bg/forest-dna.webp') center / cover no-repeat;
+  filter: invert(1) hue-rotate(180deg) saturate(0.7) contrast(0.9);
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+}
+html:not(.dark) .dna-backdrop::after {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  /* calm centre under the content, a little more texture at the edges */
+  background: radial-gradient(75% 65% at 52% 48%, rgba(243, 246, 244, 0.72) 0%, rgba(243, 246, 244, 0.35) 70%, rgba(243, 246, 244, 0) 100%);
+}
+/* portrait phones/tablets: left waves + dot mesh; the fingerprint stays off-screen, away from content */
+@media (max-aspect-ratio: 4/5) {
+  html.dark .dna-backdrop { background-position: 0 0, 0 0, 0 0, 0 0, 8% center, 0 0; }
+  html:not(.dark) .dna-backdrop::before { background-position: 8% center; }
+}
+
+/* the theme's full-screen glass sheet below 1024px hid the background: clear it; cards keep their own glass */
+@media (max-width: 1023.98px) {
+  html:root .hub-app::before { background: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (min-width: 1024px) {
+  html.dark .hub-app::before { background: rgba(8, 18, 13, 0.22); border-color: var(--pt-border); }
+}
+
+/* ═══ 4. Surfaces ═══════════════════════════════════════════════════════════════ */
+/* Cards: one recipe on every page */
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"])):not(.rounded-full):not(.pulse-dark *):not(.pulse-web *):not(.sl-pulse-main *):not(.absolute):not(.fixed):not(.sticky) {
+  background-color: var(--pt-card) !important;
+  background-image: var(--fg-card-sheen) !important;
+  -webkit-backdrop-filter: blur(var(--pt-blur)) saturate(1.1);
+  backdrop-filter: blur(var(--pt-blur)) saturate(1.1);
+  border-color: var(--pt-border) !important;
+  box-shadow: var(--pt-reflect), var(--pt-shadow) !important;
+}
+/* rim drawn by dashboard-frame.css: a hairline */
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky)::before {
+  padding: 1px !important;
+}
+/* tiles inside cards */
+html:root .hub-main :is(.pulse-tile, .pulse-well) { background: var(--pt-inset) !important; border-color: var(--pt-border) !important; }
+
+
+/* (:not(#pt-x) adds ID weight so these beat the older theme's long class-only selectors)
+   low-opacity white washes are overlays on dark media (camera controls, graph wells), not cards: keep them translucent */
+html:root .hub-main:not(#pt-x) :is([class~="bg-white/5"], [class~="bg-white/10"], [class~="bg-white/15"], [class~="bg-white/20"], [class~="bg-white/25"], [class~="bg-white/30"], [class~="bg-white/40"], [class~="bg-white/[0.02]"], [class~="bg-white/[0.03]"], [class~="bg-white/[0.04]"], [class~="bg-white/[0.05]"], [class~="bg-white/[0.06]"], [class~="bg-white/[0.07]"], [class~="bg-white/[0.08]"], [class~="bg-white/[0.1]"], [class~="bg-white/[0.12]"]) {
+  background-color: rgba(255, 255, 255, 0.08) !important; background-image: none !important;
+  box-shadow: none !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+html:root .hub-main:not(#pt-x) :is([class~="bg-white/5"], [class~="bg-white/10"], [class~="bg-white/15"], [class~="bg-white/20"], [class~="bg-white/25"], [class~="bg-white/30"], [class~="bg-white/40"], [class~="bg-white/[0.02]"], [class~="bg-white/[0.03]"], [class~="bg-white/[0.04]"], [class~="bg-white/[0.05]"], [class~="bg-white/[0.06]"], [class~="bg-white/[0.07]"], [class~="bg-white/[0.08]"], [class~="bg-white/[0.1]"], [class~="bg-white/[0.12]"])::before { display: none !important; }
+/* old charcoal one-off fills (dark-mode panels and rows) become forest glass */
+html.dark .hub-main:not(#pt-x) :is([class*="bg-[#111113]"], [class*="bg-[#151618]"], [class*="bg-[#101012]"], [class*="bg-[#151517]"], [class*="bg-[#0D0E10]"], [class*="bg-[#17181A]"], [class*="bg-[#161719]"], [class*="bg-[#121315]"], [class*="bg-[#1A2332]"]):not(.rounded-full) { background-color: var(--pt-card) !important; }
+
+
+/* .card-hover (Reports, lists) paints its own charcoal/white gradient and a blue-tinted shadow: use the card tokens */
+html:root .hub-main:not(#pt-x) .card-hover {
+  background: var(--pt-card) !important; background-image: var(--fg-card-sheen) !important;
+  border-color: var(--pt-border) !important; box-shadow: var(--pt-reflect), var(--pt-shadow) !important;
+  -webkit-backdrop-filter: blur(var(--pt-blur)); backdrop-filter: blur(var(--pt-blur));
+}
+html:root .hub-main:not(#pt-x) .card-hover:hover { border-color: var(--pt-line-accent) !important; }
+/* the older theme's [class*="bg-white/"] also caught hover-only classes (hover:bg-white/10) and painted them solid;
+   an element whose only white background is a hover state stays clear until hovered */
+html:root:not(#pt-x) [class*="hover:bg-white/"]:not([class^="bg-white"]):not([class*=" bg-white"]) { background-color: transparent !important; background-image: none !important; box-shadow: none !important; }
+html:root:not(#pt-x) [class*="hover:bg-white/"]:not([class^="bg-white"]):not([class*=" bg-white"]):hover { background-color: rgba(255, 255, 255, 0.10) !important; }
+
+/* the identity graph card keeps its deep evergreen in both themes (it is a visual, with light text on it) */
+html:root .hub-main :is(.pulse-web, section.pulse-dark) {
+  background: radial-gradient(700px 300px at 50% 45%, #183A2B 0%, #0B1611 72%) !important;
+  border-color: rgba(112, 221, 170, 0.16) !important;
+}
+
+/* a soft light runs along a card's rim under the pointer (desktop, not with reduced motion) */
+@property --fg-sweep { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html.dark .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(150, 235, 195, 0.6) 335deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 3.2s linear infinite;
+  }
+}
+@keyframes fg-sweep { to { --fg-sweep: 360deg; } }
+
+/* Sidebar: a step darker (dark) / lighter (light) than the cards, hairline border */
+html:root .hub-sidebar.velvet-nav.hub-sb {
+  background: var(--pt-sidebar) !important;
+  background-image: none !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.1); backdrop-filter: blur(18px) saturate(1.1);
+  border: 1px solid var(--pt-border) !important;
+}
+html.dark .hub-sidebar.velvet-nav.hub-sb { box-shadow: inset 0 1px 0 rgba(180, 235, 205, 0.05), 0 30px 60px -30px rgba(0, 0, 0, 0.9) !important; }
+html:not(.dark) .hub-sidebar.velvet-nav.hub-sb { box-shadow: inset 0 1px 0 #fff, 0 18px 40px -26px rgba(23, 55, 38, 0.3) !important; }
+html:root .hub-sb .hub-sb-tile { background: transparent !important; box-shadow: none !important; color: var(--pt-ink-2) !important; }
+html:root .hub-sb .hub-sb-tile * { color: inherit !important; }
+html:root .hub-sb .hub-sb-tile::before, html:root .hub-sb .hub-sb-tile::after { display: none !important; }
+/* the dark graph card keeps its own translucent wells and light text in both themes */
+html:root .hub-main :is(.pulse-dark, .pulse-web) [class*="bg-white/"]:not(#pt-x) { background-color: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.10) !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:root .hub-main :is(.pulse-dark, .pulse-web) :is(p, span, div) { --pt-ink: #F1F7F3; }
+html:root .hub-sb .hub-nav-active .hub-sb-tile { background: transparent !important; box-shadow: none !important; }
+html:root .velvet-nav.hub-sb .hub-nav-active .hub-sb-tile,
+html:root .velvet-nav.hub-sb .hub-nav-active .hub-sb-tile * { color: var(--pt-accent) !important; }
+html:root .hub-sb-pill { background: linear-gradient(90deg, var(--pt-tint-accent), color-mix(in srgb, var(--pt-tint-accent) 55%, transparent)) !important; box-shadow: inset 0 0 0 1px var(--pt-line-accent), inset 3px 0 0 var(--pt-accent) !important; }
+html.dark .hub-sb-pill { box-shadow: inset 0 0 0 1px var(--pt-line-accent), inset 3px 0 0 var(--pt-accent), 0 0 22px -8px rgba(110, 230, 175, 0.45) !important; }
+html:root .velvet-nav.hub-sb .hub-nav-active { color: var(--pt-ink) !important; font-weight: 600; }
+html:root .velvet-nav.hub-sb .hub-sb-row:not(.hub-nav-active):hover { color: var(--pt-ink) !important; }
+html:root .velvet-nav.hub-sb .hub-sb-row:not(.hub-nav-active):hover .hub-sb-tile { color: var(--pt-accent) !important; }
+
+/* Popovers, menus, dialogs (rendered outside .hub-main) */
+html:root :is([role="menu"], [role="listbox"], [role="dialog"] > div, .hub-popover, .hub-dropdown, .notification-panel) {
+  border-color: var(--pt-border) !important;
+}
+html:root :is([role="menu"], [role="listbox"]) { background-color: var(--pt-pop) !important; box-shadow: var(--pt-shadow-pop) !important; color: var(--pt-ink); }
+
+/* Inputs */
+html:root :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not(.sr-only):not(.pa-input) {
+  border-color: var(--pt-border-2);
+  color: var(--pt-ink);
+}
+html:root .hub-main :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not(.sr-only) { background-color: var(--pt-input) !important; }
+html:root :is(input, textarea)::placeholder { color: var(--pt-muted) !important; opacity: 1; }
+html:root :is(input, textarea, select):focus-visible { border-color: var(--pt-accent) !important; box-shadow: 0 0 0 3px var(--pt-tint-accent) !important; outline: none; }
+html:root :is(button, a, [role="button"]):focus-visible { outline: 2px solid var(--pt-accent); outline-offset: 2px; }
+html:root :is(button, input, select, textarea):disabled { opacity: 0.55; }
+
+/* Buttons: primary actions in emerald with white text (4.5:1); secondary on glass */
+html:root :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost)) { background: var(--pt-action) !important; border-color: transparent !important; box-shadow: var(--pt-glow) !important; }
+html:root :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost)):hover { background: var(--pt-action-hover) !important; }
+html:root :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost)), html:root :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost)) * { color: var(--pt-on-action) !important; }
+
+/* Ask PINIT is the AI assistant: violet */
+html:root .pinit-ask-fab { background: var(--pt-ai-solid) !important; box-shadow: 0 10px 28px -12px rgba(111, 82, 214, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important; }
+html:root .pinit-ask-fab, html:root .pinit-ask-fab * { color: #FFFFFF !important; }
+
+/* ═══ 5. Type ═══════════════════════════════════════════════════════════════════ */
+html:root, html:root body { font-family: var(--f) !important; }
+html:root body { color: var(--pt-ink); }
+.hub-app { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-weight: var(--pt-fw-body); }
+html:root :is(.font-mono, .mono, code, kbd, samp, .hub-mono, [class*="font-mono"]) {
+  font-family: var(--mono) !important;
+  font-weight: var(--pt-fw-tech);
+  letter-spacing: 0;
+}
+html:root .hub-app :is(h1, h2, h3, h4) { color: var(--pt-ink); letter-spacing: -0.012em; }
+html:root .hub-app h1 { font-weight: 700; }
+html:root .hub-app :is(h2, h3) { font-weight: var(--pt-fw-section); }
+html:root .hub-app h4 { font-weight: var(--pt-fw-card); }
+html:root .hub-app :is(b, strong) { font-weight: 600; }
+/* page title and description in the header */
+html:root .hub-header .hub-page-title { font-size: var(--pt-fs-title) !important; font-weight: var(--pt-fw-title) !important; letter-spacing: -0.02em; line-height: 1.12; color: var(--pt-ink) !important; }
+html:root .hub-header p.hub-page-title { font-size: 18px !important; }
+html:root .hub-header .hub-page-sub { font-size: 13.5px !important; font-weight: 420; color: var(--pt-ink-2) !important; line-height: 1.4; }
+/* navigation */
+html:root .hub-sb :is(a, button) { font-size: var(--pt-fs-nav); font-weight: var(--pt-fw-nav); }
+html:root .hub-sb .hub-sb-section, html:root .hub-sb [class*="uppercase"] { color: var(--pt-muted) !important; }
+/* no heavy glows on text; a whisper of depth on dark headings only */
+html:root .hub-app, html:root .hub-app * { text-shadow: none; }
+html.dark .hub-app :is(h1, h2, .hub-page-title) { text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35); }
+
+/* Old theme colour helpers → tokens (so slate/gray utilities follow the theme) */
+html:root :is(.text-slate-900, .text-slate-800, .text-gray-900, .text-gray-800, .text-neutral-900, .text-zinc-900, .text-black, .text-fg, .text-dna-900) { color: var(--pt-ink) !important; }
+html:root :is(.text-slate-700, .text-slate-600, .text-gray-700, .text-gray-600, .text-neutral-700, .text-neutral-600, .text-zinc-600, .text-fg-2) { color: var(--pt-ink-2) !important; }
+html:root :is(.text-slate-500, .text-slate-400, .text-gray-500, .text-gray-400, .text-neutral-500, .text-neutral-400, .text-zinc-500, .text-fg-muted) { color: var(--pt-muted) !important; }
+
+/* ═══ 6. Semantic colours ═══════════════════════════════════════════════════════
+   The previous theme forced blue/indigo/violet utilities to electric blue; each family now has one purpose.
+   emerald protected/verified (+ the old brand blue/indigo/dna) · cyan DNA/forensic · violet identity/AI ·
+   amber provenance/pending · rose biometric/sensitive · red error.
+   Each rule matches a class from its start: base classes always, dark: variants only in dark, hover: only on hover. */
+html:root :is([class^="text-blue-"], [class*=" text-blue-"], [class^="text-dna-"], [class*=" text-dna-"], [class^="text-indigo-"], [class*=" text-indigo-"], [class^="text-emerald-"], [class*=" text-emerald-"], [class^="text-green-"], [class*=" text-green-"]) { color: var(--pt-accent) !important; }
+html:root.dark :is([class*="dark:text-blue-"], [class*="dark:text-dna-"], [class*="dark:text-indigo-"], [class*="dark:text-emerald-"], [class*="dark:text-green-"]) { color: var(--pt-accent) !important; }
+html:root :is([class^="text-sky-"], [class*=" text-sky-"], [class^="text-cyan-"], [class*=" text-cyan-"], [class^="text-teal-"], [class*=" text-teal-"]) { color: var(--pt-cyan) !important; }
+html:root.dark :is([class*="dark:text-sky-"], [class*="dark:text-cyan-"], [class*="dark:text-teal-"]) { color: var(--pt-cyan) !important; }
+html:root :is([class^="text-violet-"], [class*=" text-violet-"], [class^="text-purple-"], [class*=" text-purple-"], [class^="text-fuchsia-"], [class*=" text-fuchsia-"]) { color: var(--pt-ai) !important; }
+html:root.dark :is([class*="dark:text-violet-"], [class*="dark:text-purple-"], [class*="dark:text-fuchsia-"]) { color: var(--pt-ai) !important; }
+html:root :is([class^="text-amber-"], [class*=" text-amber-"], [class^="text-yellow-"], [class*=" text-yellow-"], [class^="text-orange-"], [class*=" text-orange-"]) { color: var(--pt-prov) !important; }
+html:root.dark :is([class*="dark:text-amber-"], [class*="dark:text-yellow-"], [class*="dark:text-orange-"]) { color: var(--pt-prov) !important; }
+html:root :is([class^="text-rose-"], [class*=" text-rose-"], [class^="text-pink-"], [class*=" text-pink-"]) { color: var(--pt-bio) !important; }
+html:root.dark :is([class*="dark:text-rose-"], [class*="dark:text-pink-"]) { color: var(--pt-bio) !important; }
+html:root :is([class^="text-red-"], [class*=" text-red-"]) { color: var(--pt-err) !important; }
+html:root.dark :is([class*="dark:text-red-"]) { color: var(--pt-err) !important; }
+html:root :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) { background: var(--pt-action) !important; }
+html:root :is([class~="bg-violet-500"], [class~="bg-violet-600"], [class~="bg-violet-700"], [class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"]) { background-color: var(--pt-ai-solid) !important; }
+html:root :is([class*="hover:bg-blue-"], [class*="hover:bg-dna-"], [class*="hover:bg-indigo-"], [class*="hover:bg-emerald-"], [class*="hover:bg-green-"]):hover { background: var(--pt-action-hover) !important; }
+/* Faint hover tints (rows, list items: an opacity or a 50/100 shade) stay faint: the rule above is for solid button hovers.
+   Without this a row with hover:bg-dna-500/[0.04] took the full button colour (white in Arctic dark, terracotta in Warm Sand). */
+html:root:not(#pt-x) :is([class*="hover:bg-blue-50"], [class*="hover:bg-blue-100"], [class*="hover:bg-blue-400/"], [class*="hover:bg-blue-500/"], [class*="hover:bg-blue-600/"], [class*="hover:bg-dna-50"], [class*="hover:bg-dna-100"], [class*="hover:bg-dna-400/"], [class*="hover:bg-dna-500/"], [class*="hover:bg-dna-600/"], [class*="hover:bg-indigo-50"], [class*="hover:bg-indigo-100"], [class*="hover:bg-indigo-400/"], [class*="hover:bg-indigo-500/"], [class*="hover:bg-indigo-600/"], [class*="hover:bg-emerald-50"], [class*="hover:bg-emerald-100"], [class*="hover:bg-emerald-400/"], [class*="hover:bg-emerald-500/"], [class*="hover:bg-emerald-600/"], [class*="hover:bg-green-50"], [class*="hover:bg-green-100"], [class*="hover:bg-green-400/"], [class*="hover:bg-green-500/"], [class*="hover:bg-green-600/"]):hover { background: var(--pt-hover) !important; }
+html:root :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"], [class~="bg-violet-500"], [class~="bg-violet-600"], [class~="bg-violet-700"], [class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"], [class~="bg-red-500"], [class~="bg-red-600"], [class~="bg-red-700"]):is(.text-white), html:root :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"], [class~="bg-violet-500"], [class~="bg-violet-600"], [class~="bg-violet-700"], [class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"]) .text-white { color: #FFFFFF !important; }
+html:root :is([class^="bg-blue-500/"], [class*=" bg-blue-500/"], [class^="bg-blue-600/"], [class*=" bg-blue-600/"], [class^="bg-dna-500/"], [class*=" bg-dna-500/"], [class^="bg-dna-600/"], [class*=" bg-dna-600/"], [class^="bg-indigo-500/"], [class*=" bg-indigo-500/"], [class^="bg-emerald-500/"], [class*=" bg-emerald-500/"]) { background-color: var(--pt-tint-accent) !important; }
+html:root :is([class^="bg-violet-500/"], [class*=" bg-violet-500/"], [class^="bg-purple-500/"], [class*=" bg-purple-500/"]) { background-color: var(--pt-tint-ai) !important; }
+html:root :is([class~="bg-blue-50"], [class~="bg-blue-100"], [class~="bg-dna-50"], [class~="bg-dna-100"], [class~="bg-indigo-50"], [class~="bg-indigo-100"], [class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-green-50"], [class~="bg-green-100"], [class^="bg-blue-50/"], [class*=" bg-blue-50/"], [class^="bg-blue-100/"], [class*=" bg-blue-100/"], [class^="bg-dna-50/"], [class*=" bg-dna-50/"], [class^="bg-dna-100/"], [class*=" bg-dna-100/"], [class^="bg-indigo-50/"], [class*=" bg-indigo-50/"], [class^="bg-indigo-100/"], [class*=" bg-indigo-100/"], [class^="bg-emerald-50/"], [class*=" bg-emerald-50/"], [class^="bg-emerald-100/"], [class*=" bg-emerald-100/"], [class^="bg-green-50/"], [class*=" bg-green-50/"], [class^="bg-green-100/"], [class*=" bg-green-100/"]) { background-color: var(--pt-tint-accent) !important; }
+html:root :is([class~="bg-sky-50"], [class~="bg-sky-100"], [class~="bg-cyan-50"], [class~="bg-teal-50"], [class^="bg-sky-50/"], [class*=" bg-sky-50/"], [class^="bg-sky-100/"], [class*=" bg-sky-100/"], [class^="bg-cyan-50/"], [class*=" bg-cyan-50/"], [class^="bg-teal-50/"], [class*=" bg-teal-50/"]) { background-color: var(--pt-tint-cyan) !important; }
+html:root :is([class~="bg-violet-50"], [class~="bg-violet-100"], [class~="bg-purple-50"], [class~="bg-purple-100"], [class^="bg-violet-50/"], [class*=" bg-violet-50/"], [class^="bg-violet-100/"], [class*=" bg-violet-100/"], [class^="bg-purple-50/"], [class*=" bg-purple-50/"], [class^="bg-purple-100/"], [class*=" bg-purple-100/"]) { background-color: var(--pt-tint-ai) !important; }
+html:root :is([class~="bg-amber-50"], [class~="bg-amber-100"], [class~="bg-yellow-50"], [class~="bg-yellow-100"], [class~="bg-orange-50"], [class~="bg-orange-100"], [class^="bg-amber-50/"], [class*=" bg-amber-50/"], [class^="bg-amber-100/"], [class*=" bg-amber-100/"], [class^="bg-yellow-50/"], [class*=" bg-yellow-50/"], [class^="bg-yellow-100/"], [class*=" bg-yellow-100/"], [class^="bg-orange-50/"], [class*=" bg-orange-50/"], [class^="bg-orange-100/"], [class*=" bg-orange-100/"]) { background-color: var(--pt-tint-prov) !important; }
+html:root :is([class~="bg-rose-50"], [class~="bg-rose-100"], [class~="bg-pink-50"], [class^="bg-rose-50/"], [class*=" bg-rose-50/"], [class^="bg-rose-100/"], [class*=" bg-rose-100/"], [class^="bg-pink-50/"], [class*=" bg-pink-50/"]) { background-color: var(--pt-tint-bio) !important; }
+html:root :is([class~="bg-red-50"], [class~="bg-red-100"], [class^="bg-red-50/"], [class*=" bg-red-50/"], [class^="bg-red-100/"], [class*=" bg-red-100/"]) { background-color: var(--pt-tint-err) !important; }
+html:root :is([class^="border-blue-"], [class*=" border-blue-"], [class^="border-dna-"], [class*=" border-dna-"], [class^="border-indigo-"], [class*=" border-indigo-"], [class^="border-emerald-"], [class*=" border-emerald-"], [class^="border-green-"], [class*=" border-green-"]) { border-color: var(--pt-line-accent) !important; }
+html:root :is([class^="border-sky-"], [class*=" border-sky-"], [class^="border-cyan-"], [class*=" border-cyan-"], [class^="border-teal-"], [class*=" border-teal-"]) { border-color: color-mix(in srgb, var(--pt-cyan) 32%, transparent) !important; }
+html:root :is([class^="border-violet-"], [class*=" border-violet-"], [class^="border-purple-"], [class*=" border-purple-"], [class^="border-fuchsia-"], [class*=" border-fuchsia-"]) { border-color: color-mix(in srgb, var(--pt-ai) 30%, transparent) !important; }
+html:root :is([class^="border-amber-"], [class*=" border-amber-"], [class^="border-yellow-"], [class*=" border-yellow-"], [class^="border-orange-"], [class*=" border-orange-"]) { border-color: color-mix(in srgb, var(--pt-prov) 32%, transparent) !important; }
+html:root :is([class^="border-rose-"], [class*=" border-rose-"], [class^="border-pink-"], [class*=" border-pink-"]) { border-color: color-mix(in srgb, var(--pt-bio) 32%, transparent) !important; }
+html:root :is([class^="border-red-"], [class*=" border-red-"]) { border-color: color-mix(in srgb, var(--pt-err) 36%, transparent) !important; }
+html:root :is([class^="ring-blue-"], [class*=" ring-blue-"], [class^="ring-dna-"], [class*=" ring-dna-"], [class^="ring-indigo-"], [class*=" ring-indigo-"]) { --tw-ring-color: var(--pt-line-accent) !important; }
+html:root :is([class^="from-blue-"], [class*=" from-blue-"], [class^="from-dna-"], [class*=" from-dna-"], [class^="from-indigo-"], [class*=" from-indigo-"], [class^="from-sky-"], [class*=" from-sky-"], [class^="from-[#1755F3]"], [class*=" from-[#1755F3]"]) { --tw-gradient-from: #1F9D6A var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(31 157 106 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html:root :is([class^="to-blue-"], [class*=" to-blue-"], [class^="to-dna-"], [class*=" to-dna-"], [class^="to-indigo-"], [class*=" to-indigo-"], [class^="to-sky-"], [class*=" to-sky-"], [class^="to-[#0A40C7]"], [class*=" to-[#0A40C7]"]) { --tw-gradient-to: #0F6B48 var(--tw-gradient-to-position) !important; }
+html:root :is([class^="via-blue-"], [class*=" via-blue-"], [class^="via-indigo-"], [class*=" via-indigo-"], [class^="via-dna-"], [class*=" via-dna-"]) { --tw-gradient-stops: var(--tw-gradient-from), var(--pt-action) var(--tw-gradient-via-position), var(--tw-gradient-to) !important; }
+/* text marked white inside a solid emerald/violet fill stays white (tabs, chips, buttons) */
+html:root :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"], [class~="bg-violet-500"], [class~="bg-violet-600"], [class~="bg-violet-700"], [class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"]) [class*="text-white"] { color: rgba(255, 255, 255, 0.92) !important; }
+
+/* the old light theme turns every .text-white near-black (index.css); on dark solid hex fills it must stay white */
+html:root:not(.dark) :is([class^="bg-[#0"]:not([class*="]/"]), [class*=" bg-[#0"]:not([class*="]/"]), [class^="bg-[#1"]:not([class*="]/"]), [class*=" bg-[#1"]:not([class*="]/"]), [class^="bg-[#2"]:not([class*="]/"]), [class*=" bg-[#2"]:not([class*="]/"]), [class^="bg-[#3"]:not([class*="]/"]), [class*=" bg-[#3"]:not([class*="]/"]), [class^="bg-[#4"]:not([class*="]/"]), [class*=" bg-[#4"]:not([class*="]/"]), [class^="bg-[#7"]:not([class*="]/"]), [class*=" bg-[#7"]:not([class*="]/"]), [class^="bg-[#C"]:not([class*="]/"]), [class*=" bg-[#C"]:not([class*="]/"])):is(.text-white, [class*=" text-white/"]),
+html:root:not(.dark) :is([class^="bg-[#0"]:not([class*="]/"]), [class*=" bg-[#0"]:not([class*="]/"]), [class^="bg-[#1"]:not([class*="]/"]), [class*=" bg-[#1"]:not([class*="]/"]), [class^="bg-[#2"]:not([class*="]/"]), [class*=" bg-[#2"]:not([class*="]/"]), [class^="bg-[#3"]:not([class*="]/"]), [class*=" bg-[#3"]:not([class*="]/"]), [class^="bg-[#4"]:not([class*="]/"]), [class*=" bg-[#4"]:not([class*="]/"]), [class^="bg-[#7"]:not([class*="]/"]), [class*=" bg-[#7"]:not([class*="]/"]), [class^="bg-[#C"]:not([class*="]/"]), [class*=" bg-[#C"]:not([class*="]/"])) :is(.text-white, [class*=" text-white/"]) { color: #FFFFFF !important; }
+
+/* dark: the emerald solids are bright mint, so their text is deep forest (white would fail contrast) */
+html:root.dark :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]):is(.text-white, [class*="text-white"]), html:root.dark :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) :is(.text-white, [class*="text-white"]) { color: var(--pt-on-action) !important; }
+html:root.dark :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) svg { color: var(--pt-on-action); }
+
+/* stat tiles from the old theme */
+html:root .stat-icon-blue { background: var(--pt-tint-accent) !important; }
+html:root .stat-icon-blue * { color: var(--pt-accent) !important; }
+html:root .stat-icon-purple { background: var(--pt-tint-ai) !important; }
+html:root .stat-icon-purple * { color: var(--pt-ai) !important; }
+/* icons and inline styles with old brand blues */
+html:root :is([stroke="#0C49E4"], [stroke="#1151F3"], [stroke="#0C4CED"], [stroke="#2F6BFF"], [stroke="#2563EB"], [stroke="#3B82F6"], [stroke="#0F4FF2"], [stroke="#0B44D4"]) { stroke: var(--pt-accent); }
+html:root :is([fill="#0C49E4"], [fill="#1151F3"], [fill="#2F6BFF"], [fill="#2563EB"], [fill="#3B82F6"], [fill="#0B44D4"]) { fill: var(--pt-accent); }
+html:root :is([style*="color: rgb(12, 73, 228)"], [style*="color: rgb(17, 81, 243)"], [style*="color: rgb(47, 107, 255)"], [style*="color: rgb(37, 99, 235)"]) { color: var(--pt-accent) !important; }
+html:root :is([style*="background: rgb(12, 73, 228)"], [style*="background-color: rgb(12, 73, 228)"], [style*="background: rgb(17, 81, 243)"], [style*="background-color: rgb(17, 81, 243)"]) { background: var(--pt-action) !important; }
+/* loading spinners */
+html:root .animate-spin:is([class*="border-blue-"], [class*="border-dna-"], [class*="border-indigo-"], [class*="border-t-"]) { border-color: var(--pt-tint-accent) !important; border-top-color: var(--pt-accent) !important; }
+html:root .pa-spin, html:root .lucide-loader-circle.animate-spin, html:root .lucide-loader2.animate-spin { color: var(--pt-accent) !important; }
+
+/* ═══ 7. Component and page fixes ═══════════════════════════════════════════════ */
+/* storage line under the header */
+html:root :is(.hub-quota-meta, .hub-home-meta) { color: var(--pt-muted) !important; }
+
+/* sidebar plan chip and meta chips */
+html:root .hub-sb-plan { background: var(--pt-action) !important; box-shadow: none !important; color: var(--pt-on-action) !important; }
+html:root .hub-sb-meta { color: var(--pt-ink-2) !important; background: var(--pt-inset) !important; }
+
+/* page-change sweep bar */
+html:root .hub-route-sweep {
+  background: linear-gradient(90deg, rgba(22, 134, 90, 0), rgba(22, 134, 90, 0.9) 45%, rgba(170, 235, 205, 1) 80%, rgba(255, 255, 255, 0)) !important;
+  box-shadow: 0 0 10px rgba(22, 134, 90, 0.45) !important;
+}
+
+/* Home */
+html:root .hub-main .pulse-slide-in.bg-blue-50 { background-color: var(--pt-tint-accent) !important; box-shadow: inset 0 0 0 1px var(--pt-line-accent); }
+
+/* Shared Links hero: evergreen panel (light text on it in both themes) */
+html:root .sl-pulse-main { background: radial-gradient(120% 120% at 100% 0%, rgba(22, 134, 90, 0.30) 0%, transparent 55%), linear-gradient(135deg, #0E1A14 0%, #13241B 55%, #0F3A29 100%) !important; border: 1px solid rgba(112, 221, 170, 0.16); }
+html:root .sl-pulse-main h2 em { color: #9BEFC4 !important; }
+html:not(.dark) .sl-fnode.sel rect.bg { stroke: var(--pt-action) !important; }
+
+/* Shared Links: the hero's pale labels belong on the dark hero only; on light cards they follow the theme */
+html:root .sl-pulse-main :is(.sl-live, .sl-fact span) { color: #A9E9C8 !important; }
+html:root :not(.sl-pulse-main) > .sl-facts .sl-fact span, html:root .sl-portfolio .sl-fact span { color: var(--pt-muted) !important; }
+html:root .sl-portfolio .sl-fact b { color: var(--pt-ink); }
+
+/* old periwinkle leftovers */
+html:root .pe-eyebrow { border-color: var(--pt-line-accent) !important; background: var(--pt-tint-accent) !important; color: var(--pt-accent) !important; }
+html:root :is(.hub-interactive, .hub-chip-active):hover { border-color: var(--pt-line-accent) !important; }
+html:root .pinit-auth .pa-flow-item.on { color: var(--pt-accent) !important; }
+html:root .pinit-intel .text-sky-300 { color: var(--pt-cyan) !important; }
+html:root .pulse-card [class*=":text-blue-700"] b { color: var(--pt-accent) !important; }
+
+/* Trace */
+html:root .tr-hop .dot.share { background: var(--pt-cyan) !important; }
+html:root .card-accent-teal { border-top-color: var(--pt-cyan) !important; }
+
+/* Watch (monitoring) stage: its blue orb, rings and particles turn cyan; Reports count pill emerald */
+html:root .mc-stage { filter: hue-rotate(-44deg) saturate(0.8); }
+html:root .evi-count-pill { filter: hue-rotate(-75deg) saturate(0.85); }
+
+/* Portfolio editor */
+html:root .pe { --pe-ink: var(--pt-ink); --pe-soft: var(--pt-ink-2); --pe-faint: var(--pt-muted); --pe-line: var(--pt-border); --pe-line-2: var(--pt-border-2); --pe-accent: var(--pt-action); --pe-accent-wash: var(--pt-tint-accent); --pe-accent-line: var(--pt-line-accent); --pe-accent-ink: var(--pt-accent); }
+html:root .portfolio-premium-editor .pe-btn--solid { background: var(--pt-action) !important; border-color: transparent !important; box-shadow: var(--pt-glow) !important; color: var(--pt-on-action) !important; }
+html:root .portfolio-premium-editor .pe-nav button.is-on .pe-nav__icon { background: var(--pt-action) !important; }
+html:root .portfolio-premium-editor .pe-progress__bar > span { background: linear-gradient(90deg, var(--pt-action), var(--pt-accent)) !important; }
+
+/* PINIT Scan — a camera app: stays dark in both themes, on the artwork */
+html:root .pinit-scan-shell {
+  background:
+    radial-gradient(70% 62% at 50% 45%, rgba(5, 9, 7, 0.40) 0%, rgba(5, 9, 7, 0.2) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(4, 7, 6, 0.1) 45%, rgba(2, 4, 3, 0.6) 100%),
+    url('/bg/forest-dna.webp') 8% center / cover no-repeat, #080D0B !important;
+  font-family: var(--f) !important;
+}
+html:root .pinit-scan-shell * { font-family: inherit; }
+html:root .pinit-scan { background: rgba(8, 14, 11, 0.55) !important; }
+html:root .pinit-scan.s-open { background: radial-gradient(120% 70% at 50% 0%, rgba(22, 134, 90, 0.32) 0%, rgba(8, 14, 11, 0.6) 62%) !important; }
+html:root .pinit-scan.s-block { background: radial-gradient(120% 70% at 50% 0%, rgba(241, 138, 168, 0.16) 0%, rgba(8, 14, 11, 0.6) 62%) !important; }
+html:root .pinit-scan.res { background: rgba(12, 20, 16, 0.86) !important; }
+html:root .pinit-scan .btn.primary { background: #16865A !important; box-shadow: 0 8px 22px -10px rgba(22, 134, 90, 0.8) !important; }
+html:root .pinit-scan .btn.text { color: #9BEFC4 !important; }
+html:root .pinit-scan .btn.light { color: #16865A !important; }
+html:root .pinit-scan .viewport { border-color: rgba(112, 221, 170, 0.22) !important; }
+html:root .scan-details .back { background: var(--pt-action) !important; }
+html.pinit-scan-lock, html.pinit-scan-lock body, html.pinit-scan-lock #root { background: #080D0B !important; }
+
+/* ═══ 8. Sign-in, registration, unlock ══════════════════════════════════════════
+   Same background as the app. Text on the background follows the theme; the card is the standard glass. */
+html:root .pinit-auth .pa-hero-title { color: var(--pt-ink) !important; }
+html.dark .pinit-auth .pa-hero-title { text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5); }
+html:root .pinit-auth .pa-hero-copy { color: var(--pt-ink-2) !important; }
+html:root .pinit-auth .pa-brand-corner .pa-brand-name { color: var(--pt-ink) !important; }
+html:root .pinit-auth .pa-brand-corner .pa-brand-tag { color: var(--pt-accent) !important; }
+html:root .pinit-auth .pa-card {
+  background: var(--pt-card) !important;
+  background-image: var(--fg-card-sheen) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.1); backdrop-filter: blur(20px) saturate(1.1);
+  border-color: var(--pt-border) !important;
+  box-shadow: var(--pt-reflect), var(--pt-shadow-pop) !important;
+}
+html:root .pinit-auth .pa-card :is(h1, h2, h3, b, strong) { color: var(--pt-ink) !important; }
+html:root .pinit-auth .pa-card :is(p, span, small, label):not(.pa-btn *):not(.pa-btn-ghost *):not([style*="color"]) { color: var(--pt-ink-2); }
+html:root .pinit-auth .pa-muted { color: var(--pt-ink-2) !important; }
+html:root .pinit-auth .pa-muted b { color: var(--pt-ink) !important; }
+html:root .pinit-auth .pa-btn-ghost { background: var(--pt-tint-accent) !important; border-color: var(--pt-line-accent) !important; }
+html:root .pinit-auth .pa-btn-ghost, html:root .pinit-auth .pa-btn-ghost * { color: var(--pt-accent) !important; }
+html:root .pinit-auth .pa-input { background: var(--pt-input) !important; border-color: var(--pt-border-2) !important; color: var(--pt-ink) !important; }
+/* face scan: emerald icon tile, camera ring, progress arc and scan line */
+html:root .pinit-auth [style*="15, 79, 242"] { background: var(--pt-tint-accent) !important; border-color: var(--pt-line-accent) !important; }
+html:root .pinit-auth [style*="15, 79, 242"] svg { stroke: var(--pt-accent); }
+html:root .pinit-auth .pa-cam { border-color: var(--pt-line-accent); box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 18px 50px -18px rgba(22, 134, 90, 0.5); }
+html:root .pinit-auth .pa-cam.ok { border-color: var(--pt-accent); box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 0 34px rgba(112, 221, 170, 0.4); }
+html:root .pinit-auth .pa-ring { background: conic-gradient(from -90deg, var(--pt-accent) var(--p, 0%), rgba(127, 140, 132, 0.18) 0); }
+html:root .pinit-auth .pa-cam-scan { background: linear-gradient(90deg, transparent, #70DDAA, transparent) !important; box-shadow: 0 0 12px rgba(22, 134, 90, 0.8); }
+html:root .pinit-auth .pa-cam-lock-pulse { border-color: var(--pt-line-accent) !important; }
+/* errors (inline #F0B1B7 in the auth components): readable red */
+html:root .pinit-auth [style*="240, 177, 183"] { color: var(--pt-err) !important; }
+
+/* ═══ 9. Comfort ════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-transparency: reduce) {
+  html.dark { --pt-card: #15231B; --pt-sidebar: #101B15; }
+  html:not(.dark) { --pt-card: #FFFFFF; --pt-sidebar: #F8FAF9; }
+}
+@media (max-width: 767px) {
+  html:root { --pt-blur: 12px; }
+}
+
+/* a solid action button set from components (e.g. Home "Sort now"): theme gradient, theme text colour */
+html:root .pt-action-btn { background: var(--pt-action) !important; color: var(--pt-on-action) !important; box-shadow: var(--pt-glow); border: 0; }
+html:root .pt-action-btn:hover { background: var(--pt-action-hover) !important; }
+/* notification count badge on the mint accent */
+html:root .icon-btn-dot { background: var(--pt-action-solid) !important; color: var(--pt-on-action) !important; }
+
+/* Trace primary button */
+html:root .tr-btn.primary { background: var(--pt-action) !important; color: var(--pt-on-action) !important; border-color: transparent !important; box-shadow: var(--pt-glow) !important; }
+html:root .tr-btn.primary * { color: inherit !important; }
+/* fills set with dark: variants (active filter chips, tabs) are mint in dark mode: deep-forest text there too */
+html:root.dark :is([class~="dark:bg-blue-500"], [class~="dark:bg-blue-600"], [class~="dark:bg-blue-700"], [class~="dark:bg-dna-500"], [class~="dark:bg-dna-600"], [class~="dark:bg-dna-700"], [class~="dark:bg-indigo-500"], [class~="dark:bg-indigo-600"], [class~="dark:bg-indigo-700"], [class~="dark:bg-sky-500"], [class~="dark:bg-sky-600"], [class~="dark:bg-sky-700"], [class~="dark:bg-emerald-500"], [class~="dark:bg-emerald-600"], [class~="dark:bg-emerald-700"], [class~="dark:bg-green-500"], [class~="dark:bg-green-600"], [class~="dark:bg-green-700"]) { background: var(--pt-action) !important; color: var(--pt-on-action) !important; }
+html:root.dark :is([class~="dark:bg-blue-500"], [class~="dark:bg-blue-600"], [class~="dark:bg-blue-700"], [class~="dark:bg-dna-500"], [class~="dark:bg-dna-600"], [class~="dark:bg-dna-700"], [class~="dark:bg-indigo-500"], [class~="dark:bg-indigo-600"], [class~="dark:bg-indigo-700"], [class~="dark:bg-sky-500"], [class~="dark:bg-sky-600"], [class~="dark:bg-sky-700"], [class~="dark:bg-emerald-500"], [class~="dark:bg-emerald-600"], [class~="dark:bg-emerald-700"], [class~="dark:bg-green-500"], [class~="dark:bg-green-600"], [class~="dark:bg-green-700"]) * { color: var(--pt-on-action) !important; }
+
+/* everything inside a mint fill (counts, icons, sub-labels) takes the same deep-forest text in dark mode */
+html:root.dark:not(#pt-x) :is([class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-dna-500"], [class~="bg-dna-600"], [class~="bg-dna-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) * { color: var(--pt-on-action) !important; }
+
+/* Dark panels inside light pages (Shared Links hero, Home identity graph): their headings and copy stay light
+   in both themes. The global heading colour (page ink) made plain words in these panels near-invisible in light mode. */
+html:root .hub-main .sl-pulse-main :is(h1, h2, h3, h4, p, b, strong),
+html:root .hub-main :is(.pulse-dark, .pulse-web) :is(h1, h2, h3, h4) { color: #F7F3EE !important; }
+html:root .hub-main .sl-pulse-main :is(.sl-fact b) { color: #FFFFFF !important; }
+
+/* Sign-in / registration on short laptop screens: keep the whole face-scan card (incl. Start Face Scan) in view */
+@media (max-height: 820px) and (min-width: 768px) {
+  html:root .pinit-auth .pa-hero-title { font-size: clamp(1.6rem, 2.4vw, 2.1rem) !important; margin-bottom: 6px !important; }
+  html:root .pinit-auth .pa-cam { width: min(230px, 27vh) !important; height: min(230px, 27vh) !important; }
+  html:root .pinit-auth .pa-card { padding-top: 18px !important; padding-bottom: 18px !important; }
+}
+
+
+/* Always-dark surfaces (the file viewer and other full-screen media views): mark the root with .pt-dark-surface.
+   Inside it, text and accent tokens take their dark-theme values in BOTH themes, and white text stays white
+   (the old light theme turns .text-white near-black, which hid the viewer's date, arrows and buttons). */
+html:root .pt-dark-surface {
+  --pt-ink: #F7F3EE; --pt-ink-2: #D6CEC6; --pt-muted: #A9A29B; --pt-faint: #9A938C;
+  --pt-accent: #F4AC82; --pt-success: #7FD49B; --pt-cyan: #93C6C2; --pt-ai: #BBA6F0;
+  --pt-prov: #E9C27E; --pt-bio: #F39BB4; --pt-err: #F48A84;
+  --pt-border: rgba(255, 255, 255, 0.14); --pt-border-2: rgba(255, 255, 255, 0.22);
+  --pt-tint-accent: rgba(244, 172, 130, 0.14); --pt-tint-success: rgba(127, 212, 155, 0.12);
+  --pt-line-accent: rgba(244, 172, 130, 0.36);
+  color: var(--pt-ink);
+}
+html:root .pt-dark-surface :is(.text-white, [class*="text-white"]):not(.bg-white *):not([class*="bg-white "] *) { color: #FFFFFF !important; }
+html:root .pt-dark-surface :is(h1, h2, h3, h4) { color: var(--pt-ink); }
+/* translucent white washes (round buttons, chips) stay translucent on dark surfaces; status text keeps its colour */
+html:root .pt-dark-surface:not(#pt-x) :is([class*="bg-white/"]):not([class*="bg-white/9"]):not([class*="bg-white/8"]) { background-color: rgba(255, 255, 255, 0.12) !important; background-image: none !important; box-shadow: none !important; }
+html:root .pt-dark-surface:not(#pt-x) :is([class*="bg-white/"]):not([class*="bg-white/9"]):not([class*="bg-white/8"]):hover { background-color: rgba(255, 255, 255, 0.22) !important; }
+html:root .pt-dark-surface :is([class*="text-emerald-"], [class*="text-green-"]) { color: var(--pt-success) !important; }
+html:root .pt-dark-surface :is([class*="border-emerald-"], [class*="border-green-"]) { border-color: rgba(127, 212, 155, 0.35) !important; }
+
+/* File viewer in fullscreen: scale the image / video up to fit the whole screen (keeps proportions).
+   Outside fullscreen the viewer keeps showing images at their own size (no blurry enlargement). */
+:fullscreen :is(img.pinit-protected-media, video) {
+  width: 100vw !important; height: 100vh !important;
+  max-width: 100vw !important; max-height: 100vh !important;
+  object-fit: contain !important;
+}
+:fullscreen { background: #000; padding: 0 !important; overflow: hidden !important; }
+:fullscreen > :is(.max-w-6xl, [class*="max-w-"]) { max-width: none !important; width: 100% !important; }
+:fullscreen > :is(.max-w-6xl, [class*="max-w-"]) * { max-width: none; }
+
+/* Logo: the round PINIT mark on its own, never inside a dark tile (sidebar, sign-in corner) */
+html:root .hub-sb-appicon { background: none !important; box-shadow: none !important; border: 0 !important; width: 40px; height: 40px; }
+html:root .hub-sb-appicon .hub-brand-emblem { width: 38px !important; height: 38px !important; filter: drop-shadow(0 3px 6px rgba(30, 20, 15, 0.28)); }
+html:root .pinit-auth .pa-logo-img { background: none !important; border: 0 !important; box-shadow: none !important; width: 46px; height: 46px; border-radius: 999px; filter: drop-shadow(0 4px 10px rgba(30, 20, 15, 0.30)); }
+/* brand row: the full name "PinITHUB" fits next to the mark and the plan chip */
+html:root .hub-sb-brandrow { gap: 7px !important; }
+html:root .hub-sb-brandrow .vn-strong { font-size: 14.5px !important; letter-spacing: -0.015em !important; }
+html:root .hub-sb-plan { font-size: 9.5px !important; letter-spacing: 0.06em !important; padding: 2px 6px !important; }
+
+/* ═══ 10. Premium motion (subtle) ═══════════════════════════════════════════════════
+   Small, quiet touches on top of premium-motion.css. Colours come from the theme tokens.
+   Nothing here moves cards (a transform on a card would re-anchor dropdowns inside it).
+   All of it is off when the system asks for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Logo: a light glint crosses the metal ring every few seconds; a slow quarter-turn on hover */
+  html:root .hub-sb-appicon { position: relative; }
+  html:root .hub-sb-appicon { border-radius: 999px; overflow: hidden; }
+  html:root .hub-sb-appicon::after {
+    content: ""; position: absolute; inset: 0; border-radius: 999px; pointer-events: none;
+    background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.65) 50%, transparent 65%);
+    transform: translateX(-120%); mix-blend-mode: soft-light;
+    animation: pt-glint 7s ease-in-out 1.2s infinite;
+  }
+  html:root .hub-sb-appicon .hub-brand-emblem { transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+  html:root .hub-sb-appicon:hover .hub-brand-emblem { transform: rotate(90deg); }
+  html:root .pinit-auth .pa-logo-img { animation: pt-logo-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  /* Primary buttons: a soft shine sweeps across on hover, a slight lift, a press on click */
+  html:root :is(.btn-primary, .pulse-btn-primary, .pt-action-btn, .sl-btn.primary, .tr-btn.primary, .pa-btn:not(.pa-btn-ghost), .pe-btn--solid) {
+    position: relative; overflow: hidden; isolation: isolate;
+    transition: transform 0.18s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  }
+  html:root :is(.btn-primary, .pulse-btn-primary, .pt-action-btn, .sl-btn.primary, .tr-btn.primary, .pa-btn:not(.pa-btn-ghost), .pe-btn--solid)::after {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+    transform: translateX(-130%); transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html:root :is(.btn-primary, .pulse-btn-primary, .pt-action-btn, .sl-btn.primary, .tr-btn.primary, .pa-btn:not(.pa-btn-ghost), .pe-btn--solid):hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.04); }
+  html:root :is(.btn-primary, .pulse-btn-primary, .pt-action-btn, .sl-btn.primary, .tr-btn.primary, .pa-btn:not(.pa-btn-ghost), .pe-btn--solid):hover:not(:disabled)::after { transform: translateX(130%); }
+  html:root :is(.btn-primary, .pulse-btn-primary, .pt-action-btn, .sl-btn.primary, .tr-btn.primary, .pa-btn:not(.pa-btn-ghost), .pe-btn--solid):active:not(:disabled) { transform: translateY(0) scale(0.97); }
+
+  /* Cards: on hover the edge warms to the accent and the shadow deepens (no movement) */
+  html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+    transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  html:root .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):hover {
+    border-color: var(--pt-line-accent) !important;
+    box-shadow: var(--pt-reflect), var(--pt-shadow), 0 18px 44px -26px color-mix(in srgb, var(--pt-accent) 45%, transparent) !important;
+  }
+
+  /* Sidebar: the hovered icon slides a touch toward its label */
+  html:root .hub-sb .hub-sb-row .hub-sb-tile { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease; }
+  html:root .hub-sb .hub-sb-row:hover .hub-sb-tile { transform: translateX(2px); }
+
+  /* Bell: one gentle swing when the page opens with unread notifications */
+  html:root .icon-btn:has(> .icon-btn-dot) svg { transform-origin: 50% 10%; animation: pt-bell 1.1s ease-in-out 0.8s 1 both; }
+
+  /* Ask PINIT: a slow, soft glow pulse */
+  html:root .pinit-ask-fab { animation: pt-breathe 4.5s ease-in-out 2s infinite; }
+}
+@keyframes pt-glint { 0%, 78% { transform: translateX(-120%); } 92%, 100% { transform: translateX(120%); } }
+@keyframes pt-logo-in { from { opacity: 0; transform: scale(0.85) rotate(-25deg); } to { opacity: 1; transform: none; } }
+@keyframes pt-bell { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-11deg); } 45% { transform: rotate(7deg); } 60% { transform: rotate(-4deg); } 75% { transform: rotate(2deg); } }
+@keyframes pt-breathe {
+  0%, 100% { box-shadow: 0 10px 28px -12px rgba(111, 82, 214, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.16); }
+  50% { box-shadow: 0 12px 34px -8px rgba(111, 82, 214, 0.8), 0 0 0 6px rgba(111, 82, 214, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.16); }
+}
+
+/* The PINITHUB story in light (components/dna/BrandStory.tsx): a canvas inside the fixed backdrop, above the artwork */
+html:root .dna-backdrop > canvas.brand-story { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; display: block; }
+
+/* Timeline chapter headings: readable ink; the chapter colour stays on the dot beside each heading */
+html:root .tl-root .tl-ch-h h4 { color: var(--pt-ink) !important; }
+
+/* My Work folder cards: empty thumbnail slots are quiet recessed spaces, not raised white tiles */
+html:root .hub-main:not(#pt-x) .hub-home-panel .grid > div.rounded-lg:empty {
+  background: var(--pt-inset) !important; background-image: none !important;
+  border: 1px dashed var(--pt-border-2) !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none; backdrop-filter: none; animation: none !important; top: 0 !important;
+}
+html:root .hub-main .hub-home-panel .grid > div.rounded-lg:empty::before { display: none !important; }
+
+/* ═══ Layout: less empty space beside the sidebar (2026-11-19) ═══════════════════
+   A slightly wider sidebar on desktop, and the wide centred pages (Profile and
+   Business profile, max-w-6xl) now start at the same left edge as the page header
+   instead of floating ~90px away from the sidebar. */
+@media (min-width: 1280px) {
+  :root { --sb-open: 224px; }
+}
+html:root .hub-page > .page-shell.max-w-6xl {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  max-width: min(100%, 1440px) !important;
+}

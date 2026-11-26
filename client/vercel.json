@@ -1,0 +1,36 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Permissions-Policy", "value": "camera=(self), microphone=(self), geolocation=(self), payment=(self)" },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: data: https:; connect-src 'self' https: wss:; frame-src 'self' blob: https://api.razorpay.com https://checkout.razorpay.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/s/:token",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|facebookexternalhit|Facebot|Twitterbot|TelegramBot|Slackbot|Slack-ImgProxy|LinkedInBot|Discordbot|SkypeUriPreview|Googlebot|bingbot|Pinterest|Applebot|redditbot|Embedly|vkShare).*"
+        }
+      ],
+      "destination": "https://pinit-hub-sg.onrender.com/s/:token"
+    },
+    { "source": "/assets", "destination": "/index.html" },
+    { "source": "/assets/:path*", "destination": "/index.html" },
+    { "source": "/((?!static/).*)", "destination": "/index.html" }
+  ]
+}

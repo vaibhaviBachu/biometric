@@ -1,0 +1,48 @@
+name: CodeQL
+
+# Phase 8 — static application security testing (SAST). GitHub-native, zero
+# additional cost beyond Actions compute minutes (no third-party service).
+# Scheduled weekly rather than per-PR/push, deliberately: a SAST pass over
+# this codebase's size takes meaningfully longer than the fast PR checks in
+# ci.yml, and a new vulnerability class introduced by one PR is still caught
+# within a week — the cost/latency tradeoff this phase's Cost & Complexity
+# report reasons about explicitly, not an oversight.
+on:
+  schedule:
+    - cron: "0 3 * * 1" # Every Monday 03:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  security-events: write # required by codeql-action/upload-sarif, the only elevated permission this workflow needs
+  actions: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (JavaScript/TypeScript)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: javascript-typescript
+
+      # No explicit build step: CodeQL's JS/TS analysis works directly on
+      # source (it does not need compiled output), so the default
+      # autobuild/no-build path is sufficient and keeps this workflow from
+      # duplicating ci.yml's own build job.
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: "/language:javascript-typescript"

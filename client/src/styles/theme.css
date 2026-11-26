@@ -1,0 +1,958 @@
+/*
+  PinITHUB design system — Smoky Glass (design-reference/smoky-glass.html).
+  Dark:  <html class="dark">  — ash black page, smoky charcoal glass, soft white type.
+  Light: <html> without .dark — soft ash page, light glass, charcoal type.
+  Greys do the work; electric blue only points: primary buttons, the active menu item, selected states,
+  highlighted text and the few icons that matter. Status is a word and a shape, not a colour. Red is the one alert.
+
+  The class is set before first paint in index.html and switched by hooks/useTheme.ts.
+  This file loads after index.css and owns tokens, surfaces, the shell and the shared components for both themes.
+  Colour variables named --c-* hold RGB channels; Tailwind wraps them as rgb(var(--c-x) / <alpha>).
+*/
+
+:root {
+  /* Accent — electric blue, the same in both themes */
+  --blue: #2F6BFF;
+  --blue-2: #2B62F0;
+  --blue-rgb: 47, 107, 255;
+  --accent: var(--blue);
+  --accent-grad: linear-gradient(180deg, #3A74FF 0%, #2B62F0 100%);
+  --accent-grad-hover: linear-gradient(180deg, #4C82FF 0%, #3169F5 100%);
+  --accent-glow: 0 8px 20px -10px rgba(47, 107, 255, 0.7);
+  --c-brand: 47 107 255;
+  --c-brand-press: 43 98 240;
+
+  /* Shape */
+  --r-chip: 10px;
+  --r-control: 12px;
+  --r-field: 12px;
+  --r-card: 16px;
+  --r-panel: 22px;
+  --r-frame: 30px;
+
+  /* Glass */
+  --blur: 30px;
+  --glass-blur: blur(var(--blur)) saturate(115%);
+  --glass-blur-in: blur(14px);
+  --frame-gap: 16px;
+
+  /* Type */
+  --f: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --serif: 'Source Serif 4', Georgia, serif;
+  --paper: #FAFAF8;
+
+  /* Motion — short and quiet */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* The smoke the glass floats over: soft fractal cloud, drawn once */
+  --smoke-tex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1400' height='900'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0035 0.006' numOctaves='4' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.9 0 0 0 -0.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+}
+@media (max-width: 767px) {
+  /* Backdrop blur is the expensive part: lighter on phones */
+  :root { --blur: 18px; --frame-gap: 0px; }
+}
+
+/* ── Dark · Smoky ash ─────────────────────────────────────────────────────────── */
+html.dark {
+  color-scheme: dark;
+
+  --bg: #101114;
+  --bg2: #17191E;
+  --glass: rgba(23, 25, 30, 0.5);
+  --glass-in: rgba(255, 255, 255, 0.045);
+  --glass-deep: rgba(0, 0, 0, 0.26);
+  --edge: rgba(255, 255, 255, 0.085);
+  --edge-top: rgba(255, 255, 255, 0.14);
+  --edge-soft: rgba(255, 255, 255, 0.055);
+  --ink: #EDEEF1;
+  --ink-2: #B9BCC4;
+  --muted: #868A95;
+  --faint: #6E727D;
+  --ink-rgb: 255, 255, 255;
+  --blue-hi: #7BA2FF;
+  --alert: #E8808B;
+  --shadow: 0 34px 70px -34px rgba(0, 0, 0, 0.9);
+  --smoke-opacity: 0.11;
+  --smoke-veil: linear-gradient(180deg, rgba(16, 17, 20, 0), rgba(16, 17, 20, 0.22));
+  --backdrop:
+    radial-gradient(70% 60% at 12% 4%, rgba(98, 102, 112, 0.34) 0%, transparent 64%),
+    radial-gradient(60% 60% at 96% 26%, rgba(70, 74, 84, 0.36) 0%, transparent 62%),
+    radial-gradient(70% 55% at 62% 104%, rgba(110, 114, 124, 0.24) 0%, transparent 64%),
+    linear-gradient(160deg, #101114 0%, #17191E 55%, #101114 100%);
+  --page-bg: #101114;
+
+  --c-bg-base: 16 17 20;
+  --c-bg-surface: 23 25 30;
+  --c-bg-card: 29 31 37;
+  --c-bg-elevated: 36 39 46;
+  --c-fg: 237 238 241;
+  --c-fg-2: 185 188 196;
+  --c-fg-muted: 134 138 149;
+  --c-line: 44 47 54;
+  --c-line-control: 92 96 106;
+  --c-brand-soft: 123 162 255;    /* blue as text on dark glass, 7.1:1 */
+
+  /* Status families: grey tint + ink; only the accent family is blue, only danger is red */
+  --c-lavender: 38 41 48;      --c-lavender-ink: 123 162 255;
+  --c-periwinkle: 38 41 48;    --c-periwinkle-ink: 123 162 255;
+  --c-powder: 34 36 42;        --c-powder-ink: 185 188 196;
+  --c-peach: 34 36 42;         --c-peach-ink: 185 188 196;
+  --c-rose: 46 30 33;          --c-rose-ink: 232 128 139;
+  --c-mint: 38 41 48;          --c-mint-ink: 237 238 241;
+  --c-cream: 34 36 42;         --c-cream-ink: 185 188 196;
+  --c-danger: 46 30 33;        --c-danger-ink: 232 128 139;
+
+  --fill-card: var(--glass-in);
+  --fill-card-hover: rgba(255, 255, 255, 0.075);
+  --fill-elevated: rgba(255, 255, 255, 0.08);
+  --fill-surface: rgba(255, 255, 255, 0.03);
+  --fill-base: rgba(0, 0, 0, 0.2);
+  --fill-input: rgba(255, 255, 255, 0.045);
+  --fill-solid: rgba(23, 25, 30, 0.94);
+  --fill-hover: rgba(255, 255, 255, 0.08);
+  --line: rgba(255, 255, 255, 0.085);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --btn2-bg-hover: rgba(255, 255, 255, 0.08);
+  --shadow-e1: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-e2: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 22px 44px -28px rgba(0, 0, 0, 0.8);
+  --shadow-e3: inset 0 1px 0 var(--edge-top), 0 40px 80px -30px #000;
+  --scroll-thumb: rgba(255, 255, 255, 0.18);
+  --thumb-knob: #FFFFFF;
+}
+
+/* ── Light · Soft ash ─────────────────────────────────────────────────────────── */
+html:not(.dark) {
+  color-scheme: light;
+
+  --bg: #E9EAED;
+  --bg2: #F4F5F7;
+  --glass: rgba(255, 255, 255, 0.5);
+  --glass-in: rgba(16, 17, 20, 0.035);
+  --glass-deep: rgba(16, 17, 20, 0.06);
+  --edge: rgba(16, 17, 20, 0.09);
+  --edge-top: rgba(255, 255, 255, 0.9);
+  --edge-soft: rgba(16, 17, 20, 0.06);
+  --ink: #15171B;
+  --ink-2: #3A3E47;
+  --muted: #6B707B;
+  --faint: #8E939E;
+  --ink-rgb: 16, 17, 20;
+  --blue-hi: #1F55E6;
+  --alert: #C8434F;
+  --shadow: 0 30px 60px -34px rgba(40, 44, 52, 0.45);
+  --smoke-opacity: 0.4;
+  --smoke-veil: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.28));
+  --backdrop:
+    radial-gradient(70% 60% at 10% 2%, rgba(184, 188, 198, 0.75) 0%, transparent 64%),
+    radial-gradient(60% 60% at 98% 24%, rgba(170, 175, 186, 0.6) 0%, transparent 62%),
+    radial-gradient(70% 55% at 60% 104%, rgba(196, 200, 208, 0.7) 0%, transparent 64%),
+    linear-gradient(160deg, #E9EAED 0%, #DDDFE4 55%, #E9EAED 100%);
+  --page-bg: #E9EAED;
+
+  --c-bg-base: 233 234 237;
+  --c-bg-surface: 244 245 247;
+  --c-bg-card: 255 255 255;
+  --c-bg-elevated: 250 250 251;
+  --c-fg: 21 23 27;
+  --c-fg-2: 58 62 71;
+  --c-fg-muted: 107 112 123;
+  --c-line: 214 216 221;
+  --c-line-control: 150 154 163;
+  --c-brand-soft: 31 85 230;      /* blue as text on light glass, 5.5:1 */
+
+  --c-lavender: 232 234 238;   --c-lavender-ink: 31 85 230;
+  --c-periwinkle: 232 234 238; --c-periwinkle-ink: 31 85 230;
+  --c-powder: 236 237 240;     --c-powder-ink: 58 62 71;
+  --c-peach: 236 237 240;      --c-peach-ink: 58 62 71;
+  --c-rose: 250 236 238;       --c-rose-ink: 200 67 79;
+  --c-mint: 232 234 238;       --c-mint-ink: 21 23 27;
+  --c-cream: 236 237 240;      --c-cream-ink: 58 62 71;
+  --c-danger: 250 236 238;     --c-danger-ink: 200 67 79;
+
+  --fill-card: var(--glass-in);
+  --fill-card-hover: rgba(16, 17, 20, 0.06);
+  --fill-elevated: rgba(255, 255, 255, 0.66);
+  --fill-surface: rgba(16, 17, 20, 0.025);
+  --fill-base: rgba(16, 17, 20, 0.05);
+  --fill-input: rgba(255, 255, 255, 0.62);
+  --fill-solid: rgba(248, 248, 250, 0.96);
+  --fill-hover: rgba(16, 17, 20, 0.08);
+  --line: rgba(16, 17, 20, 0.09);
+  --line-strong: rgba(16, 17, 20, 0.18);
+  --btn2-bg-hover: rgba(16, 17, 20, 0.08);
+  --shadow-e1: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  --shadow-e2: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 20px 40px -28px rgba(40, 44, 52, 0.4);
+  --shadow-e3: inset 0 1px 0 #fff, 0 40px 80px -30px rgba(40, 44, 52, 0.5);
+  --scroll-thumb: rgba(16, 17, 20, 0.24);
+  --thumb-knob: #FFFFFF;
+}
+
+/* ── Tokens shared by both themes (they resolve through the ones above) ───────── */
+html:root {
+  --ink-muted: var(--muted);
+  --accent-ink: var(--blue-hi);
+  --card-edge: var(--edge-soft);
+  --glass-edge: var(--edge);
+  --glass-panel: var(--glass);
+  --glass-bar: transparent;
+  --glass-shell: var(--glass-deep);
+  --glass-shell-solid: var(--fill-solid);
+
+  --btn-bg: var(--accent-grad);
+  --btn-bg-hover: var(--accent-grad-hover);
+  --btn-fg: #FFFFFF;
+  --btn2-bg: var(--glass-in);
+  --btn2-edge: var(--edge);
+  --shadow-btn: var(--accent-glow);
+  --ring: 0 0 0 2px var(--bg2), 0 0 0 4px var(--blue);
+
+  /* Home: summary banner and activity web (pages/home/pulse) */
+  --pulse-hero-bg: var(--glass-in);
+  --pulse-edge: var(--edge-soft);
+  --pulse-ink: var(--ink);
+  --pulse-ink-2: var(--ink-2);
+  --pulse-ink-muted: var(--muted);
+  --pulse-good: var(--ink);
+  --pulse-info: var(--blue-hi);
+  --pulse-warn: var(--ink-2);
+  --pulse-link: var(--blue-hi);
+  --pulse-note: var(--muted);
+  --pulse-cta: var(--blue-hi);
+  --pulse-tile: var(--glass-in);
+  --pulse-tile-hover: var(--fill-card-hover);
+  --pulse-tile-edge: var(--edge-soft);
+  --pulse-track: rgba(var(--ink-rgb), 0.1);
+  --pulse-spark: var(--blue);
+  --pulse-btn-bg: var(--accent-grad);
+  --pulse-btn-bg-hover: var(--accent-grad-hover);
+  --pulse-btn-fg: #FFFFFF;
+  --pulse-btn2-bg: var(--glass-in);
+  --pulse-btn2-bg-hover: var(--fill-hover);
+  --pulse-btn2-edge: var(--edge);
+  --pulse-web-bg: var(--glass-in);
+  --pulse-web-edge: var(--edge-soft);
+  --pulse-web-well: var(--glass-in);
+  --pulse-web-node-edge: var(--bg2);
+  --pulse-web-line: rgba(var(--ink-rgb), 0.18);
+  --pulse-web-dot: var(--ink);
+  --pulse-center-a: #3A74FF;
+  --pulse-center-b: #2B62F0;
+  --rel-opened: var(--blue);
+  --rel-downloaded: rgba(var(--ink-rgb), 0.72);
+  --rel-forwarded: rgba(var(--ink-rgb), 0.45);
+  --rel-review: var(--muted);
+  --rel-web-match: var(--alert);
+}
+
+/* ── Canvas and smoke ─────────────────────────────────────────────────────────── */
+html:root { background-color: var(--page-bg); color: var(--ink); }
+/* body and #root stay transparent: in-flow backgrounds would paint above the z-index:-1 backdrop */
+html:root body, html:root #root { background: transparent !important; color: var(--ink); }
+
+.dna-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--backdrop);
+}
+.dna-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: -4%;
+  background: var(--smoke-tex) center / cover no-repeat;
+  opacity: var(--smoke-opacity);
+}
+.dna-backdrop::after { content: ""; position: absolute; inset: 0; background: var(--smoke-veil); }
+
+/* Shell layers are transparent so the smoke shows through the glass */
+html:root .hub-app,
+html:root .hub-app-shell,
+html:root .hub-app-content,
+html:root .hub-main-atmosphere { background: transparent !important; background-image: none !important; }
+.hub-main-atmosphere::before,
+.hub-main-atmosphere::after { display: none !important; }
+
+/* ── Type ─────────────────────────────────────────────────────────────────────── */
+html:root, html:root body { font-family: var(--f); }
+html:root h1, html:root h2, html:root h3, html:root h4, html:root h5, html:root h6 { color: var(--ink); }
+h1 { letter-spacing: -0.02em; }
+h2, h3 { letter-spacing: -0.01em; }
+html:root .hub-page-title, html:root main h1 { font-weight: 800; }
+::selection { background: rgba(var(--blue-rgb), 0.3); }
+.font-mono, .mono { font-family: var(--mono); font-feature-settings: "zero" 1; letter-spacing: 0; }
+.tabular-nums, .stat-card, .data-table td { font-variant-numeric: tabular-nums; }
+
+html:root ::-webkit-scrollbar-track { background: transparent !important; }
+html:root ::-webkit-scrollbar-thumb { background: var(--scroll-thumb) !important; border-radius: 999px; }
+
+/* "White" type means primary type: soft white on dark glass, charcoal on light glass */
+html:root .text-white, html:root .hover:text-white:hover, html:root .group:hover .group-hover:text-white { color: var(--ink) !important; }
+html.dark [class*="text-white/"] { color: var(--ink-2) !important; }
+html:not(.dark) [class*="text-white/"] { color: var(--ink-2) !important; }
+/* …except on photos, video and camera frames, which stay dark in both themes */
+html:root .on-dark .text-white, html:root .on-dark [class*="text-white/"],
+html:root [class*="bg-black/"].text-white, html:root [class*="bg-black/"] .text-white { color: #F7F7F8 !important; }
+html:root .ink-photo { color: #F7F7F8 !important; }
+/* Greys follow the theme: strong, secondary, muted */
+html:root .text-slate-900, html:root .text-gray-900, html:root .text-zinc-900,
+html:root .text-slate-800, html:root .text-gray-800, html:root .text-zinc-800 { color: var(--ink) !important; }
+html:root .text-slate-700, html:root .text-gray-700, html:root .text-zinc-700,
+html:root .text-slate-600, html:root .text-gray-600, html:root .text-zinc-600 { color: var(--ink-2) !important; }
+html:root .text-slate-400, html:root .text-slate-500,
+html:root .text-gray-400, html:root .text-gray-500,
+html:root .text-zinc-400, html:root .text-zinc-500,
+html:root .evi-empty-desc { color: var(--muted) !important; }
+html.dark .text-slate-300, html.dark .text-gray-300, html.dark .text-zinc-300,
+html.dark .text-slate-200, html.dark .text-gray-200, html.dark .text-zinc-200 { color: var(--ink-2) !important; }
+/* Accent text: every cool hue reads as the one highlight blue */
+html:root .text-dna-300, html:root .text-dna-400, html:root .text-dna-500,
+html:root .text-dna-600, html:root .text-dna-700,
+html:root .text-blue-400, html:root .text-blue-500, html:root .text-blue-600, html:root .text-blue-700,
+html:root .text-indigo-400, html:root .text-indigo-500, html:root .text-indigo-600, html:root .text-indigo-700,
+html:root .text-violet-400, html:root .text-violet-500, html:root .text-violet-600, html:root .text-violet-700,
+html:root .text-purple-400, html:root .text-purple-500, html:root .text-purple-600, html:root .text-purple-700,
+html:root .text-sky-400, html:root .text-sky-500, html:root .text-sky-600, html:root .text-sky-700,
+html:root .text-cyan-400, html:root .text-cyan-500, html:root .text-cyan-600,
+html:root .text-teal-400, html:root .text-teal-500, html:root .text-teal-600 { color: var(--blue-hi) !important; }
+/* Status text: a strong grey in both themes — the word carries the meaning */
+html:root [class*="text-emerald-"], html:root [class*="text-green-"],
+html:root [class*="text-amber-"], html:root [class*="text-yellow-"], html:root [class*="text-orange-"] { color: var(--ink-2) !important; }
+html:root [class*="text-red-"], html:root [class*="text-rose-"] { color: var(--alert) !important; }
+
+/* One keyboard focus treatment everywhere */
+:where(a, button, [role="button"], [role="tab"], [role="radio"], [role="menuitem"], input, select, textarea, summary):focus-visible {
+  outline: none;
+  box-shadow: var(--ring) !important;
+}
+
+/* ── Surfaces ─────────────────────────────────────────────────────────────────── */
+/* The frame is the glass (see Shell). Cards are the lighter, more transparent layer inside it. */
+html:root .card,
+html:root .card-sm,
+html:root .stat-card,
+html:root .stat-card-blue,
+html:root .stat-card-purple,
+html:root .stat-card-green,
+html:root .stat-card-orange {
+  background: var(--fill-card) !important;
+  background-image: none !important;
+  border: 1px solid var(--card-edge) !important;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-e1) !important;
+}
+html:root .card-hover:hover,
+html:root .stat-card:hover {
+  background: var(--fill-card-hover) !important;
+  box-shadow: var(--shadow-e1) !important;
+}
+.card-hover,
+.stat-card { transition: background-color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out); }
+html:root [class*="card-accent-"] { border-top: 1px solid var(--card-edge) !important; }
+
+/* Token, white and tinted fills used straight from utilities become glass too */
+html:root .bg-bg-base { background-color: var(--fill-base) !important; }
+html:root .bg-bg-surface,
+html:root .bg-bg-muted { background-color: var(--fill-surface) !important; }
+html:root .bg-bg-card,
+html:root .bg-white { background-color: var(--fill-card) !important; }
+html:root .bg-bg-elevated { background-color: var(--fill-elevated) !important; }
+html:root [class*="bg-white/"],
+html:root [class*="bg-bg-card/"],
+html:root [class*="bg-bg-elevated/"] { background-color: var(--fill-card) !important; }
+html:root [class*="bg-bg-base/"],
+html:root [class*="bg-bg-surface/"],
+html:root [class*="bg-bg-muted/"] { background-color: var(--fill-surface) !important; }
+html:root .bg-slate-50, html:root .bg-gray-50, html:root .bg-zinc-50,
+html:root .bg-slate-100, html:root .bg-gray-100, html:root .bg-zinc-100 { background-color: var(--fill-surface) !important; }
+html:root .bg-slate-200, html:root .bg-gray-200, html:root .bg-zinc-200 { background-color: rgba(var(--ink-rgb), 0.1) !important; }
+html:root .hover\:bg-slate-50:hover, html:root .hover\:bg-gray-50:hover,
+html:root .hover\:bg-slate-100:hover, html:root .hover\:bg-gray-100:hover,
+html:root .hover\:bg-white:hover, html:root .hover\:bg-bg-elevated:hover,
+html:root .hover\:bg-bg-surface:hover, html:root .hover\:bg-bg-card:hover { background-color: var(--fill-hover) !important; }
+/* No tinted panels: pale status and accent washes are plain glass */
+html:root :is(.bg-blue-50, .bg-blue-100, .bg-indigo-50, .bg-indigo-100, .bg-violet-50, .bg-violet-100, .bg-purple-50, .bg-purple-100,
+  .bg-sky-50, .bg-sky-100, .bg-cyan-50, .bg-teal-50, .bg-dna-50, .bg-dna-100,
+  .bg-emerald-50, .bg-emerald-100, .bg-green-50, .bg-green-100, .bg-amber-50, .bg-amber-100,
+  .bg-yellow-50, .bg-yellow-100, .bg-orange-50, .bg-orange-100) { background-color: var(--glass-in) !important; }
+html:root :is(.bg-red-50, .bg-red-100, .bg-rose-50, .bg-rose-100) { background-color: rgb(var(--c-danger)) !important; }
+html:root .border-bg-border,
+html:root .border-slate-100, html:root .border-slate-200, html:root .border-slate-300,
+html:root .border-gray-100, html:root .border-gray-200, html:root .border-gray-300,
+html:root .border-zinc-200, html:root .border-zinc-300,
+html:root [class*="border-white/"] { border-color: var(--line) !important; }
+html:root :is([class*="border-emerald-"], [class*="border-green-"], [class*="border-amber-"], [class*="border-yellow-"], [class*="border-orange-"]) { border-color: var(--line-strong) !important; }
+html:root :is(.border-blue-100, .border-blue-200, .border-indigo-100, .border-indigo-200, .border-violet-100, .border-violet-200,
+  .border-purple-100, .border-purple-200, .border-sky-100, .border-sky-200, .border-dna-100, .border-dna-200) { border-color: var(--line) !important; }
+html:root :is(.border-red-100, .border-red-200, .border-red-300, .border-rose-200) { border-color: color-mix(in srgb, var(--alert) 40%, transparent) !important; }
+html:root .divide-gray-200 > :not(:first-child),
+html:root .divide-gray-100 > :not(:first-child),
+html:root .divide-slate-100 > :not(:first-child),
+html:root .divide-slate-200 > :not(:first-child),
+html:root .divide-bg-border > :not(:first-child),
+html:root hr { border-color: var(--line) !important; }
+
+/* Filled accent and dark chips keep white type in both themes */
+html:root :is(.bg-dna-500, .bg-dna-600, .bg-blue-500, .bg-blue-600, .bg-blue-700, .bg-indigo-500, .bg-indigo-600,
+  .bg-violet-500, .bg-violet-600, .bg-purple-500, .bg-purple-600, .bg-sky-500, .bg-sky-600) {
+  background-color: var(--blue) !important;
+  color: #fff !important;
+}
+html:root :is(.bg-dna-500, .bg-dna-600, .bg-blue-500, .bg-blue-600, .bg-blue-700, .bg-indigo-500, .bg-indigo-600,
+  .bg-violet-500, .bg-violet-600, .bg-purple-500, .bg-purple-600, .bg-sky-500, .bg-sky-600) :is(.text-white, svg) { color: #fff !important; }
+html:root :is(.hover\:bg-dna-600, .hover\:bg-blue-600, .hover\:bg-blue-700, .hover\:bg-indigo-700, .hover\:bg-violet-700):hover { background-color: var(--blue-2) !important; }
+html:root :is(.bg-emerald-500, .bg-emerald-600, .bg-emerald-700, .bg-green-500, .bg-green-600, .bg-green-700,
+  .bg-amber-500, .bg-amber-600, .bg-orange-500, .bg-orange-600, .bg-red-500, .bg-red-600, .bg-red-700, .bg-rose-500, .bg-rose-600,
+  .bg-slate-700, .bg-slate-800, .bg-slate-900, .bg-gray-700, .bg-gray-800, .bg-gray-900, .bg-zinc-800, .bg-zinc-900, .bg-black).text-white,
+html:root :is(.bg-emerald-500, .bg-emerald-600, .bg-emerald-700, .bg-green-500, .bg-green-600, .bg-green-700,
+  .bg-amber-500, .bg-amber-600, .bg-orange-500, .bg-orange-600, .bg-red-500, .bg-red-600, .bg-red-700, .bg-rose-500, .bg-rose-600,
+  .bg-slate-700, .bg-slate-800, .bg-slate-900, .bg-gray-700, .bg-gray-800, .bg-gray-900, .bg-zinc-800, .bg-zinc-900, .bg-black) .text-white,
+html:root :is(.bg-emerald-500, .bg-emerald-600, .bg-emerald-700, .bg-green-500, .bg-green-600, .bg-green-700,
+  .bg-amber-500, .bg-amber-600, .bg-orange-500, .bg-orange-600, .bg-red-500, .bg-red-600, .bg-red-700, .bg-rose-500, .bg-rose-600,
+  .bg-slate-700, .bg-slate-800, .bg-slate-900, .bg-gray-700, .bg-gray-800, .bg-gray-900, .bg-zinc-800, .bg-zinc-900, .bg-black) .text-white { color: #fff !important; }
+
+/* Anything that floats over content must not show the page through it */
+html:root .fixed.bg-white, html:root .absolute.bg-white, html:root .sticky.bg-white,
+html:root .fixed.bg-bg-card, html:root .absolute.bg-bg-card, html:root .sticky.bg-bg-card,
+html:root .fixed.bg-bg-elevated, html:root .absolute.bg-bg-elevated,
+html:root .fixed.bg-bg-surface, html:root .absolute.bg-bg-surface, html:root .sticky.bg-bg-surface,
+html:root .fixed.bg-bg-base, html:root .sticky.bg-bg-base,
+html:root [role="dialog"].bg-white, html:root [role="dialog"].bg-bg-card,
+html:root [role="dialog"] > .bg-white, html:root [role="dialog"] > .bg-bg-card,
+html:root [role="menu"], html:root [role="listbox"] {
+  background-color: var(--fill-solid) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-color: var(--edge) !important;
+}
+
+/* Glass, in three layers: smoke at the back, .glass as the frame, .glass-in for cards inside it */
+.glass {
+  background: var(--glass);
+  background-image: linear-gradient(180deg, rgba(var(--ink-rgb), 0.05), rgba(var(--ink-rgb), 0) 42%);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-panel);
+  box-shadow: inset 0 1px 0 var(--edge-top), var(--shadow);
+}
+.glass-in,
+.surface-feature {
+  background: var(--glass-in);
+  border: 1px solid var(--edge-soft);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-e1);
+}
+.surface-feature { border-radius: 20px; }
+
+/* Icon tiles: a small glass square with a grey icon; .gem-cobalt marks the one that matters */
+.stat-icon,
+.gem {
+  position: relative;
+  border-radius: 11px;
+  background: var(--glass-in) !important;
+  background-image: none !important;
+  border: 1px solid var(--edge-soft);
+  box-shadow: none !important;
+}
+html:root .stat-icon *, html:root .gem * { color: var(--ink-2) !important; position: relative; z-index: 1; }
+html:root .gem-cobalt * { color: var(--blue-hi) !important; }
+
+/* ── Shared components from the reference ─────────────────────────────────────── */
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* Status chip: grey glass, a dot, and a word. Variants change the dot's shape, not the hue. */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: 999px; padding: 3px 10px;
+  font-size: 11.5px; font-weight: 600; line-height: 1.5; white-space: nowrap;
+  border: 1px solid var(--edge); background: var(--glass-in); color: var(--ink-2);
+}
+.chip > i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); display: inline-block; flex: none; }
+.chip-pri, .chip-ok, .chip-warn, .chip-hi, .chip-seal { color: var(--ink); }
+.chip-pri > i { background: var(--blue); }
+.chip-ok > i, .chip-seal > i { background: var(--ink); }
+.chip-warn > i { background: transparent; border: 1.5px solid var(--ink-2); }
+.chip-hi > i { background: var(--ink-2); }
+.chip-seal { border-color: rgba(var(--ink-rgb), 0.28); }
+.chip-bad { color: var(--alert); border-color: color-mix(in srgb, var(--alert) 40%, transparent); }
+.chip-bad > i { background: var(--alert); }
+
+/* The older .badge-* names resolve to the same chip */
+html:root .badge,
+html:root [class*="badge-"] {
+  background: var(--glass-in) !important;
+  border: 1px solid var(--edge) !important;
+  color: var(--ink-2) !important;
+  font-size: 11.5px; font-weight: 600;
+}
+html:root .badge-success { color: var(--ink) !important; }
+html:root .badge-info, html:root .badge-purple, html:root .badge-dna { color: var(--blue-hi) !important; }
+html:root .badge-danger { color: var(--alert) !important; border-color: color-mix(in srgb, var(--alert) 40%, transparent) !important; }
+
+/* Filter pill: grey until chosen, then a blue outline and blue word */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--edge); background: var(--glass-in); border-radius: 999px;
+  padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--ink-2);
+  transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.pill:hover { background: var(--fill-hover); }
+.pill.on, .pill[aria-selected="true"], .pill[aria-pressed="true"] { color: var(--blue-hi); border-color: rgba(var(--blue-rgb), 0.7); }
+
+.meter { height: 6px; border-radius: 99px; background: rgba(var(--ink-rgb), 0.1); overflow: hidden; }
+.meter > b { display: block; height: 100%; border-radius: 99px; background: var(--blue); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────────── */
+.btn {
+  border-radius: var(--r-control) !important;
+  font-weight: 600;
+  transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out) !important;
+}
+.btn.btn-sm { border-radius: 10px !important; }
+.btn:active:not(:disabled) { transform: translateY(1px) !important; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Primary: the one blue thing on the page */
+html:root .btn-primary {
+  background: var(--btn-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: var(--shadow-btn) !important;
+  font-weight: 700;
+}
+html:root .btn-primary,
+html:root .btn-primary *,
+html:root .btn-primary.nav-cta,
+html:root .btn-primary.nav-cta * { color: var(--btn-fg) !important; }
+html:root .btn-primary:hover:not(:disabled) { background: var(--btn-bg-hover) !important; }
+/* Secondary: glass with a fine edge */
+html:root .btn-secondary {
+  background: var(--btn2-bg) !important;
+  border: 1px solid var(--btn2-edge) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+html:root .btn-secondary:hover:not(:disabled) { background: var(--btn2-bg-hover) !important; color: var(--ink) !important; }
+html:root .btn-light {
+  background: var(--btn2-bg) !important;
+  border: 1px solid var(--btn2-edge) !important;
+  color: var(--ink) !important;
+}
+html:root .btn-light:hover:not(:disabled) { background: var(--btn2-bg-hover) !important; }
+html:root .btn-danger {
+  background: var(--glass-in) !important;
+  border: 1px solid color-mix(in srgb, var(--alert) 40%, transparent) !important;
+  color: var(--alert) !important;
+  box-shadow: none !important;
+}
+html:root .btn-danger:hover:not(:disabled) { background: rgb(var(--c-danger)) !important; }
+html:root .btn-ghost { color: var(--ink-2) !important; background: transparent !important; }
+html:root .btn-ghost:hover:not(:disabled) { background: var(--fill-hover) !important; color: var(--ink) !important; }
+
+/* ── Forms ────────────────────────────────────────────────────────────────────── */
+html:root input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+html:root select, html:root textarea {
+  background-color: var(--fill-input);
+  border-color: var(--edge);
+  color: var(--ink);
+}
+html.dark option { background-color: #17191E; color: #EDEEF1; }
+html:root .input,
+html:root .input-recessed,
+html:root .hub-home .input {
+  background: var(--fill-input) !important;
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--r-field) !important;
+  min-height: 42px;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+html:root .input:hover:not(:focus),
+html:root .input-recessed:hover:not(:focus) { border-color: var(--line-strong) !important; }
+html:root .input:focus,
+html:root .input-recessed:focus,
+html:root input:focus, html:root select:focus, html:root textarea:focus {
+  border-color: rgba(var(--blue-rgb), 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(var(--blue-rgb), 0.5) !important;
+}
+html:root input::placeholder, html:root textarea::placeholder { color: var(--muted) !important; opacity: 1; }
+html:root input[type="checkbox"], html:root input[type="radio"], html:root input[type="range"] { accent-color: #2F6BFF; }
+html:root label { color: var(--ink-2); }
+
+/* ── Skeleton ─────────────────────────────────────────────────────────────────── */
+html:root .skeleton {
+  background-color: rgba(var(--ink-rgb), 0.06);
+  background-image: linear-gradient(90deg, rgba(var(--ink-rgb), 0) 0%, rgba(var(--ink-rgb), 0.07) 45%, rgba(var(--ink-rgb), 0) 90%);
+  background-size: 200% 100%;
+  border-radius: 10px;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────────────── */
+html:root .table-wrap {
+  background: var(--fill-card);
+  border: 1px solid var(--card-edge);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-e1);
+  overflow: hidden;
+}
+html:root .data-table thead th,
+html:root .data-table th,
+html:root main table thead th {
+  background: transparent;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--edge-soft);
+}
+html:root .data-table td,
+html:root main table tbody td { border-color: var(--edge-soft); color: var(--ink-2); }
+html:root .data-table tbody td:first-child { color: var(--ink); font-weight: 600; }
+html:root .data-table tbody tr:hover td { background: var(--fill-hover); }
+
+/* ── Menus, modals, toasts ────────────────────────────────────────────────────── */
+html:root .dropdown-panel {
+  background: var(--fill-solid) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-e3) !important;
+}
+html:root .dropdown-backdrop { background: rgba(16, 17, 20, 0.28); backdrop-filter: blur(3px); }
+html:root .modal-panel {
+  background: var(--fill-solid) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-e3) !important;
+}
+.hub-toast {
+  background: var(--fill-solid) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--edge);
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-e3) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* ── Shell: one large glass window, a darker inset sidebar, pages layered inside ─ */
+html:root .hub-app { position: relative; isolation: isolate; }
+html:root .hub-app::before {
+  content: "";
+  position: fixed;
+  inset: var(--frame-gap);
+  z-index: -1;
+  pointer-events: none;
+  background: var(--glass);
+  background-image: linear-gradient(180deg, rgba(var(--ink-rgb), 0.05), rgba(var(--ink-rgb), 0) 42%);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.hub-main-glass { display: none; }
+html:root .hub-main { background: transparent !important; background-image: none !important; }
+
+/* Sidebar */
+html:root .hub-sidebar.velvet-nav {
+  background: var(--fill-solid) !important;
+  background-image: none !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 0 !important;
+  border-right: 1px solid var(--edge-soft) !important;
+  box-shadow: none !important;
+  color: var(--ink);
+  width: 248px;
+}
+.velvet-nav .hub-sidebar-brand,
+.velvet-nav .hub-sidebar-footer {
+  background: transparent !important;
+  border: 0 !important;
+}
+.velvet-nav .hub-sidebar-glow { display: none !important; }
+html:root .vn-strong { color: var(--ink) !important; }
+html:root .vn-muted { color: var(--muted) !important; }
+html:root .vn-icon { color: currentColor !important; opacity: 0.85; }
+html:root .vn-item {
+  color: var(--ink-2) !important;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+html:root .velvet-nav .hub-sidebar-item--idle:hover,
+html:root .velvet-nav .vn-item:hover {
+  background: var(--fill-hover) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+html:root .vn-group {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--faint) !important;
+  padding: 14px 12px 5px;
+}
+.vn-icon-btn { color: var(--ink-2); }
+.vn-icon-btn:hover { color: var(--ink); }
+
+/* Active: the one blue item in the menu */
+html:root .velvet-nav .hub-nav-active,
+html:root .velvet-nav .hub-nav-active:hover {
+  background: var(--accent-grad) !important;
+  border: 0 !important;
+  box-shadow: var(--accent-glow) !important;
+  font-weight: 700;
+}
+html:root .velvet-nav .hub-nav-active,
+html:root .velvet-nav .hub-nav-active * { color: #fff !important; opacity: 1; }
+
+/* Workspace switcher and footer cards on the inset sidebar */
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"] {
+  background: var(--glass-in) !important;
+  border: 1px solid var(--edge-soft) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"]:hover { background: var(--fill-hover) !important; }
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"] > span:first-child {
+  background: rgba(var(--ink-rgb), 0.14) !important;
+  background-image: none !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"],
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"] * { color: var(--ink) !important; }
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"] .text-2xs { color: var(--muted) !important; }
+.velvet-nav .hub-sidebar-plan,
+.velvet-nav .hub-sidebar-status {
+  background: var(--glass-in) !important;
+  border: 1px solid var(--edge-soft) !important;
+  border-radius: 14px;
+}
+
+/* Header: the page title and the few global actions, sitting on the frame — not a bar of its own */
+html:root .hub-header {
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  height: auto;
+  min-height: 64px;
+}
+html:root .hub-header .hub-page-title { color: var(--ink) !important; font-size: 24px; line-height: 1.2; letter-spacing: -0.02em; }
+html:root .hub-header .hub-page-sub { color: var(--muted) !important; font-size: 13px; margin-top: 2px; font-weight: 400; }
+
+/* Square glass icon button (theme switch, bell, header tools) */
+.glass-icon-btn, .icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 12px;
+  background: var(--glass-in);
+  border: 1px solid var(--edge);
+  color: var(--ink);
+  transition: background-color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+.glass-icon-btn:hover, .icon-btn:hover { background: var(--fill-hover); }
+.glass-icon-btn:active, .icon-btn:active { transform: scale(0.96); }
+
+.icon-btn-dot {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 17px; height: 17px; padding: 0 4px;
+  border-radius: 99px; background: var(--blue); color: #fff !important;
+  font-size: 10px; font-weight: 800; line-height: 1;
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 3px var(--bg2);
+}
+.hub-avatar {
+  width: 38px; height: 38px; flex: none;
+  border-radius: 50%; overflow: hidden;
+  background: rgba(var(--ink-rgb), 0.14);
+  border: 1px solid var(--edge);
+  color: var(--ink) !important;
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 13px;
+}
+
+/* Desktop: the frame floats over the smoke with the sidebar set into its left edge */
+@media (min-width: 1024px) {
+  html:root .hub-app::before {
+    border: 1px solid var(--edge);
+    border-radius: var(--r-frame);
+    box-shadow: inset 0 1px 0 var(--edge-top), var(--shadow);
+  }
+  html:root .hub-sidebar.velvet-nav {
+    top: calc(var(--frame-gap) + 1px);
+    left: calc(var(--frame-gap) + 1px);
+    height: calc(100dvh - 2 * var(--frame-gap) - 2px);
+    background: var(--glass-deep) !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-radius: calc(var(--r-frame) - 1px) 0 0 calc(var(--r-frame) - 1px);
+  }
+  html:root .hub-app-content {
+    margin-left: calc(248px + var(--frame-gap) + 1px);
+    padding: calc(var(--frame-gap) + 1px) calc(var(--frame-gap) + 1px) calc(var(--frame-gap) + 1px) 0;
+  }
+  html:root .hub-header { padding: 14px 24px 12px; min-height: 76px; }
+  html:root .hub-main { border-radius: 0 0 calc(var(--r-frame) - 1px) 0; padding: 6px 24px 28px; }
+}
+
+/* ── Mobile: floating glass capsule ───────────────────────────────────────────── */
+.hub-bottom-nav {
+  background: var(--fill-solid);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--edge);
+  box-shadow: var(--shadow-e3);
+}
+.hub-bottom-nav .bn-tab { color: var(--muted); }
+.hub-bottom-nav .bn-tab--active { color: var(--blue-hi); }
+.hub-bottom-nav .bn-bubble--active { background: var(--accent-grad); box-shadow: var(--accent-glow); color: #fff; }
+.hub-bottom-nav .bn-bubble--active * { color: #fff !important; }
+
+/* ── Page header band — see components/ui/PageHeader.tsx ──────────────────────── */
+.page-band {
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid var(--edge-soft);
+  background: var(--glass-in);
+  box-shadow: var(--shadow-e1);
+}
+
+/* Line drawing in a summary card's right half — see components/ui/HeroMark.tsx */
+.hero-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  color: rgba(var(--ink-rgb), 0.5);
+}
+.hero-mark::before {
+  content: "";
+  position: absolute;
+  width: 172px;
+  height: 172px;
+  border-radius: 50%;
+  border: 1px solid var(--edge);
+  background: rgba(var(--ink-rgb), 0.03);
+}
+.hero-mark > svg { position: relative; }
+.hero-mark > i { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); transform: translate(52px, -52px); }
+
+/* ── Page transition: content fades up; no transform remains afterwards ───────── */
+.hub-page-enter { height: 100%; animation: riseIn var(--dur-3) var(--ease-out) backwards; }
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Sign-in, registration, vault unlock — one glass card over the smoke ──────── */
+.pinit-auth {
+  --pa-bg: transparent;
+  --pa-panel: var(--glass);
+  --pa-border: var(--edge);
+  --pa-text: var(--ink);
+  --pa-muted: var(--ink-2);
+  --pa-faint: var(--muted);
+  --pa-accent: var(--blue-hi);
+  --pa-accent-2: var(--blue);
+  background: transparent !important;
+  color: var(--ink);
+}
+.pinit-auth .pa-bg { display: none; }
+html:root .pinit-auth h1, html:root .pinit-auth h2, html:root .pinit-auth h3 { color: var(--ink); }
+.pinit-auth .pa-card {
+  background: var(--glass) !important;
+  background-image: linear-gradient(180deg, rgba(var(--ink-rgb), 0.05), rgba(var(--ink-rgb), 0) 42%) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--r-panel);
+  box-shadow: inset 0 1px 0 var(--edge-top), var(--shadow);
+}
+.pinit-auth .pa-btn {
+  color: #fff !important;
+  background: var(--accent-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: var(--r-control);
+  box-shadow: var(--accent-glow) !important;
+}
+.pinit-auth .pa-btn * { color: #fff !important; }
+.pinit-auth .pa-btn:hover { filter: none; background: var(--accent-grad-hover) !important; }
+.pinit-auth .pa-btn-ghost, .pinit-auth .pa-btn-ghost * { color: var(--ink) !important; }
+.pinit-auth .pa-btn-ghost { background: var(--glass-in) !important; border-color: var(--edge) !important; box-shadow: none !important; }
+.pinit-auth .pa-btn-ghost:hover { background: var(--fill-hover) !important; }
+html:root .pinit-auth .pa-input { background: var(--fill-input) !important; border: 1px solid var(--edge) !important; color: var(--ink) !important; border-radius: var(--r-field); }
+html:root .pinit-auth .pa-input::placeholder { color: var(--muted) !important; }
+html:root .pinit-auth .pa-input:focus { border-color: rgba(var(--blue-rgb), 0.85) !important; box-shadow: 0 0 0 1px rgba(var(--blue-rgb), 0.5) !important; }
+.pinit-auth .pa-rail span.on { background: var(--blue); }
+.pinit-auth .pa-rail span.done { background: var(--ink-2); }
+.pinit-auth .pa-hero-title { font-weight: 800; letter-spacing: -0.03em; }
+
+/* ── Home: summary banner and activity web (pages/home/pulse) ─────────────────── */
+.pulse-panel { color: var(--pulse-ink); }
+html:root .pulse-panel h1, html:root .pulse-panel h2 { color: var(--pulse-ink); }
+.pulse-hero { background: var(--pulse-hero-bg); border: 1px solid var(--pulse-edge); border-radius: 20px; box-shadow: var(--shadow-e1); }
+.pulse-web { background: var(--pulse-web-bg); border: 1px solid var(--pulse-web-edge); border-radius: 20px; box-shadow: var(--shadow-e1); }
+.pulse-strong { color: var(--pulse-ink); }
+.pulse-2 { color: var(--pulse-ink-2); }
+.pulse-muted { color: var(--pulse-ink-muted); }
+.pulse-good { color: var(--pulse-good); }
+.pulse-info { color: var(--pulse-info); }
+.pulse-warn { color: var(--pulse-warn); }
+.pulse-link { color: var(--pulse-link); }
+.pulse-note { color: var(--pulse-note); }
+.pulse-cta { color: var(--pulse-cta); }
+.pulse-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.pulse-tile { background: var(--pulse-tile); border: 1px solid var(--pulse-tile-edge); box-shadow: var(--shadow-e1); }
+a.pulse-tile { transition: background-color var(--dur-1) var(--ease-out); }
+a.pulse-tile:hover { background: var(--pulse-tile-hover); }
+.pulse-well { background: var(--pulse-web-well); border: 1px solid var(--pulse-tile-edge); color: var(--pulse-ink-2); }
+.pulse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: background-color var(--dur-1) var(--ease-out);
+}
+.pulse-btn-primary { background: var(--pulse-btn-bg); border-color: rgba(255, 255, 255, 0.18); box-shadow: var(--accent-glow); font-weight: 700; }
+.pulse-btn-primary, .pulse-btn-primary * { color: var(--pulse-btn-fg) !important; }
+.pulse-btn-primary:hover { background: var(--pulse-btn-bg-hover); }
+.pulse-btn-secondary { background: var(--pulse-btn2-bg); border-color: var(--pulse-btn2-edge); color: var(--pulse-ink); }
+.pulse-btn-secondary:hover { background: var(--pulse-btn2-bg-hover); }
+.pulse-web-avatar { background: var(--accent-grad); border: 2px solid var(--pulse-web-node-edge); color: #fff; }
+
+/* ── Reduced motion ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Responsive display utilities win over component display values set in this file */
+@media (min-width: 1024px) { html:root .lg\:hidden { display: none; } }

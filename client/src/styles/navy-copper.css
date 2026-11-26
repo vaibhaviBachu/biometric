@@ -1,0 +1,379 @@
+/*
+  PINITHUB — Navy & Copper (trial palette, 2026-11-19).
+  Active when <html data-palette="navy-copper"> (index.html; ?palette=navy-copper / ?palette=warm-sand switch and remember).
+  Warm Sand stays in warm-sand.css, untouched, and is backed up in docs/backups/2026-11-19-warm-sand-safe/.
+  Generated from warm-sand.css (same depth, float, hover and border-light effects), recoloured.
+
+  Light: soft beige · navy · electric blue.  Dark: midnight · slate · cyan glow.
+  Roles: blue = trust, navigation, primary interaction · cyan = live activity, illumination ·
+         copper = brand and creation (Pin It) · green success · amber provenance · rose biometric · red error.
+  Where a proposed colour fails WCAG AA as text (electric blue, soft cyan, secondary grey), a deeper shade is used for text.
+*/
+
+/* ═══ 1. Tokens ═══════════════════════════════════════════════════════════════ */
+html[data-palette="navy-copper"]:not(.dark) {
+  --pt-bg: #F4F0E8;
+  --pt-bg-2: #ECE6DB;
+  --pt-sidebar: rgba(252, 250, 246, 0.94);
+  --pt-card: rgba(255, 255, 255, 0.92);
+  --pt-card-2: rgba(250, 248, 244, 0.96);
+  --pt-inset: rgba(246, 243, 236, 0.9);
+  --pt-pop: rgba(255, 255, 255, 0.98);
+  --pt-input: #FFFFFF;
+  --pt-hover: rgba(23, 59, 99, 0.05);
+  --pt-ink: #273444;
+  --pt-ink-2: #56657A;            /* #687789 deepened: 4.5:1 on beige too */
+  --pt-muted: #5D6B7D;
+  --pt-faint: #5A687E;
+  --pt-border: rgba(23, 59, 99, 0.13);
+  --pt-border-2: rgba(23, 59, 99, 0.21);
+  --pt-accent: #2A62C2;            /* electric blue as text (#397FEA is 3.9:1) */
+  --pt-action: linear-gradient(180deg, #2E6FD9 0%, #2558BC 100%);   /* blue buttons, white text 4.7–6.4:1 */
+  --pt-action-solid: #2E6FD9;
+  --pt-action-hover: linear-gradient(180deg, #3478E2 0%, #2A62C8 100%);
+  --pt-on-action: #FFFFFF;
+  --pt-brand: linear-gradient(180deg, #B65328 0%, #9C431E 100%);    /* copper: Pin It */
+  --pt-brand-hover: linear-gradient(180deg, #C05A2D 0%, #A64A22 100%);
+  --pt-on-brand: #FFFFFF;
+  --pt-navy: #173B63;
+  --pt-cyan: #187680;              /* soft cyan #55C9D5 deepened for text */
+  --pt-cyan-glow: #55C9D5;
+  --pt-ai: #3F4FB8;
+  --pt-ai-solid: #173B63;
+  --pt-prov: #7E5614;
+  --pt-bio: #A44865;
+  --pt-err: #B23B3B;
+  --pt-success: #2F7346;
+  --pt-safe: var(--pt-success);
+  --pt-tint-accent: rgba(57, 127, 234, 0.10);
+  --pt-tint-cyan: rgba(85, 201, 213, 0.15);
+  --pt-tint-ai: rgba(63, 79, 184, 0.08);
+  --pt-tint-prov: rgba(196, 150, 70, 0.14);
+  --pt-tint-bio: rgba(164, 72, 101, 0.08);
+  --pt-tint-err: rgba(178, 59, 59, 0.08);
+  --pt-tint-success: rgba(47, 115, 70, 0.09);
+  --pt-line-accent: rgba(57, 127, 234, 0.32);
+  --pt-glow: 0 8px 20px -10px rgba(46, 111, 217, 0.45);
+  --pt-shadow: 0 1px 2px rgba(20, 35, 60, 0.05), 0 16px 36px -22px rgba(25, 45, 80, 0.28);
+  --pt-shadow-pop: 0 24px 60px -24px rgba(25, 45, 80, 0.30);
+  --pt-reflect: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --blue-rgb: 46, 111, 217;
+  --ink-rgb: 39, 52, 68;
+  --c-brand: 46 111 217;  --c-brand-press: 37 88 188;   --c-brand-soft: 42 98 194;
+  --c-bg-base: 244 240 232; --c-bg-surface: 236 230 219; --c-bg-card: 255 255 255; --c-bg-elevated: 250 248 244;
+  --c-fg: 39 52 68;       --c-fg-2: 86 101 122;         --c-fg-muted: 93 107 125;
+  --c-line: 224 220 210;  --c-line-control: 190 186 172;
+  --c-mint: 232 241 233;     --c-mint-ink: 40 100 60;
+  --c-powder: 226 242 244;   --c-powder-ink: 22 104 112;
+  --c-lavender: 232 238 252; --c-lavender-ink: 37 88 188;
+  --c-periwinkle: 232 238 252; --c-periwinkle-ink: 37 88 188;
+  --c-peach: 251 235 222;    --c-peach-ink: 150 70 36;
+  --c-cream: 247 238 220;    --c-cream-ink: 124 86 22;
+  --c-rose: 249 235 238;     --c-rose-ink: 150 60 88;
+  --c-danger: 250 234 232;   --c-danger-ink: 170 52 52;
+  --scroll-thumb: rgba(23, 59, 99, 0.22);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(57, 127, 234, 0.05) 0%, rgba(57, 127, 234, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(85, 201, 213, 0.06) 0%, rgba(85, 201, 213, 0) 60%);
+}
+
+html[data-palette="navy-copper"].dark {
+  --pt-bg: #101B2B;
+  --pt-bg-2: #142338;
+  --pt-sidebar: rgba(16, 27, 43, 0.90);
+  --pt-card: rgba(27, 48, 73, 0.78);            /* #1B3049 */
+  --pt-card-2: rgba(34, 58, 88, 0.85);
+  --pt-inset: rgba(170, 200, 240, 0.05);
+  --pt-pop: rgba(22, 38, 60, 0.97);
+  --pt-input: rgba(8, 14, 24, 0.5);
+  --pt-hover: rgba(150, 190, 240, 0.08);
+  --pt-ink: #EAF1FA;
+  --pt-ink-2: #AABBD0;
+  --pt-muted: #93A5BC;
+  --pt-faint: #8798AF;
+  --pt-border: rgba(150, 190, 240, 0.16);
+  --pt-border-2: rgba(150, 190, 240, 0.26);
+  --pt-accent: #7FAEFF;
+  --pt-action: linear-gradient(180deg, #7AADFF 0%, #5795FF 100%);   /* blue buttons, deep navy text */
+  --pt-action-solid: #5795FF;
+  --pt-action-hover: linear-gradient(180deg, #8CB8FF 0%, #64A0FF 100%);
+  --pt-on-action: #0A1A33;
+  --pt-brand: linear-gradient(180deg, #F4AE80 0%, #F0A06E 100%);    /* copper: Pin It */
+  --pt-brand-hover: linear-gradient(180deg, #F7BA92 0%, #F2A878 100%);
+  --pt-on-brand: #2A1308;
+  --pt-navy: #0B1626;
+  --pt-cyan: #54D6E5;
+  --pt-cyan-glow: #54D6E5;
+  --pt-ai: #A9B6FF;
+  --pt-ai-solid: #24456E;
+  --pt-prov: #E9C27E;
+  --pt-bio: #F39BB4;
+  --pt-err: #F48A84;
+  --pt-success: #7FD49B;
+  --pt-safe: var(--pt-success);
+  --pt-tint-accent: rgba(87, 149, 255, 0.14);
+  --pt-tint-cyan: rgba(84, 214, 229, 0.13);
+  --pt-tint-ai: rgba(169, 182, 255, 0.12);
+  --pt-tint-prov: rgba(233, 194, 126, 0.13);
+  --pt-tint-bio: rgba(243, 155, 180, 0.12);
+  --pt-tint-err: rgba(244, 138, 132, 0.13);
+  --pt-tint-success: rgba(127, 212, 155, 0.12);
+  --pt-line-accent: rgba(87, 149, 255, 0.40);
+  --pt-glow: 0 10px 26px -12px rgba(87, 149, 255, 0.6);
+  --pt-shadow: 0 24px 54px -30px rgba(0, 0, 0, 0.75);
+  --pt-shadow-pop: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
+  --pt-reflect: inset 0 1px 0 rgba(200, 220, 255, 0.10);
+
+  --blue-rgb: 87, 149, 255;
+  --ink-rgb: 234, 241, 250;
+  --edge-top: rgba(200, 220, 255, 0.12);
+  --c-brand: 87 149 255;  --c-brand-press: 76 136 245;  --c-brand-soft: 127 174 255;
+  --c-bg-base: 16 27 43;  --c-bg-surface: 20 35 56;     --c-bg-card: 27 48 73;   --c-bg-elevated: 34 58 88;
+  --c-fg: 234 241 250;    --c-fg-2: 170 187 208;        --c-fg-muted: 147 165 188;
+  --c-line: 40 60 88;     --c-line-control: 72 96 128;
+  --c-mint: 22 44 36;        --c-mint-ink: 127 212 155;
+  --c-powder: 18 42 52;      --c-powder-ink: 84 214 229;
+  --c-lavender: 26 40 70;    --c-lavender-ink: 169 182 255;
+  --c-periwinkle: 26 40 70;  --c-periwinkle-ink: 127 174 255;
+  --c-peach: 58 38 28;       --c-peach-ink: 240 160 110;
+  --c-cream: 52 42 26;       --c-cream-ink: 233 194 126;
+  --c-rose: 54 30 38;        --c-rose-ink: 243 155 180;
+  --c-danger: 56 28 28;      --c-danger-ink: 244 138 132;
+  --scroll-thumb: rgba(150, 190, 240, 0.2);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(87, 149, 255, 0.10) 0%, rgba(87, 149, 255, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(84, 214, 229, 0.07) 0%, rgba(84, 214, 229, 0) 60%);
+}
+
+/* ═══ 2. Background: the same artwork, re-toned navy/blue (dark) and pale blue lines on beige (light) ═══ */
+html[data-palette="navy-copper"]:not(.dark) .dna-backdrop {
+  background:
+    radial-gradient(55% 45% at 30% 18%, rgba(85, 160, 230, 0.10) 0%, transparent 70%),
+    radial-gradient(40% 40% at 92% 10%, rgba(85, 201, 213, 0.10) 0%, transparent 70%),
+    radial-gradient(45% 40% at 8% 92%, rgba(182, 83, 40, 0.05) 0%, transparent 70%),
+    linear-gradient(170deg, #F7F3EC 0%, #F1ECE2 55%, #F4F0E8 100%);
+}
+html[data-palette="navy-copper"]:not(.dark) .dna-backdrop::before {
+  filter: invert(1) hue-rotate(252deg) saturate(0.6) contrast(0.9);
+  opacity: 0.30;
+}
+html[data-palette="navy-copper"]:not(.dark) .dna-backdrop::after {
+  background: radial-gradient(75% 65% at 52% 48%, rgba(244, 240, 232, 0.72) 0%, rgba(244, 240, 232, 0.35) 70%, rgba(244, 240, 232, 0) 100%);
+}
+html[data-palette="navy-copper"].dark .dna-backdrop {
+  background: linear-gradient(170deg, #122036 0%, #101B2B 60%, #0C1624 100%);
+}
+html[data-palette="navy-copper"].dark .dna-backdrop::before {
+  content: ""; display: block; position: absolute; inset: 0;
+  background: url('/bg/forest-dna.webp') center / cover no-repeat;
+  filter: hue-rotate(72deg) saturate(0.95) brightness(1.05);
+}
+html[data-palette="navy-copper"].dark .dna-backdrop::after {
+  content: ""; display: block; position: absolute; inset: 0;
+  background:
+    radial-gradient(55% 45% at 50% 30%, rgba(84, 214, 229, 0.08) 0%, rgba(84, 214, 229, 0) 70%),
+    radial-gradient(30% 34% at 94% 14%, rgba(6, 12, 24, 0.45) 0%, rgba(6, 12, 24, 0) 100%),
+    radial-gradient(70% 62% at 52% 48%, rgba(8, 14, 28, 0.24) 0%, rgba(8, 14, 28, 0.08) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(5, 10, 20, 0.04) 50%, rgba(4, 8, 16, 0.5) 100%);
+}
+@media (max-aspect-ratio: 4/5) {
+  html[data-palette="navy-copper"] .dna-backdrop::before { background-position: 8% center; }
+}
+@media (min-width: 1024px) {
+  html[data-palette="navy-copper"].dark .hub-app::before { background: rgba(8, 14, 28, 0.22); }
+}
+
+/* ═══ 3. Places the Forest file hard-codes green ═══════════════════════════════════ */
+html[data-palette="navy-copper"].dark .hub-sb-pill { box-shadow: inset 0 0 0 1px var(--pt-line-accent), inset 3px 0 0 var(--pt-accent), 0 0 22px -8px rgba(87, 149, 255, 0.45) !important; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html[data-palette="navy-copper"].dark .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(150, 200, 255, 0.6) 335deg, transparent 360deg), var(--lit-ring);
+  }
+}
+html[data-palette="navy-copper"] .hub-route-sweep {
+  background: linear-gradient(90deg, rgba(46, 111, 217, 0), rgba(46, 111, 217, 0.9) 45%, rgba(200, 225, 255, 1) 80%, rgba(255, 255, 255, 0)) !important;
+  box-shadow: 0 0 10px rgba(46, 111, 217, 0.4) !important;
+}
+/* identity graph card on Home: warm espresso panel; its lines, centre and labels follow */
+html[data-palette="navy-copper"] .hub-main :is(.pulse-web, section.pulse-dark) {
+  background: radial-gradient(700px 300px at 50% 45%, #1C3A5E 0%, #0B1626 72%) !important;
+  border-color: rgba(87, 149, 255, 0.18) !important;
+}
+html[data-palette="navy-copper"] .hub-main .pulse-dark #pulse-center stop:first-child { stop-color: #3E86F0; }
+html[data-palette="navy-copper"] .hub-main .pulse-dark #pulse-center stop:last-child { stop-color: #173B63; }
+html[data-palette="navy-copper"] .hub-main .pulse-dark line { stroke: rgba(180, 210, 250, 0.26); }
+html[data-palette="navy-copper"] .hub-main .pulse-dark circle[fill="rgba(46,170,115,.12)"] { fill: rgba(84, 214, 229, 0.14); }
+html[data-palette="navy-copper"] .hub-main .pulse-dark :is(text[fill="#8FB5A2"], [class*="text-[#8FB5A2]"]) { fill: #A9BCD6; color: #A9BCD6 !important; }
+html[data-palette="navy-copper"] .hub-main .pulse-dark [class*="text-[#B9CEC2]"] { color: #C3D1E6 !important; }
+html[data-palette="navy-copper"] .hub-main .pulse-dark [class*="text-[#6FE0A8]"] { color: #7FAEFF !important; }
+html[data-palette="navy-copper"] .hub-main .pulse-dark [class*="bg-[#1E9B68]"] { background-color: rgba(57, 127, 234, 0.30) !important; border-color: rgba(87, 149, 255, 0.4) !important; }
+/* Shared Links hero */
+html[data-palette="navy-copper"] .sl-pulse-main { background: radial-gradient(120% 120% at 100% 0%, rgba(57, 127, 234, 0.30) 0%, transparent 55%), linear-gradient(135deg, #0E1828 0%, #142338 55%, #173B63 100%) !important; border-color: rgba(87, 149, 255, 0.18); }
+html[data-palette="navy-copper"] .sl-pulse-main h2 em { color: #A9CBFF !important; }
+html[data-palette="navy-copper"] .sl-pulse-main :is(.sl-live, .sl-fact span) { color: #C9D8EE !important; }
+/* Reports count pill: this palette's own accent */
+html[data-palette="navy-copper"] .evi-count-pill { filter: none; }
+/* PINIT Scan (camera app) */
+html[data-palette="navy-copper"] .pinit-scan-shell { background: radial-gradient(125% 100% at 50% 45%, rgba(5, 10, 20, 0.1) 45%, rgba(4, 8, 16, 0.6) 100%), #101B2B !important; }
+html[data-palette="navy-copper"] .pinit-scan { background: rgba(16, 27, 43, 0.6) !important; }
+html[data-palette="navy-copper"] .pinit-scan.s-open { background: radial-gradient(120% 70% at 50% 0%, rgba(57, 127, 234, 0.30) 0%, rgba(16, 27, 43, 0.6) 62%) !important; }
+html[data-palette="navy-copper"] .pinit-scan .btn.primary { background: #2E6FD9 !important; box-shadow: 0 8px 22px -10px rgba(46, 111, 217, 0.8) !important; }
+html[data-palette="navy-copper"] .pinit-scan .btn.text { color: #A9CBFF !important; }
+html[data-palette="navy-copper"] .pinit-scan .btn.light { color: #2A62C2 !important; }
+html[data-palette="navy-copper"] .pinit-scan .viewport { border-color: rgba(87, 149, 255, 0.22) !important; }
+html[data-palette="navy-copper"].pinit-scan-lock, html[data-palette="navy-copper"].pinit-scan-lock body, html[data-palette="navy-copper"].pinit-scan-lock #root { background: #101B2B !important; }
+/* sign-in face scan */
+html[data-palette="navy-copper"] .pinit-auth .pa-cam { box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 18px 50px -18px rgba(46, 111, 217, 0.45); }
+html[data-palette="navy-copper"] .pinit-auth .pa-cam.ok { box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 0 34px rgba(87, 149, 255, 0.4); }
+html[data-palette="navy-copper"] .pinit-auth .pa-cam-scan { background: linear-gradient(90deg, transparent, #7FAEFF, transparent) !important; box-shadow: 0 0 12px rgba(57, 127, 234, 0.8); }
+
+/* ═══ 4. Semantics: green stays for success / verified (generated below) ═════════════ */
+html[data-palette="navy-copper"] :is([class^="text-emerald-"], [class*=" text-emerald-"], [class^="text-green-"], [class*=" text-green-"]) { color: var(--pt-success) !important; }
+html[data-palette="navy-copper"].dark :is([class*="dark:text-emerald-"], [class*="dark:text-green-"]) { color: var(--pt-success) !important; }
+html[data-palette="navy-copper"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) { background: #2F7346 !important; }
+html[data-palette="navy-copper"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]), html[data-palette="navy-copper"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) * { color: #FFFFFF !important; }
+html[data-palette="navy-copper"] :is([class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-green-50"], [class~="bg-green-100"], [class^="bg-emerald-50/"], [class*=" bg-emerald-50/"], [class^="bg-emerald-100/"], [class*=" bg-emerald-100/"], [class^="bg-green-50/"], [class*=" bg-green-50/"], [class^="bg-green-100/"], [class*=" bg-green-100/"], [class^="bg-emerald-500/"], [class*=" bg-emerald-500/"]) { background-color: var(--pt-tint-success) !important; }
+html[data-palette="navy-copper"] :is([class^="border-emerald-"], [class*=" border-emerald-"], [class^="border-green-"], [class*=" border-green-"]) { border-color: color-mix(in srgb, var(--pt-success) 34%, transparent) !important; }
+
+/* white sub-labels inside the solid terracotta (active tabs) stay fully white for contrast */
+html[data-palette="navy-copper"]:not(.dark) :is([class~="bg-dna-500"],[class~="bg-dna-600"],[class~="bg-blue-600"]) [class*="text-white"] { color: #FFFFFF !important; }
+
+/* old brand gradient (Upgrade "Most popular", certificate seals, profile ring) follows the terracotta action colour */
+html[data-palette="navy-copper"] :is([class^="from-[#1755F3]"], [class*=" from-[#1755F3]"], [class^="from-blue-"], [class*=" from-blue-"], [class^="from-dna-"], [class*=" from-dna-"], [class^="from-indigo-"], [class*=" from-indigo-"]) { --tw-gradient-from: #2E6FD9 var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(168 76 35 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html[data-palette="navy-copper"] :is([class^="to-[#0A40C7]"], [class*=" to-[#0A40C7]"], [class^="to-blue-"], [class*=" to-blue-"], [class^="to-dna-"], [class*=" to-dna-"], [class^="to-indigo-"], [class*=" to-indigo-"]) { --tw-gradient-to: #1F4FA8 var(--tw-gradient-to-position) !important; }
+
+/* Shared Links buttons read their own --sl-blue: follow the action colour and its text colour */
+html[data-palette="navy-copper"] .sl-btn.primary { background: var(--pt-action) !important; border-color: transparent !important; color: var(--pt-on-action) !important; box-shadow: var(--pt-glow); }
+html[data-palette="navy-copper"] .sl-btn.primary:hover:not(:disabled) { background: var(--pt-action-hover) !important; }
+html[data-palette="navy-copper"] .sl-btn.primary * { color: inherit !important; }
+/* white text on the brand gradient (badges, seals) stays white; the old light theme turns .text-white near-black */
+html:root:not(.dark) :is([class*="from-[#1755F3]"], [class*="from-blue-"], [class*="from-dna-"], [class*="from-indigo-"]):is([class*="text-white"]),
+html:root:not(.dark) :is([class*="from-[#1755F3]"], [class*="from-blue-"], [class*="from-dna-"], [class*="from-indigo-"]) [class*="text-white"] { color: #FFFFFF !important; }
+
+/* Highlighted card borders: a fine lit rim (terracotta-peach → warm sand → sage) on every card, always on */
+html[data-palette="navy-copper"]:not(.dark) {
+  --lit-ring: linear-gradient(135deg, rgba(57, 127, 234, 0.62) 0%, rgba(160, 180, 205, 0.34) 30%, rgba(170, 185, 205, 0.30) 62%, rgba(85, 201, 213, 0.55) 100%);
+}
+html[data-palette="navy-copper"].dark {
+  --lit-ring: linear-gradient(135deg, rgba(110, 165, 255, 0.62) 0%, rgba(170, 200, 240, 0.20) 30%, rgba(170, 200, 240, 0.16) 62%, rgba(84, 214, 229, 0.48) 100%);
+}
+/* top-level cards: 1.5px rim; tiles inside cards: same rim, a little quieter */
+html[data-palette="navy-copper"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky)::before { padding: 1.5px !important; opacity: 1; }
+html[data-palette="navy-copper"] .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card) :is(.pulse-tile, .card-sm, .glass-in, [class*="rounded-xl"], [class*="rounded-2xl"])::before { opacity: 0.85 !important; }
+/* the dark graph panel gets its own warm rim */
+html[data-palette="navy-copper"] .hub-main :is(.pulse-web, section.pulse-dark) { border-color: rgba(87, 149, 255, 0.32) !important; }
+
+/* ═══ Depth + float ═══════════════════════════════════════════════════════════════
+   --pt-lift (0 → 1) drives both the float and the shadow, so a card's shadow grows as it rises.
+   Light: layered warm-brown shadows. Dark: black shadows barely show on espresso, so depth comes from a warm
+   under-glow beneath the card and a lit top edge. */
+
+html[data-palette="navy-copper"]:not(.dark) .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(20, 35, 60, 0.08),
+    0 calc(10px + 8px * var(--pt-lift)) calc(22px + 12px * var(--pt-lift)) -12px rgba(25, 45, 80, calc(0.22 + 0.06 * var(--pt-lift))),
+    0 calc(32px + 22px * var(--pt-lift)) calc(64px + 34px * var(--pt-lift)) -28px rgba(25, 45, 80, calc(0.42 + 0.10 * var(--pt-lift))) !important;
+}
+html[data-palette="navy-copper"].dark .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+  box-shadow:
+    inset 0 1px 0 rgba(200, 220, 255, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 calc(14px + 8px * var(--pt-lift)) calc(30px + 14px * var(--pt-lift)) -12px rgba(0, 0, 0, 0.65),
+    0 calc(36px + 22px * var(--pt-lift)) calc(74px + 32px * var(--pt-lift)) -26px rgba(0, 0, 0, 0.9),
+    0 calc(28px + 16px * var(--pt-lift)) calc(70px + 20px * var(--pt-lift)) -30px rgba(84, 214, 229, calc(0.16 + 0.16 * var(--pt-lift))) !important;
+}
+
+/* Float: Home's main cards rise ~7px and settle, slowly and out of step; the shadow grows with them.
+   Moved with `top` (cards are position:relative), not transform, so dropdowns inside keep their place.
+   Pauses while the pointer is on a card; desktop with a mouse only; off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  html[data-palette="navy-copper"] .hub-main:not(#pt-x) :is(.pulse-hero, .pulse-card, .pulse-web, section.pulse-dark) { animation: pt-float 7s ease-in-out infinite; }
+  html[data-palette="navy-copper"] .hub-main:not(#pt-x) :is(.pulse-web, section.pulse-dark) { animation-duration: 8s; animation-delay: -2.5s; }
+  html[data-palette="navy-copper"] .hub-main:not(#pt-x) .pulse-card:nth-of-type(2n) { animation-duration: 6.5s; animation-delay: -4s; }
+  html[data-palette="navy-copper"] .hub-main:not(#pt-x) .pulse-card:nth-of-type(3n) { animation-duration: 7.5s; animation-delay: -5.5s; }
+}
+@keyframes pt-float {
+  0%, 100% { top: 0; --pt-lift: 0; }
+  50% { top: -7px; --pt-lift: 1; }
+}
+
+/* Hover: the card is "picked up". It stops floating and lifts ~6px, its shadow (or warm under-glow) grows, its edge
+   warms, and a soft band of light travels around its border. Settles back when the pointer leaves.
+   (top and --pt-lift are transitioned; --pt-lift is a registered number so it animates smoothly.) */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  html[data-palette="navy-copper"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+    transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), --pt-lift 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+  html[data-palette="navy-copper"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):is(:hover, :focus-within) {
+    animation: none; top: -6px; --pt-lift: 1.25;
+    border-color: var(--pt-line-accent) !important;
+  }
+  /* light travelling around the border (light mode: terracotta; dark mode keeps its peach band) */
+  html[data-palette="navy-copper"]:not(.dark) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 290deg, rgba(57, 127, 234, 0.85) 330deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 2.8s linear infinite;
+    padding: 1.5px !important;
+  }
+  html[data-palette="navy-copper"].dark .hub-main :is(.card-hover):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(150, 200, 255, 0.7) 335deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 2.8s linear infinite;
+  }
+}
+
+/* ═══ Navy & Copper extras ════════════════════════════════════════════════════════ */
+/* Copper is the brand / creation colour: every Pin It action */
+html[data-palette="navy-copper"] :is(.hub-header .nav-cta, .pt-brand-btn) { background: var(--pt-brand) !important; color: var(--pt-on-brand) !important; box-shadow: 0 8px 20px -10px rgba(182, 83, 40, 0.55) !important; border-color: transparent !important; }
+html[data-palette="navy-copper"] :is(.hub-header .nav-cta, .pt-brand-btn) * { color: inherit !important; }
+html[data-palette="navy-copper"] :is(.hub-header .nav-cta, .pt-brand-btn):hover { background: var(--pt-brand-hover) !important; }
+
+/* Home: Safe / Shared / Needs you dots glow softly in their own colour */
+html[data-palette="navy-copper"] .pt-status-dot { box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 18%, transparent), 0 0 8px var(--dot); }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-palette="navy-copper"] .pt-status-dot { animation: pt-dot 3.2s ease-in-out infinite; }
+  html[data-palette="navy-copper"] span:nth-child(2) > .pt-status-dot { animation-delay: -1s; }
+  html[data-palette="navy-copper"] span:nth-child(3) > .pt-status-dot { animation-delay: -2s; }
+}
+@keyframes pt-dot { 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--dot) 10%, transparent), 0 0 12px var(--dot); } }
+
+/* Home welcome card: a soft blue-to-cyan ambient light behind the greeting */
+html[data-palette="navy-copper"] .hub-main:not(#pt-x) .pulse-hero, html[data-palette="navy-copper"] .hub-main:not(#pt-x) .pulse-card:first-child {
+  background-image: radial-gradient(70% 120% at 0% 0%, rgba(57, 127, 234, 0.10) 0%, transparent 60%), radial-gradient(60% 100% at 100% 100%, rgba(85, 201, 213, 0.10) 0%, transparent 60%), var(--fg-card-sheen) !important;
+}
+
+/* Pin It camera: the active mode is softly illuminated in cyan; the capture ring glows copper */
+html[data-palette="navy-copper"] .protect-studio button.bg-white.text-slate-900 { background: #FFFFFF !important; color: #173B63 !important; box-shadow: 0 0 0 1px rgba(85, 201, 213, 0.7), 0 0 16px rgba(85, 201, 213, 0.45) !important; }
+html[data-palette="navy-copper"] .protect-studio button[class*="border-[3px]"] { border-color: #F0A06E !important; box-shadow: 0 0 0 4px rgba(240, 160, 110, 0.18), 0 0 22px rgba(240, 160, 110, 0.35); }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-palette="navy-copper"] .protect-studio button[class*="border-[3px]"]:not(:disabled) { animation: pt-shutter 2.8s ease-in-out infinite; }
+  html[data-palette="navy-copper"] .protect-studio button[class*="border-[3px]"]:active { transform: scale(0.94); }
+}
+@keyframes pt-shutter { 50% { box-shadow: 0 0 0 7px rgba(240, 160, 110, 0.12), 0 0 30px rgba(240, 160, 110, 0.5); } }
+
+/* Ask PINIT: an integrated navy glass button with a cyan spark (not a separate violet blob) */
+html[data-palette="navy-copper"] .pinit-ask-fab { background: linear-gradient(180deg, #21497A 0%, #173B63 100%) !important; border: 1px solid rgba(85, 201, 213, 0.45) !important; }
+html[data-palette="navy-copper"] .pinit-ask-fab svg { color: #7FE3EE !important; }
+html[data-palette="navy-copper"].dark .pinit-ask-fab { background: linear-gradient(180deg, rgba(36, 69, 110, 0.95) 0%, rgba(27, 48, 73, 0.95) 100%) !important; }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-palette="navy-copper"] .pinit-ask-fab { animation: pt-breathe-cyan 4.5s ease-in-out 2s infinite !important; }
+}
+@keyframes pt-breathe-cyan {
+  0%, 100% { box-shadow: 0 10px 28px -12px rgba(23, 59, 99, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+  50% { box-shadow: 0 12px 34px -8px rgba(23, 59, 99, 0.7), 0 0 0 6px rgba(85, 201, 213, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+}
+
+/* Shared Links live panel: deep navy with restrained cyan highlights for live activity */
+html[data-palette="navy-copper"] .sl-pulse-main h2 em { color: #7FE3EE !important; }
+html[data-palette="navy-copper"] .sl-pulse-main .sl-live b { background: #54D6E5 !important; box-shadow: 0 0 0 4px rgba(84, 214, 229, 0.2); }
+
+/* Dark: older "hub-home-*" panels (My Work search, folders, recents) were charcoal #121214 from index.css.
+   Give them the navy surface so the dark theme reads navy everywhere, not brown/black. */
+html[data-palette="navy-copper"].dark .hub-main:not(#pt-x) :is(.hub-home-panel, .hub-home-hero, .hub-home-block, .hub-home-row, .hub-home-empty) {
+  background: var(--pt-card) !important;
+  border-color: var(--pt-border) !important;
+}
+html[data-palette="navy-copper"].dark .hub-main:not(#pt-x) :is(.hub-home-stat, .hub-home-stat-blue, .hub-home-stat-violet, .hub-home-stat-green, .hub-home-stat-amber) {
+  background: var(--pt-card-2) !important;
+  border-color: var(--pt-border) !important;
+}
+html[data-palette="navy-copper"].dark .hub-main:not(#pt-x) .hub-home-panel.hub-interactive:hover {
+  background: var(--pt-card-2) !important;
+  border-color: var(--pt-border-2) !important;
+}

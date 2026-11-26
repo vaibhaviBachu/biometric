@@ -1,0 +1,111 @@
+node_modules/
+dist/
+# But keep client/dist (pre-built frontend for Render to serve share links)
+!client/dist/
+coverage/
+tmp/
+.env
+*.log
+# prisma/migrations/ was ignored here, which is why migration history drifted:
+# the files never reached the remote, so nothing could apply them and the
+# team fell back on `db push` + scripts/ensure-*.cjs. Migrations are now
+# tracked so the SQL is reviewable and travels with the code.
+
+# Vault encrypted files — never commit user data
+vault/encrypted/*.enc
+vault/encrypted/*.json
+
+# Uploaded temp files
+tmp/
+data/
+
+# Generated AI/search indexes (rebuild on AI sidecar / Node startup).
+# Root `data/` is already ignored; keep python-ai/data binaries untracked too.
+python-ai/data/*.bin
+python-ai/data/*.bin.corrupt
+python-ai/data/*.faiss
+python-ai/data/metadata.json
+*.faiss
+
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env overrides
+.env.local
+.env
+
+# Python AI isolated venv
+python-ai/.venv/
+
+# Local Apache Tika server jar (not part of the app deploy)
+tools/tika/
+
+# Design-mockup canvas and throwaway maintenance scripts (Exchange)
+exchange/.design-preview/
+exchange/scripts/
+
+# Decrypted vault recovery output — contains other users private files, never commit
+recovered-vault/
+
+# Local DB snapshots taken before migrations — contain real user data, never commit
+scripts/backups/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Throwaway probe scripts
+scripts/tmp-*.py
+scripts/tmp-*.cjs
+tmp-*.cjs
+
+# Large binaries — not source. Fetch or build these locally.
+eng.traineddata
+*.zip
+
+# Editor
+.cursor/
+# Next.js build output
+.next/
+out/
+# Dependencies
+# Secrets — never commit
+.env.*
+!.env.example
+# Large media
+*.mp4
+# Landing page showreel clips (short, compressed screen recordings) are part of the site.
+!pinithub-landing/public/media/demo/*.mp4
+
+# Local scratch/debug output — logs, tokens, one-off test artifacts
+scratch/
+*.tsbuildinfo
+
+# Separate repository — a Hugging Face Space with its own remote.
+# Committing it here would embed a pointer, not the code.
+pinit-ai-service/
+
+# Private project documents — kept locally, never published to GitHub.
+docs/
+
+# Local encrypted vault files and private business documents — kept on disk, never committed.
+/vault/
+/PINIT_DNA_Work_Report_Ashwitha.docx
+/Pinit-Exchange-Field-Report*.docx
+/Pinit-Marketing-Video-Playbook.docx
+/PINIT-DNA_SmartLinks_Audit_Report.pdf
+/exchange/PinIT_Exchange_Builder_Guide.docx
+/exchange/guide_text.txt
+/exchange/guide_formatted.txt
+/client/tmp-tw-out.css
+/client/BUSINESS_ACCOUNT_UX_SPEC.html
+
+# A separate, nested git repository with its own .env — never commit it here.
+/PINIT-DNA/
+# Separate, unrelated R&D side-project.
+/pinit-qr-image-rnd/
+# Legal and QA documents — kept locally, never published to GitHub.
+/PinITHUB_Mutual_NDA_v1.1.docx
+/PinIt_Live_Test_Session_Script.pdf

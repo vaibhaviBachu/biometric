@@ -1,0 +1,215 @@
+/*
+  PinITHUB · Floating Glass — the look of design-previews/pinit-home-final.html, across every page.
+  Loads after theme.css. Same colours and tokens; only the material changes:
+
+    backdrop  light: soft grey + blue light and a faint DNA helix · dark: lighter grey smoke
+    frame     light: no frame, the sidebar floats as its own glass card
+              dark:  one floating smoky window with the sidebar set into its left edge
+    cards     top-level panels are smoked glass panes with a fine frosted grain
+    boxes     anything inside a card is brighter glass floating above it
+    wells     lists and inputs sit recessed below the boxes
+
+  Depth comes from nesting, so pages need no new class names: a card inside a card is drawn as a box.
+*/
+
+/* ── Tokens per theme ─────────────────────────────────────────────────────────── */
+html:not(.dark) {
+  --fg-card-bg: rgba(236, 237, 241, 0.34);
+  --fg-card-sheen: linear-gradient(155deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.08) 38%, rgba(214,217,224,.22) 100%);
+  --fg-card-bd: rgba(255, 255, 255, 0.75);
+  --fg-card-blur: blur(18px) saturate(150%);
+  --fg-card-sh:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 0 0 1px rgba(16,17,20,.05),
+    inset 0 -30px 60px -40px rgba(120,126,140,.35),
+    0 60px 100px -46px rgba(40,44,52,.6),
+    0 18px 36px -22px rgba(40,44,52,.3);
+  --fg-card-sh-hover:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 0 0 1px rgba(16,17,20,.05),
+    inset 0 -30px 60px -40px rgba(120,126,140,.35),
+    0 70px 110px -46px rgba(40,44,52,.66),
+    0 22px 40px -22px rgba(40,44,52,.32);
+  --fg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .46 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --fg-box-bg: linear-gradient(170deg, rgba(255,255,255,.92) 0%, rgba(255,255,255,.62) 100%);
+  --fg-box-bg-hover: linear-gradient(170deg, #fff 0%, rgba(255,255,255,.78) 100%);
+  --fg-box-bd: rgba(255, 255, 255, 0.95);
+  --fg-box-sh:
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(16,17,20,.05),
+    0 0 0 1px rgba(16,17,20,.06),
+    0 18px 32px -18px rgba(40,44,52,.4),
+    0 4px 10px -6px rgba(40,44,52,.18);
+  --fg-box-sh-hover:
+    inset 0 1px 0 #fff,
+    0 0 0 1px rgba(16,17,20,.07),
+    0 30px 48px -22px rgba(40,44,52,.5),
+    0 10px 18px -10px rgba(40,44,52,.24);
+  --fg-key-sh: inset 0 1px 0 #fff, 0 0 0 1px rgba(16,17,20,.05), 0 6px 12px -8px rgba(0,0,0,.35);
+
+  --fg-well-bg: linear-gradient(180deg, rgba(16,17,20,.065) 0%, rgba(16,17,20,.035) 100%);
+  --fg-well-bd: rgba(16, 17, 20, 0.07);
+  --fg-well-sh: inset 0 2px 6px rgba(16,17,20,.08), inset 0 1px 1px rgba(16,17,20,.06), 0 1px 0 rgba(255,255,255,.85);
+}
+html.dark {
+  --page-bg: #23262C;
+  --fg-card-bg: rgba(12, 13, 17, 0.62);
+  --fg-card-sheen: linear-gradient(165deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.015) 35%, rgba(255,255,255,0) 60%);
+  --fg-card-bd: rgba(255, 255, 255, 0.09);
+  --fg-card-blur: blur(22px) saturate(115%);
+  --fg-card-sh:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 0 0 1px rgba(255,255,255,.02),
+    0 0 0 1px rgba(0,0,0,.35),
+    0 40px 80px -34px rgba(0,0,0,.95),
+    0 12px 24px -14px rgba(0,0,0,.6);
+  --fg-card-sh-hover:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 0 0 1px rgba(0,0,0,.35),
+    0 52px 96px -34px rgba(0,0,0,1),
+    0 16px 30px -14px rgba(0,0,0,.65);
+  --fg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --fg-box-bg: linear-gradient(170deg, rgba(255,255,255,.115) 0%, rgba(255,255,255,.045) 100%);
+  --fg-box-bg-hover: linear-gradient(170deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.07) 100%);
+  --fg-box-bd: rgba(255, 255, 255, 0.11);
+  --fg-box-sh:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.25),
+    0 0 0 1px rgba(0,0,0,.4),
+    0 18px 32px -16px rgba(0,0,0,.85),
+    0 4px 10px -6px rgba(0,0,0,.6);
+  --fg-box-sh-hover:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    0 0 0 1px rgba(0,0,0,.4),
+    0 26px 44px -18px rgba(0,0,0,.95);
+  --fg-key-sh: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(0,0,0,.4), 0 6px 12px -8px rgba(0,0,0,.7);
+
+  --fg-well-bg: linear-gradient(180deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.28) 100%);
+  --fg-well-bd: rgba(0, 0, 0, 0.5);
+  --fg-well-sh: inset 0 2px 8px rgba(0,0,0,.55), inset 0 1px 1px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.07);
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────────────────────── */
+.dna-backdrop > * { position: absolute; pointer-events: none; }
+.fg-orbs, .fg-smoke { inset: 0; }
+
+/* light: drifting grey + blue light and a faint DNA helix */
+html:not(.dark) .dna-backdrop::after { opacity: .45; }
+.fg-orbs i { position: absolute; border-radius: 50%; filter: blur(48px); will-change: transform; }
+.fg-orbs .o1 { width: 620px; height: 620px; left: -140px; top: -160px; background: radial-gradient(circle, rgba(138,144,158,.85), transparent 68%); animation: fgOrb1 34s ease-in-out infinite alternate; }
+.fg-orbs .o2 { width: 520px; height: 520px; right: -120px; top: 12%; background: radial-gradient(circle, rgba(var(--blue-rgb), .42), transparent 68%); animation: fgOrb2 40s ease-in-out infinite alternate; }
+.fg-orbs .o3 { width: 680px; height: 680px; left: 30%; bottom: -260px; background: radial-gradient(circle, rgba(150,156,170,.8), transparent 68%); animation: fgOrb3 46s ease-in-out infinite alternate; }
+.fg-orbs .o4 { width: 380px; height: 380px; left: 38%; top: 30%; background: radial-gradient(circle, rgba(var(--blue-rgb), .30), transparent 70%); animation: fgOrb2 52s ease-in-out infinite alternate-reverse; }
+.fg-orbs .o5 { width: 460px; height: 460px; left: 8%; top: 52%; background: radial-gradient(circle, rgba(255,255,255,.95), transparent 70%); animation: fgOrb1 38s ease-in-out infinite alternate-reverse; }
+@keyframes fgOrb1 { to { transform: translate(140px, 90px) scale(1.12); } }
+@keyframes fgOrb2 { to { transform: translate(-160px, 120px) scale(.9); } }
+@keyframes fgOrb3 { to { transform: translate(-120px, -110px) scale(1.08); } }
+.fg-helix { right: 3%; top: -4%; height: 112%; width: auto; opacity: .4; transform: rotate(14deg); animation: fgHelix 24s ease-in-out infinite alternate; }
+@keyframes fgHelix { from { translate: 0 -30px; } to { translate: 0 30px; } }
+
+/* dark: lighter grey smoke drifting behind the window */
+html.dark .dna-backdrop {
+  background:
+    radial-gradient(60% 50% at 82% 8%, rgba(170, 176, 188, 0.42), transparent 70%),
+    radial-gradient(55% 55% at 18% 30%, rgba(130, 136, 148, 0.34), transparent 72%),
+    radial-gradient(60% 45% at 55% 100%, rgba(146, 152, 164, 0.32), transparent 70%),
+    radial-gradient(40% 40% at 95% 70%, rgba(47, 107, 255, 0.08), transparent 70%),
+    linear-gradient(160deg, #2D3138 0%, #23262C 50%, #2A2D33 100%);
+}
+html.dark .dna-backdrop::before, html.dark .dna-backdrop::after { display: none; }
+html.dark .dna-backdrop .fg-smoke .w { position: absolute; inset: -10%; background-size: cover; animation: fgDrift 90s ease-in-out infinite alternate; }
+html.dark .dna-backdrop .fg-smoke .w1 { opacity: .30; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0022 0.0042' numOctaves='5' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.86 0 0 0 0 0.88 0 0 0 0 0.92 2.1 0 0 0 -0.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"); }
+html.dark .dna-backdrop .fg-smoke .w2 { opacity: .22; animation-duration: 130s; animation-direction: alternate-reverse; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0014 0.0028' numOctaves='4' seed='29'/%3E%3CfeColorMatrix values='0 0 0 0 0.78 0 0 0 0 0.81 0 0 0 0 0.88 2 0 0 0 -0.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"); }
+html.dark .dna-backdrop .fg-smoke .w3 { opacity: .5; mix-blend-mode: multiply; animation-duration: 110s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0018 0.0036' numOctaves='4' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.06 0 0 0 0 0.08 2.2 0 0 0 -0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"); }
+html.dark .dna-backdrop .fg-smoke .grain { position: absolute; inset: 0; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+@keyframes fgDrift { from { transform: translate3d(-2%, -1%, 0) scale(1); } to { transform: translate3d(2%, 1.5%, 0) scale(1.06); } }
+
+html.dark .fg-orbs, html.dark .fg-helix { display: none; }
+html:not(.dark) .fg-smoke { display: none; }
+
+/* ── Frame and sidebar (desktop) ──────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  /* light: no window — the sidebar is its own floating glass card */
+  html:not(.dark) .hub-app::before { display: none; }
+  html:root:not(.dark) .hub-sidebar.velvet-nav {
+    background: rgba(255, 255, 255, 0.42) !important;
+    background-image: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 45%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(120%); backdrop-filter: blur(34px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.75) !important;
+    border-radius: 22px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 0 0 1px rgba(16,17,20,.05), 0 40px 80px -40px rgba(40,44,52,.55), 0 10px 24px -16px rgba(40,44,52,.25) !important;
+  }
+  html:root:not(.dark) .hub-app-content { padding-left: 20px; }
+
+  /* dark: one floating smoky window, sidebar set into its left edge */
+  html.dark { --frame-gap: 22px; }
+  html.dark .hub-app::before {
+    background: rgba(24, 26, 31, 0.22);
+    background-image: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 30%);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 60px 120px -40px rgba(0,0,0,.85), 0 20px 40px -24px rgba(0,0,0,.6);
+  }
+  html:root.dark .hub-sidebar.velvet-nav { background: rgba(8, 9, 12, 0.40) !important; }
+}
+
+/* ── Cards: smoked glass panes ────────────────────────────────────────────────── */
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)) {
+  background-color: var(--fg-card-bg) !important;
+  background-image: var(--fg-card-sheen), var(--fg-grain) !important;
+  background-size: auto, 160px 160px !important;
+  border: 1px solid var(--fg-card-bd) !important;
+  -webkit-backdrop-filter: var(--fg-card-blur); backdrop-filter: var(--fg-card-blur);
+  box-shadow: var(--fg-card-sh) !important;
+}
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)):is(.card-hover, a, [role="button"]):hover { box-shadow: var(--fg-card-sh-hover) !important; }
+
+/* ── Boxes: brighter glass floating above the card ────────────────────────────── */
+html:root .hub-main :is(.stat-card, .stat-card-blue, .stat-card-purple, .stat-card-green, .stat-card-orange, .glass-in, .pulse-tile, .card-sm),
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)),
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)) :is(.pulse-btn-secondary, .btn-secondary, .btn-light),
+html:root .hub-header :is(.glass-icon-btn, .icon-btn, .btn-secondary),
+html:root .velvet-nav .hub-sidebar-account [aria-haspopup="listbox"],
+html:root .velvet-nav :is(.hub-sidebar-plan, .hub-sidebar-status) {
+  background: var(--fg-box-bg) !important;
+  border: 1px solid var(--fg-box-bd) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: var(--fg-box-sh) !important;
+}
+html:root .hub-main :is(.stat-card, .stat-card-blue, .stat-card-purple, .stat-card-green, .stat-card-orange, .glass-in, .pulse-tile, .card-sm, .pulse-btn-secondary, .btn-secondary, .btn-light),
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)) {
+  transition: transform var(--dur-3) var(--ease-out), box-shadow var(--dur-3) var(--ease-out), background-color var(--dur-2) var(--ease-out) !important;
+}
+html:root .hub-main :is(a.pulse-tile, .stat-card, .card-hover, .pulse-btn-secondary, .btn-secondary, .btn-light):hover,
+html:root .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)) :is(a, button, [role="button"]):is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):not(.rounded-full):not(.fixed):not(.absolute)):hover {
+  background: var(--fg-box-bg-hover) !important;
+  transform: translateY(-3px);
+  box-shadow: var(--fg-box-sh-hover) !important;
+}
+
+/* icon squares, chips and pills: small glass keys */
+html:root .hub-main :is(.stat-icon, .gem) {
+  background: var(--fg-box-bg) !important;
+  border: 1px solid var(--fg-box-bd) !important;
+  box-shadow: var(--fg-key-sh) !important;
+}
+html:root .hub-main :is(.chip, .pill, .badge) { background: var(--fg-box-bg) !important; box-shadow: var(--fg-key-sh) !important; }
+
+/* ── Wells: recessed below the boxes ──────────────────────────────────────────── */
+html:root .hub-main .pulse-well {
+  background: var(--fg-well-bg) !important;
+  border: 1px solid var(--fg-well-bd) !important;
+  box-shadow: var(--fg-well-sh) !important;
+}
+
+/* the main buttons keep their blue, with a crisper edge on the glass */
+html:root .hub-main :is(.btn-primary, .pulse-btn-primary) { border-color: rgba(255,255,255,.22) !important; }
+
+/* round emblem in the sidebar */
+.hub-brand-emblem { box-shadow: 0 0 0 1px rgba(16,17,20,.18), 0 8px 16px -8px rgba(0,0,0,.55); }
+html.dark .hub-brand-emblem { box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 8px 18px -8px rgba(0,0,0,.9); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-orbs i, .fg-helix, .fg-smoke .w { animation: none !important; }
+}

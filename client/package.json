@@ -1,0 +1,53 @@
+{
+  "name": "pinit-dna-ui",
+  "version": "1.0.0",
+  "description": "PINIT-DNA Frontend — 6-layer Image Fingerprint Demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node ../scripts/check-backend-port.cjs",
+    "dev": "vite",
+    "dev:hint": "echo Start backend first from project root: npm run dev",
+    "dev:ngrok": "vite --mode ngrok",
+    "build": "tsc && vite build",
+    "build:ngrok": "tsc && vite build --mode ngrok",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "@types/d3": "^7.4.3",
+    "@types/leaflet": "^1.9.21",
+    "axios": "^1.7.2",
+    "d3": "^7.9.0",
+    "date-fns": "^4.4.0",
+    "docx-preview": "^0.3.7",
+    "face-api.js": "^0.22.2",
+    "framer-motion": "^11.2.10",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "jszip": "^3.10.1",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.17.0",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-dropzone": "^14.2.3",
+    "react-hot-toast": "^2.6.0",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.16.0",
+    "recharts": "^3.8.1",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1"
+  }
+}

@@ -1,0 +1,23 @@
+# Throwaway PostgreSQL for testing the resumable upload sessions. Local only: bound to 127.0.0.1, data kept in memory,
+# fixed test credentials that mean nothing anywhere else. Never point this at (or copy credentials from) production.
+#
+#   docker compose -f docker/upload-test/docker-compose.yml up -d
+#   UPLOAD_TEST_DATABASE_URL=postgresql://pinit_test:pinit_test_only@127.0.0.1:55432/pinit_upload_test
+#   docker compose -f docker/upload-test/docker-compose.yml down
+name: pinit-upload-test
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pinit_test
+      POSTGRES_PASSWORD: pinit_test_only
+      POSTGRES_DB: pinit_upload_test
+    ports:
+      - "127.0.0.1:55432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pinit_test -d pinit_upload_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30

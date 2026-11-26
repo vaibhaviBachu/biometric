@@ -1,0 +1,65 @@
+name: Manual Deployment Smoke Test
+
+# Phase 8 — deployment verification. Deliberately workflow_dispatch ONLY:
+# no push/pull_request/schedule trigger exists anywhere in this file, and
+# the target URL has no default value, so this can never fire on its own
+# and can never accidentally point at a URL nobody chose. A human must open
+# this workflow in the Actions tab, click "Run workflow", and type the
+# exact URL to check — satisfying the master prompt's explicit instruction
+# to never trigger production deployment or verification automatically.
+#
+# This does not deploy anything — Render's own git-triggered auto-deploy
+# already handles deployment (see PHASE_8_CD_DEPLOYMENT_PIPELINE_IMPLEMENTATION
+# for why this repo does not need a parallel GitHub-Actions deploy
+# mechanism). This workflow only checks whatever is already running at the
+# URL a human supplies, after the fact.
+on:
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Base URL to check (e.g. https://your-service.onrender.com) — no default; you must type the exact target"
+        required: true
+        type: string
+      timeout_ms:
+        description: "Per-request timeout in milliseconds"
+        required: false
+        default: "8000"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # Scoped per-target-URL (not just per-workflow) — found during this phase's
+  # own independent review: without the URL in the group key, two people
+  # checking two unrelated services at the same time would needlessly queue
+  # behind each other. cancel-in-progress stays false either way: a
+  # verification check already running for the SAME URL should finish, not
+  # be superseded mid-run.
+  group: manual-smoke-test-${{ github.workflow }}-${{ inputs.target_url }}
+  cancel-in-progress: false
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "20.x"
+
+      # Inputs are passed via env, not interpolated directly into the shell
+      # command — this is a workflow_dispatch input typed by a trusted
+      # collaborator, not untrusted PR content, but passing any
+      # workflow-expression value through an env var rather than direct
+      # `${{ }}` string interpolation into `run:` is the standard,
+      # zero-cost defense against the expression-injection class this
+      # phase's Actions-security workstream explicitly asks about.
+      - name: Run smoke test against the chosen URL
+        env:
+          TARGET_URL: ${{ inputs.target_url }}
+          TIMEOUT_MS: ${{ inputs.timeout_ms }}
+        run: node scripts/smoke-test.mjs --url="$TARGET_URL" --timeout-ms="$TIMEOUT_MS"

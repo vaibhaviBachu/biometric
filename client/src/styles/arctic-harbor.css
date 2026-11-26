@@ -1,0 +1,983 @@
+/*
+  PINITHUB — Arctic Harbor (chosen 2026-11-19).
+  Active when <html data-palette="arctic-harbor"> (index.html; ?palette=arctic-harbor / warm-sand / navy-copper switch and remember).
+  Warm Sand stays in warm-sand.css, untouched, backed up in docs/backups/2026-11-19-warm-sand-helix/.
+  Generated from warm-sand.css (same depth, float, hover and lit-border effects), recoloured, plus frosted glass.
+
+  Palette: #08131F deep night · #16314A harbor navy · #2E4F6B slate · #5F7F98 mist blue · #A9BDC9 frost · #E8EFF3 ice.
+  Cool blues, crisp horizons, serene clarity. Light = misty daylight; dark = arctic night with a silver glint.
+  Pin It is frosted silver (like the chrome logo) in dark, deep harbor navy in light.
+  Where a palette colour is too faint for text (mist blue on ice), a deeper shade from the same family is used.
+*/
+
+/* ═══ 1. Tokens ═══════════════════════════════════════════════════════════════ */
+html[data-palette="arctic-harbor"]:not(.dark) {
+  --pt-bg: #E8EFF3;
+  --pt-bg-2: #DCE6EC;
+  --pt-sidebar: rgba(244, 248, 250, 0.60);
+  --pt-card: rgba(255, 255, 255, 0.56);
+  --pt-card-2: rgba(250, 252, 253, 0.70);
+  --pt-inset: rgba(232, 239, 243, 0.62);
+  --pt-pop: rgba(250, 252, 253, 0.94);
+  --pt-input: rgba(255, 255, 255, 0.82);
+  --pt-hover: rgba(22, 49, 74, 0.05);
+  --pt-ink: #0F2235;
+  --pt-ink-2: #2E4F6B;
+  --pt-muted: #3B5A74;
+  --pt-faint: #46637D;
+  --pt-border: rgba(22, 49, 74, 0.13);
+  --pt-border-2: rgba(22, 49, 74, 0.22);
+  --pt-accent: #2E4F6B;
+  --pt-action: linear-gradient(180deg, #2E4F6B 0%, #16314A 100%);
+  --pt-action-solid: #16314A;
+  --pt-action-hover: linear-gradient(180deg, #375C7C 0%, #1C3A56 100%);
+  --pt-on-action: #F2F6F8;
+  --pt-brand: linear-gradient(180deg, #1D3D5A 0%, #08131F 100%);
+  --pt-brand-hover: linear-gradient(180deg, #24496A 0%, #0E1D2D 100%);
+  --pt-on-brand: #E8EFF3;
+  --pt-navy: #16314A;
+  --pt-cyan: #2E4F6B;
+  --pt-cyan-glow: #A9BDC9;
+  --pt-ai: #3D5A88;
+  --pt-ai-solid: #16314A;
+  --pt-prov: #7A5A1E;
+  --pt-bio: #9A4A66;
+  --pt-err: #B03A3A;
+  --pt-success: #2E7050;
+  --pt-safe: var(--pt-success);
+  --pt-tint-accent: rgba(46, 79, 107, 0.10);
+  --pt-tint-cyan: rgba(169, 189, 201, 0.28);
+  --pt-tint-ai: rgba(61, 90, 136, 0.09);
+  --pt-tint-prov: rgba(196, 150, 70, 0.14);
+  --pt-tint-bio: rgba(154, 74, 102, 0.08);
+  --pt-tint-err: rgba(176, 58, 58, 0.08);
+  --pt-tint-success: rgba(46, 112, 80, 0.10);
+  --pt-line-accent: rgba(46, 79, 107, 0.30);
+  --pt-glow: 0 8px 20px -10px rgba(22, 49, 74, 0.45);
+  --pt-shadow: 0 1px 2px rgba(8, 19, 31, 0.05), 0 16px 36px -22px rgba(16, 35, 55, 0.30);
+  --pt-shadow-pop: 0 24px 60px -24px rgba(16, 35, 55, 0.32);
+  --pt-reflect: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --pt-blur: 22px;
+
+  --blue-rgb: 46, 79, 107;
+  --ink-rgb: 15, 34, 53;
+  --c-brand: 22 49 74;    --c-brand-press: 8 19 31;     --c-brand-soft: 46 79 107;
+  --c-bg-base: 232 239 243; --c-bg-surface: 220 230 236; --c-bg-card: 255 255 255; --c-bg-elevated: 248 251 252;
+  --c-fg: 15 34 53;       --c-fg-2: 46 79 107;          --c-fg-muted: 59 90 116;
+  --c-line: 208 220 228;  --c-line-control: 169 189 201;
+  --c-mint: 228 241 234;     --c-mint-ink: 38 100 70;
+  --c-powder: 226 236 242;   --c-powder-ink: 30 70 100;
+  --c-lavender: 228 234 246; --c-lavender-ink: 50 76 130;
+  --c-periwinkle: 228 236 244; --c-periwinkle-ink: 30 62 98;
+  --c-peach: 246 236 228;    --c-peach-ink: 130 70 40;
+  --c-cream: 246 238 222;    --c-cream-ink: 120 86 24;
+  --c-rose: 247 234 238;     --c-rose-ink: 140 60 86;
+  --c-danger: 249 233 232;   --c-danger-ink: 166 52 52;
+  --scroll-thumb: rgba(22, 49, 74, 0.22);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(169, 189, 201, 0.16) 0%, rgba(169, 189, 201, 0) 60%);
+}
+
+html[data-palette="arctic-harbor"].dark {
+  --pt-bg: #08131F;
+  --pt-bg-2: #0C1A2A;
+  --pt-sidebar: rgba(10, 22, 36, 0.52);
+  --pt-card: rgba(22, 49, 74, 0.40);
+  --pt-card-2: rgba(46, 79, 107, 0.36);
+  --pt-inset: rgba(169, 189, 201, 0.06);
+  --pt-pop: rgba(14, 30, 47, 0.96);
+  --pt-input: rgba(4, 10, 18, 0.42);
+  --pt-hover: rgba(169, 189, 201, 0.08);
+  --pt-ink: #E8EFF3;
+  --pt-ink-2: #A9BDC9;
+  --pt-muted: #9AAFBF;
+  --pt-faint: #90A6B7;
+  --pt-border: rgba(169, 189, 201, 0.16);
+  --pt-border-2: rgba(169, 189, 201, 0.28);
+  --pt-accent: #BFD1DD;
+  --pt-action: linear-gradient(180deg, #E8EFF3 0%, #B4C6D1 100%);
+  --pt-action-solid: #C4D3DC;
+  --pt-action-hover: linear-gradient(180deg, #F4F8FA 0%, #C2D2DC 100%);
+  --pt-on-action: #08131F;
+  --pt-brand: linear-gradient(180deg, #F2F6F8 0%, #A9BDC9 100%);
+  --pt-brand-hover: linear-gradient(180deg, #FFFFFF 0%, #B8CAD4 100%);
+  --pt-on-brand: #08131F;
+  --pt-navy: #08131F;
+  --pt-cyan: #A9BDC9;
+  --pt-cyan-glow: #E8EFF3;
+  --pt-ai: #B7C6FF;
+  --pt-ai-solid: #2E4F6B;
+  --pt-prov: #E6C27E;
+  --pt-bio: #F0A0B8;
+  --pt-err: #F28C8C;
+  --pt-success: #7FD3A6;
+  --pt-safe: var(--pt-success);
+  --pt-tint-accent: rgba(169, 189, 201, 0.12);
+  --pt-tint-cyan: rgba(232, 239, 243, 0.10);
+  --pt-tint-ai: rgba(183, 198, 255, 0.12);
+  --pt-tint-prov: rgba(230, 194, 126, 0.13);
+  --pt-tint-bio: rgba(240, 160, 184, 0.12);
+  --pt-tint-err: rgba(242, 140, 140, 0.13);
+  --pt-tint-success: rgba(127, 211, 166, 0.12);
+  --pt-line-accent: rgba(169, 189, 201, 0.38);
+  --pt-glow: 0 10px 26px -12px rgba(169, 189, 201, 0.5);
+  --pt-shadow: 0 24px 54px -30px rgba(0, 0, 0, 0.75);
+  --pt-shadow-pop: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
+  --pt-reflect: inset 0 1px 0 rgba(232, 239, 243, 0.14);
+  --pt-blur: 22px;
+
+  --blue-rgb: 169, 189, 201;
+  --ink-rgb: 232, 239, 243;
+  --edge-top: rgba(232, 239, 243, 0.16);
+  --c-brand: 196 211 220; --c-brand-press: 169 189 201; --c-brand-soft: 191 209 221;
+  --c-bg-base: 8 19 31;   --c-bg-surface: 12 26 42;     --c-bg-card: 22 49 74;   --c-bg-elevated: 46 79 107;
+  --c-fg: 232 239 243;    --c-fg-2: 169 189 201;        --c-fg-muted: 154 175 191;
+  --c-line: 30 52 75;     --c-line-control: 70 98 124;
+  --c-mint: 20 44 36;        --c-mint-ink: 127 211 166;
+  --c-powder: 20 40 56;      --c-powder-ink: 191 209 221;
+  --c-lavender: 26 38 66;    --c-lavender-ink: 183 198 255;
+  --c-periwinkle: 24 42 62;  --c-periwinkle-ink: 191 209 221;
+  --c-peach: 52 38 30;       --c-peach-ink: 236 180 140;
+  --c-cream: 50 42 26;       --c-cream-ink: 230 194 126;
+  --c-rose: 52 30 38;        --c-rose-ink: 240 160 184;
+  --c-danger: 54 28 28;      --c-danger-ink: 242 140 140;
+  --scroll-thumb: rgba(169, 189, 201, 0.22);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(232, 239, 243, 0.08) 0%, rgba(232, 239, 243, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(95, 127, 152, 0.10) 0%, rgba(95, 127, 152, 0) 60%);
+}
+
+/* ═══ 2. Background: the DNA helix artwork in Arctic Harbor tones (bg/arctic-helix-light.webp, bg/arctic-helix-dark.webp) ═══
+   Made from docs/backups/2026-11-19-helix-bg/helix-source-blue.webp; the misty seascape (arctic-*.webp) is kept as an alternative. */
+html[data-palette="arctic-harbor"]:not(.dark) .dna-backdrop {
+  background: linear-gradient(180deg, #F2F6F8 0%, #E1E9EE 60%, #D3DEE5 100%);
+}
+html[data-palette="arctic-harbor"]:not(.dark) .dna-backdrop::before {
+  content: ""; display: block; position: absolute; inset: 0;
+  background: url('/bg/arctic-helix-light.webp') 70% center / cover no-repeat;
+  filter: none; opacity: 0.82; mix-blend-mode: multiply;
+}
+html[data-palette="arctic-harbor"]:not(.dark) .dna-backdrop::after {
+  content: ""; display: block; position: absolute; inset: 0;
+  background: radial-gradient(80% 70% at 50% 50%, rgba(242, 246, 248, 0.30) 0%, rgba(242, 246, 248, 0.10) 70%, rgba(242, 246, 248, 0) 100%);
+}
+html[data-palette="arctic-harbor"].dark .dna-backdrop {
+  background: linear-gradient(180deg, #060F1A 0%, #0E2134 60%, #08131F 100%);
+}
+html[data-palette="arctic-harbor"].dark .dna-backdrop::before {
+  content: ""; display: block; position: absolute; inset: 0;
+  background: url('/bg/arctic-helix-dark.webp') 70% center / cover no-repeat;
+  filter: brightness(0.85); opacity: 1;
+}
+html[data-palette="arctic-harbor"].dark .dna-backdrop::after {
+  content: ""; display: block; position: absolute; inset: 0;
+  background:
+    radial-gradient(70% 62% at 52% 48%, rgba(4, 10, 18, 0.20) 0%, rgba(4, 10, 18, 0.06) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(3, 8, 14, 0.02) 50%, rgba(3, 8, 14, 0.45) 100%);
+}
+@media (max-aspect-ratio: 4/5) {
+  html[data-palette="arctic-harbor"] .dna-backdrop::before { background-position: 78% top; }
+}
+@media (min-width: 1024px) {
+  html[data-palette="arctic-harbor"].dark .hub-app::before { background: rgba(6, 14, 24, 0.18); }
+}
+html[data-palette="arctic-harbor"] .pinit-scan-shell {
+  background:
+    radial-gradient(70% 62% at 50% 45%, rgba(4, 10, 18, 0.40) 0%, rgba(4, 10, 18, 0.2) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(3, 8, 14, 0.1) 45%, rgba(3, 8, 14, 0.6) 100%),
+    url('/bg/arctic-helix-dark.webp') 70% center / cover no-repeat, #08131F !important;
+}
+html[data-palette="arctic-harbor"] .pinit-scan { background: rgba(8, 19, 31, 0.55) !important; }
+
+/* ═══ Frosted glass: the mist shows through every panel, with an icy edge ═════════ */
+html[data-palette="arctic-harbor"] .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) {
+  -webkit-backdrop-filter: blur(var(--pt-blur)) saturate(1.25);
+  backdrop-filter: blur(var(--pt-blur)) saturate(1.25);
+}
+html[data-palette="arctic-harbor"]:not(.dark) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) {
+  border-color: rgba(255, 255, 255, 0.70) !important;
+}
+html[data-palette="arctic-harbor"].dark .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) {
+  border-color: rgba(232, 239, 243, 0.14) !important;
+}
+html[data-palette="arctic-harbor"] .hub-sidebar.velvet-nav.hub-sb {
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+}
+
+/* Pin It: frosted silver in dark (like the chrome logo), deep harbor navy in light. */
+html[data-palette="arctic-harbor"] :is(.hub-header .nav-cta, .pt-brand-btn) {
+  background: var(--pt-brand) !important;
+  color: var(--pt-on-brand) !important;
+  border: 1px solid rgba(232, 239, 243, 0.55) !important;
+  box-shadow: var(--pt-glow), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+html[data-palette="arctic-harbor"] :is(.hub-header .nav-cta, .pt-brand-btn) * { color: inherit !important; }
+html[data-palette="arctic-harbor"] :is(.hub-header .nav-cta, .pt-brand-btn):hover { background: var(--pt-brand-hover) !important; }
+
+/* ═══ 3. Places the Forest file hard-codes green ═══════════════════════════════════ */
+html[data-palette="arctic-harbor"].dark .hub-sb-pill { box-shadow: inset 0 0 0 1px var(--pt-line-accent), inset 3px 0 0 var(--pt-accent), 0 0 22px -8px rgba(169, 189, 201, 0.45) !important; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html[data-palette="arctic-harbor"].dark .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(200, 220, 232, 0.6) 335deg, transparent 360deg), var(--lit-ring);
+  }
+}
+html[data-palette="arctic-harbor"] .hub-route-sweep {
+  background: linear-gradient(90deg, rgba(46, 79, 107, 0), rgba(46, 79, 107, 0.9) 45%, rgba(232, 239, 243, 1) 80%, rgba(255, 255, 255, 0)) !important;
+  box-shadow: 0 0 10px rgba(46, 79, 107, 0.4) !important;
+}
+/* identity graph card on Home: warm espresso panel; its lines, centre and labels follow */
+html[data-palette="arctic-harbor"] .hub-main :is(.pulse-web, section.pulse-dark) {
+  background: radial-gradient(700px 300px at 50% 45%, #2E4F6B 0%, #08131F 72%) !important;
+  border-color: rgba(169, 189, 201, 0.18) !important;
+}
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark #pulse-center stop:first-child { stop-color: #5F7F98; }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark #pulse-center stop:last-child { stop-color: #16314A; }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark line { stroke: rgba(220, 232, 240, 0.26); }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark circle[fill="rgba(46,170,115,.12)"] { fill: rgba(169, 189, 201, 0.14); }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark :is(text[fill="#8FB5A2"], [class*="text-[#8FB5A2]"]) { fill: #A9BDC9; color: #A9BDC9 !important; }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark [class*="text-[#B9CEC2]"] { color: #C9D6DE !important; }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark [class*="text-[#6FE0A8]"] { color: #C9D9E4 !important; }
+html[data-palette="arctic-harbor"] .hub-main .pulse-dark [class*="bg-[#1E9B68]"] { background-color: rgba(95, 127, 152, 0.30) !important; border-color: rgba(169, 189, 201, 0.4) !important; }
+/* Shared Links hero */
+html[data-palette="arctic-harbor"] .sl-pulse-main { background: radial-gradient(120% 120% at 100% 0%, rgba(95, 127, 152, 0.30) 0%, transparent 55%), linear-gradient(135deg, #0C1A28 0%, #16314A 55%, #16314A 100%) !important; border-color: rgba(169, 189, 201, 0.18); }
+html[data-palette="arctic-harbor"] .sl-pulse-main h2 em { color: #E8EFF3 !important; }
+html[data-palette="arctic-harbor"] .sl-pulse-main :is(.sl-live, .sl-fact span) { color: #D6E0E6 !important; }
+/* Reports count pill: this palette's own accent */
+html[data-palette="arctic-harbor"] .evi-count-pill { filter: none; }
+/* PINIT Scan (camera app) */
+html[data-palette="arctic-harbor"] .pinit-scan-shell { background: radial-gradient(125% 100% at 50% 45%, rgba(4, 10, 18, 0.1) 45%, rgba(3, 8, 14, 0.6) 100%), #08131F !important; }
+html[data-palette="arctic-harbor"] .pinit-scan { background: rgba(8, 19, 31, 0.6) !important; }
+html[data-palette="arctic-harbor"] .pinit-scan.s-open { background: radial-gradient(120% 70% at 50% 0%, rgba(95, 127, 152, 0.30) 0%, rgba(8, 19, 31, 0.6) 62%) !important; }
+html[data-palette="arctic-harbor"] .pinit-scan .btn.primary { background: #2E4F6B !important; box-shadow: 0 8px 22px -10px rgba(46, 79, 107, 0.8) !important; }
+html[data-palette="arctic-harbor"] .pinit-scan .btn.text { color: #E8EFF3 !important; }
+html[data-palette="arctic-harbor"] .pinit-scan .btn.light { color: #2E4F6B !important; }
+html[data-palette="arctic-harbor"] .pinit-scan .viewport { border-color: rgba(169, 189, 201, 0.22) !important; }
+html[data-palette="arctic-harbor"].pinit-scan-lock, html[data-palette="arctic-harbor"].pinit-scan-lock body, html[data-palette="arctic-harbor"].pinit-scan-lock #root { background: #08131F !important; }
+/* sign-in face scan */
+html[data-palette="arctic-harbor"] .pinit-auth .pa-cam { box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 18px 50px -18px rgba(46, 79, 107, 0.45); }
+html[data-palette="arctic-harbor"] .pinit-auth .pa-cam.ok { box-shadow: 0 0 0 6px var(--pt-tint-accent), 0 0 34px rgba(169, 189, 201, 0.4); }
+html[data-palette="arctic-harbor"] .pinit-auth .pa-cam-scan { background: linear-gradient(90deg, transparent, #C9D9E4, transparent) !important; box-shadow: 0 0 12px rgba(95, 127, 152, 0.8); }
+
+/* ═══ 4. Semantics: green stays for success / verified (generated below) ═════════════ */
+html[data-palette="arctic-harbor"] :is([class^="text-emerald-"], [class*=" text-emerald-"], [class^="text-green-"], [class*=" text-green-"]) { color: var(--pt-success) !important; }
+html[data-palette="arctic-harbor"].dark :is([class*="dark:text-emerald-"], [class*="dark:text-green-"]) { color: var(--pt-success) !important; }
+html[data-palette="arctic-harbor"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) { background: #2F7346 !important; }
+html[data-palette="arctic-harbor"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]), html[data-palette="arctic-harbor"] :is([class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"]) * { color: #FFFFFF !important; }
+html[data-palette="arctic-harbor"] :is([class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-green-50"], [class~="bg-green-100"], [class^="bg-emerald-50/"], [class*=" bg-emerald-50/"], [class^="bg-emerald-100/"], [class*=" bg-emerald-100/"], [class^="bg-green-50/"], [class*=" bg-green-50/"], [class^="bg-green-100/"], [class*=" bg-green-100/"], [class^="bg-emerald-500/"], [class*=" bg-emerald-500/"]) { background-color: var(--pt-tint-success) !important; }
+html[data-palette="arctic-harbor"] :is([class^="border-emerald-"], [class*=" border-emerald-"], [class^="border-green-"], [class*=" border-green-"]) { border-color: color-mix(in srgb, var(--pt-success) 34%, transparent) !important; }
+
+/* white sub-labels inside the solid terracotta (active tabs) stay fully white for contrast */
+html[data-palette="arctic-harbor"]:not(.dark) :is([class~="bg-dna-500"],[class~="bg-dna-600"],[class~="bg-blue-600"]) [class*="text-white"] { color: #FFFFFF !important; }
+
+/* old brand gradient (Upgrade "Most popular", certificate seals, profile ring) follows the terracotta action colour */
+html[data-palette="arctic-harbor"] :is([class^="from-[#1755F3]"], [class*=" from-[#1755F3]"], [class^="from-blue-"], [class*=" from-blue-"], [class^="from-dna-"], [class*=" from-dna-"], [class^="from-indigo-"], [class*=" from-indigo-"]) { --tw-gradient-from: #2E4F6B var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(168 76 35 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html[data-palette="arctic-harbor"] :is([class^="to-[#0A40C7]"], [class*=" to-[#0A40C7]"], [class^="to-blue-"], [class*=" to-blue-"], [class^="to-dna-"], [class*=" to-dna-"], [class^="to-indigo-"], [class*=" to-indigo-"]) { --tw-gradient-to: #16314A var(--tw-gradient-to-position) !important; }
+
+/* Shared Links buttons read their own --sl-blue: follow the action colour and its text colour */
+html[data-palette="arctic-harbor"] .sl-btn.primary { background: var(--pt-action) !important; border-color: transparent !important; color: var(--pt-on-action) !important; box-shadow: var(--pt-glow); }
+html[data-palette="arctic-harbor"] .sl-btn.primary:hover:not(:disabled) { background: var(--pt-action-hover) !important; }
+html[data-palette="arctic-harbor"] .sl-btn.primary * { color: inherit !important; }
+/* white text on the brand gradient (badges, seals) stays white; the old light theme turns .text-white near-black */
+html:root:not(.dark) :is([class*="from-[#1755F3]"], [class*="from-blue-"], [class*="from-dna-"], [class*="from-indigo-"]):is([class*="text-white"]),
+html:root:not(.dark) :is([class*="from-[#1755F3]"], [class*="from-blue-"], [class*="from-dna-"], [class*="from-indigo-"]) [class*="text-white"] { color: #FFFFFF !important; }
+
+/* Highlighted card borders: a fine lit rim on every card, always on (frost tones; silver/black with the silver finish) */
+html[data-palette="arctic-harbor"]:not(.dark) {
+  --lit-ring: linear-gradient(135deg, rgba(46, 79, 107, 0.62) 0%, rgba(150, 170, 185, 0.34) 30%, rgba(160, 178, 190, 0.30) 62%, rgba(95, 127, 152, 0.55) 100%);
+}
+html[data-palette="arctic-harbor"].dark {
+  --lit-ring: linear-gradient(135deg, rgba(190, 210, 222, 0.62) 0%, rgba(200, 215, 225, 0.20) 30%, rgba(200, 215, 225, 0.16) 62%, rgba(169, 189, 201, 0.48) 100%);
+}
+/* top-level cards: 1.5px rim; tiles inside cards: same rim, a little quieter */
+html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky)::before { padding: 1.5px !important; opacity: 1; }
+html[data-palette="arctic-harbor"] .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card) :is(.pulse-tile, .card-sm, .glass-in, [class*="rounded-xl"], [class*="rounded-2xl"])::before { opacity: 0.85 !important; }
+/* the dark graph panel gets its own warm rim */
+html[data-palette="arctic-harbor"] .hub-main :is(.pulse-web, section.pulse-dark) { border-color: rgba(169, 189, 201, 0.32) !important; }
+
+/* ═══ Depth + float ═══════════════════════════════════════════════════════════════
+   --pt-lift (0 → 1) drives both the float and the shadow, so a card's shadow grows as it rises.
+   Light: layered warm-brown shadows. Dark: black shadows barely show on espresso, so depth comes from a warm
+   under-glow beneath the card and a lit top edge. */
+
+html[data-palette="arctic-harbor"]:not(.dark) .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(8, 19, 31, 0.08),
+    0 calc(10px + 8px * var(--pt-lift)) calc(22px + 12px * var(--pt-lift)) -12px rgba(16, 35, 55, calc(0.22 + 0.06 * var(--pt-lift))),
+    0 calc(32px + 22px * var(--pt-lift)) calc(64px + 34px * var(--pt-lift)) -28px rgba(16, 35, 55, calc(0.42 + 0.10 * var(--pt-lift))) !important;
+}
+html[data-palette="arctic-harbor"].dark .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+  box-shadow:
+    inset 0 1px 0 rgba(232, 239, 243, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 calc(14px + 8px * var(--pt-lift)) calc(30px + 14px * var(--pt-lift)) -12px rgba(0, 0, 0, 0.65),
+    0 calc(36px + 22px * var(--pt-lift)) calc(74px + 32px * var(--pt-lift)) -26px rgba(0, 0, 0, 0.9),
+    0 calc(28px + 16px * var(--pt-lift)) calc(70px + 20px * var(--pt-lift)) -30px rgba(169, 189, 201, calc(0.16 + 0.16 * var(--pt-lift))) !important;
+}
+
+/* Float: Home's main cards rise ~7px and settle, slowly and out of step; the shadow grows with them.
+   Moved with `top` (cards are position:relative), not transform, so dropdowns inside keep their place.
+   Pauses while the pointer is on a card; desktop with a mouse only; off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) :is(.pulse-hero, .pulse-card, .pulse-web, section.pulse-dark) { animation: pt-float 7s ease-in-out infinite; }
+  html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) :is(.pulse-web, section.pulse-dark) { animation-duration: 8s; animation-delay: -2.5s; }
+  html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) .pulse-card:nth-of-type(2n) { animation-duration: 6.5s; animation-delay: -4s; }
+  html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) .pulse-card:nth-of-type(3n) { animation-duration: 7.5s; animation-delay: -5.5s; }
+}
+@keyframes pt-float {
+  0%, 100% { top: 0; --pt-lift: 0; }
+  50% { top: -7px; --pt-lift: 1; }
+}
+
+/* Hover: the card is "picked up". It stops floating and lifts ~6px, its shadow (or warm under-glow) grows, its edge
+   warms, and a soft band of light travels around its border. Settles back when the pointer leaves.
+   (top and --pt-lift are transitioned; --pt-lift is a registered number so it animates smoothly.) */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky) {
+    transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), --pt-lift 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+  html[data-palette="arctic-harbor"] .hub-main:not(#pt-x) :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, section.pulse-dark, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):is(:hover, :focus-within) {
+    animation: none; top: -6px; --pt-lift: 1.25;
+    border-color: var(--pt-line-accent) !important;
+  }
+  /* light travelling around the border (light mode: terracotta; dark mode keeps its peach band) */
+  html[data-palette="arctic-harbor"]:not(.dark) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 290deg, rgba(46, 79, 107, 0.85) 330deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 2.8s linear infinite;
+    padding: 1.5px !important;
+  }
+  html[data-palette="arctic-harbor"].dark .hub-main :is(.card-hover):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(200, 220, 232, 0.7) 335deg, transparent 360deg), var(--lit-ring);
+    animation: fg-sweep 2.8s linear infinite;
+  }
+}
+
+/* ═══ Optional SILVER FINISH (data-finish="silver", ?finish=silver): black and silver, closer to the chrome logo.
+   The team chose the navy version above as the default (2026-11-19); this stays available for comparison. ══════════
+   Arctic blue stays only as a faint glint (like the small blue light on the logo).
+   Dark: near-black graphite glass, chrome-banded silver actions, chrome page titles.
+   Light: cool silver-white, black-chrome actions with silver text, graphite titles. */
+html[data-palette="arctic-harbor"][data-finish="silver"].dark {
+  --pt-bg: #05080C;
+  --pt-bg-2: #0A0E13;
+  --pt-sidebar: rgba(8, 11, 15, 0.56);
+  --pt-card: rgba(16, 20, 26, 0.52);
+  --pt-card-2: rgba(28, 33, 40, 0.52);
+  --pt-inset: rgba(220, 226, 232, 0.05);
+  --pt-pop: rgba(14, 17, 22, 0.96);
+  --pt-input: rgba(0, 0, 0, 0.42);
+  --pt-hover: rgba(220, 226, 232, 0.07);
+  --pt-ink: #F4F6F8;
+  --pt-ink-2: #BAC1C9;
+  --pt-muted: #A4ACB5;
+  --pt-faint: #9AA2AC;
+  --pt-border: rgba(220, 226, 232, 0.14);
+  --pt-border-2: rgba(220, 226, 232, 0.26);
+  --pt-accent: #DCE2E8;
+  /* chrome bands, like the logo ring: bright top, darker waist, bright lip */
+  --pt-action: linear-gradient(180deg, #FFFFFF 0%, #E4E8EC 36%, #AFB7BF 52%, #D8DDE2 76%, #F3F5F7 100%);
+  --pt-action-solid: #D8DDE2;
+  --pt-action-hover: linear-gradient(180deg, #FFFFFF 0%, #EEF1F4 36%, #BDC4CB 52%, #E3E7EB 76%, #FFFFFF 100%);
+  --pt-on-action: #05080C;
+  --pt-brand: var(--pt-action);
+  --pt-brand-hover: var(--pt-action-hover);
+  --pt-on-brand: #05080C;
+  --pt-navy: #05080C;
+  --pt-cyan: #D4E3F0;
+  --pt-cyan-glow: #9EC9FF;
+  --pt-glow: 0 10px 28px -12px rgba(220, 226, 232, 0.48);
+  --pt-reflect: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  --c-brand: 216 221 226; --c-brand-press: 175 183 191; --c-brand-soft: 220 226 232;
+  --c-bg-base: 5 8 12;   --c-bg-surface: 10 14 19;      --c-bg-card: 16 20 26;   --c-bg-elevated: 28 33 40;
+  --c-fg: 244 246 248;    --c-fg-2: 186 193 201;        --c-fg-muted: 164 172 181;
+  --c-line: 34 40 48;     --c-line-control: 72 80 90;
+  --scroll-thumb: rgba(220, 226, 232, 0.22);
+  --fg-card-sheen: radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(158, 201, 255, 0.05) 0%, rgba(158, 201, 255, 0) 60%);
+}
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) {
+  --pt-bg: #F3F5F7;
+  --pt-bg-2: #E8EBEE;
+  --pt-sidebar: rgba(250, 251, 252, 0.64);
+  --pt-card: rgba(255, 255, 255, 0.64);
+  --pt-card-2: rgba(252, 253, 254, 0.76);
+  --pt-inset: rgba(236, 239, 242, 0.7);
+  --pt-input: rgba(255, 255, 255, 0.88);
+  --pt-hover: rgba(5, 8, 12, 0.05);
+  --pt-ink: #0A0D11;
+  --pt-ink-2: #39414B;
+  --pt-muted: #444C57;
+  --pt-faint: #4E5661;
+  --pt-border: rgba(5, 8, 12, 0.12);
+  --pt-border-2: rgba(5, 8, 12, 0.22);
+  --pt-accent: #1F262E;
+  /* black chrome: a lit top edge fading into deep black */
+  --pt-action: linear-gradient(180deg, #4A515A 0%, #1A1E23 46%, #05070A 100%);
+  --pt-action-solid: #15191E;
+  --pt-action-hover: linear-gradient(180deg, #5A626C 0%, #23282E 46%, #0B0E12 100%);
+  --pt-on-action: #EEF1F4;
+  --pt-brand: var(--pt-action);
+  --pt-brand-hover: var(--pt-action-hover);
+  --pt-on-brand: #EEF1F4;
+  --pt-navy: #0A0D11;
+  --pt-cyan: #2B4A66;
+  --pt-cyan-glow: #9EC9FF;
+  --pt-glow: 0 8px 22px -10px rgba(5, 8, 12, 0.5);
+  --c-brand: 21 25 30;   --c-brand-press: 5 7 10;      --c-brand-soft: 31 38 46;
+  --c-bg-base: 243 245 247; --c-bg-surface: 232 235 238; --c-bg-card: 255 255 255; --c-bg-elevated: 252 253 254;
+  --c-fg: 10 13 17;       --c-fg-2: 57 65 75;           --c-fg-muted: 68 76 87;
+  --c-line: 214 219 224;  --c-line-control: 170 177 185;
+  --scroll-thumb: rgba(5, 8, 12, 0.22);
+}
+
+/* Background: the helix in chrome silver on black (dark) and graphite on silver-white (light) */
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .dna-backdrop { background: linear-gradient(180deg, #030507 0%, #0A0E13 60%, #05080C 100%); }
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .dna-backdrop::before { background-image: url('/bg/silver-helix-dark.webp'); filter: brightness(0.86); }
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .dna-backdrop::after {
+  background:
+    radial-gradient(28% 26% at 76% 16%, rgba(158, 201, 255, 0.09) 0%, rgba(158, 201, 255, 0) 100%),
+    radial-gradient(70% 62% at 52% 48%, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.06) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(0, 0, 0, 0.02) 50%, rgba(0, 0, 0, 0.5) 100%);
+}
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .dna-backdrop { background: linear-gradient(180deg, #F7F8FA 0%, #ECEFF2 60%, #E2E6EA 100%); }
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .dna-backdrop::before { background-image: url('/bg/silver-helix-light.webp'); opacity: 0.78; }
+html[data-palette="arctic-harbor"][data-finish="silver"] .pinit-scan-shell {
+  background:
+    radial-gradient(70% 62% at 50% 45%, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.2) 70%, transparent 100%),
+    radial-gradient(125% 100% at 50% 45%, rgba(0, 0, 0, 0.1) 45%, rgba(0, 0, 0, 0.6) 100%),
+    url('/bg/silver-helix-dark.webp') 70% center / cover no-repeat, #05080C !important;
+}
+
+/* Chrome action buttons: a crisp metal edge and a lit lip */
+html[data-palette="arctic-harbor"][data-finish="silver"].dark :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost), .hub-header .nav-cta, .pt-brand-btn) {
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: var(--pt-glow), inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(120, 128, 138, 0.55) !important;
+}
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost), .hub-header .nav-cta, .pt-brand-btn) {
+  border: 1px solid #05070A !important;
+  box-shadow: var(--pt-glow), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+}
+
+/* Page titles in chrome (dark) and graphite (light), like the logo's metal */
+html[data-palette="arctic-harbor"][data-finish="silver"] .hub-header .hub-page-title,
+html[data-palette="arctic-harbor"][data-finish="silver"] .pinit-auth .pa-hero-title {
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none !important;
+}
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .hub-header .hub-page-title,
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .pinit-auth .pa-hero-title {
+  background-image: linear-gradient(180deg, #FFFFFF 0%, #EEF1F4 42%, #A9B1BA 58%, #E6EAEE 100%);
+}
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .hub-header .hub-page-title,
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .pinit-auth .pa-hero-title {
+  background-image: linear-gradient(180deg, #2A3038 0%, #05070A 55%, #3A424C 100%);
+}
+
+/* First impression on sign-in: the logo glows silver, the card wears a chrome rim */
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .pinit-auth .pa-logo-img { filter: drop-shadow(0 0 14px rgba(220, 226, 232, 0.35)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6)); }
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .pinit-auth .pa-logo-img { filter: drop-shadow(0 6px 14px rgba(5, 8, 12, 0.35)); }
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .pinit-auth .pa-card {
+  background: rgba(14, 18, 24, 0.58) !important;
+  border: 1px solid rgba(232, 236, 240, 0.30) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 30px 80px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(0, 0, 0, 0.4) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2);
+}
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .pinit-auth .pa-card {
+  background: rgba(255, 255, 255, 0.70) !important;
+  border: 1px solid rgba(5, 8, 12, 0.28) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 30px 70px -32px rgba(5, 8, 12, 0.45) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2);
+}
+
+/* Live panels (Home "Who's with your work", Shared Links pulse): graphite night instead of navy */
+html[data-palette="arctic-harbor"][data-finish="silver"] .hub-main :is(.pulse-web, section.pulse-dark) {
+  background: radial-gradient(700px 300px at 50% 45%, #262C33 0%, #07090C 72%) !important;
+  border-color: rgba(226, 231, 236, 0.30) !important;
+}
+html[data-palette="arctic-harbor"][data-finish="silver"] .hub-main .pulse-dark #pulse-center stop:first-child { stop-color: #8C949C; }
+html[data-palette="arctic-harbor"][data-finish="silver"] .hub-main .pulse-dark #pulse-center stop:last-child { stop-color: #1A1F25; }
+html[data-palette="arctic-harbor"][data-finish="silver"] .sl-pulse-main {
+  background: radial-gradient(120% 120% at 100% 0%, rgba(158, 201, 255, 0.10) 0%, transparent 55%), linear-gradient(135deg, #07090C 0%, #1A1F25 55%, #20262D 100%) !important;
+}
+
+/* Ask PINIT: a black-chrome pill with a silver rim and the one ice-blue spark */
+html[data-palette="arctic-harbor"][data-finish="silver"] .pinit-ask-fab {
+  background: linear-gradient(180deg, #2A3038 0%, #0B0E12 60%, #05070A 100%) !important;
+  border: 1px solid rgba(226, 231, 236, 0.45) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 12px 30px -12px rgba(0, 0, 0, 0.7), 0 0 18px -6px rgba(158, 201, 255, 0.35) !important;
+  color: #F4F6F8 !important;
+}
+html[data-palette="arctic-harbor"][data-finish="silver"] .pinit-ask-fab svg { color: #9EC9FF !important; }
+
+/* ═══ Icons: silver by default, one ice-blue glint where it means something (2026-11-19) ═══
+   Like the logo: chrome with a single blue light. Blue marks where you are, what you point
+   at, and what is live. Status colours (safe, warning, risk) are left as they are. */
+html[data-palette="arctic-harbor"].dark { --pt-glint: #9EC9FF; --pt-glint-glow: rgba(158, 201, 255, 0.55); --pt-glint-tint: rgba(158, 201, 255, 0.12); --pt-glint-line: rgba(158, 201, 255, 0.30); }
+html[data-palette="arctic-harbor"]:not(.dark) { --pt-glint: #2B6BD6; --pt-glint-glow: rgba(43, 107, 214, 0.35); --pt-glint-tint: rgba(43, 107, 214, 0.08); --pt-glint-line: rgba(43, 107, 214, 0.22); }
+
+/* 1. Sidebar: the page you are on glows; the rest stay silver */
+html[data-palette="arctic-harbor"] .hub-sb-row svg { transition: color 0.25s ease, filter 0.25s ease; }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-nav-active .hub-sb-tile,
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-nav-active .hub-sb-tile *,
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row.hub-nav-active svg {
+  color: var(--pt-glint) !important;
+}
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row.hub-nav-active svg { filter: drop-shadow(0 0 6px var(--pt-glint-glow)); }
+
+/* 2. Hover: an icon warms from silver to blue as you point at it */
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row:hover .hub-sb-tile,
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row:hover .hub-sb-tile *,
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row:hover svg,
+html[data-palette="arctic-harbor"] .hub-header button:not(.nav-cta):hover svg,
+html[data-palette="arctic-harbor"] .hub-main :is(a, button):not(.btn-primary):not(.pulse-btn-primary):not(.pt-brand-btn):hover > svg:first-child {
+  color: var(--pt-glint) !important;
+  filter: drop-shadow(0 0 5px var(--pt-glint-glow));
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+/* 3. Live: the "Live" and "Right now" dots pulse blue */
+html[data-palette="arctic-harbor"] .pulse-live-dot {
+  background: var(--pt-glint) !important;
+  box-shadow: 0 0 0 3px var(--pt-glint-tint), 0 0 10px var(--pt-glint-glow) !important;
+  animation: pt-glint-pulse 2.4s ease-in-out infinite;
+}
+@keyframes pt-glint-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--pt-glint-tint), 0 0 8px var(--pt-glint-glow); }
+  50% { box-shadow: 0 0 0 6px transparent, 0 0 14px var(--pt-glint-glow); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-palette="arctic-harbor"] .pulse-live-dot { animation: none; }
+}
+
+/* 4. Stat tiles: silver icons on a softly blue-tinted glass tile */
+html[data-palette="arctic-harbor"] .hub-main :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg) {
+  background: var(--pt-glint-tint) !important;
+  box-shadow: inset 0 0 0 1px var(--pt-glint-line), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+html[data-palette="arctic-harbor"].dark .hub-main :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg) { color: #E6EAEE !important; }
+html[data-palette="arctic-harbor"]:not(.dark) .hub-main :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg) { color: #1F262E !important; }
+html[data-palette="arctic-harbor"] .hub-main :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg):hover > svg,
+html[data-palette="arctic-harbor"] .hub-main :hover > :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]) > svg {
+  color: var(--pt-glint) !important;
+}
+
+/* Silver finish: card edges brushed silver in dark, near-black in light */
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) {
+  --lit-ring: linear-gradient(135deg, rgba(6, 9, 13, 0.80) 0%, rgba(6, 9, 13, 0.34) 30%, rgba(6, 9, 13, 0.28) 62%, rgba(6, 9, 13, 0.66) 100%);
+  --pt-line-accent: rgba(6, 9, 13, 0.42);
+}
+html[data-palette="arctic-harbor"][data-finish="silver"].dark {
+  --lit-ring: linear-gradient(135deg, rgba(240, 243, 246, 0.80) 0%, rgba(208, 214, 221, 0.30) 30%, rgba(192, 199, 207, 0.24) 62%, rgba(228, 233, 238, 0.66) 100%);
+  --pt-line-accent: rgba(226, 231, 236, 0.48);
+}
+html[data-palette="arctic-harbor"][data-finish="silver"]:not(.dark) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) { border-color: rgba(6, 9, 13, 0.16) !important; }
+html[data-palette="arctic-harbor"][data-finish="silver"].dark .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) { border-color: rgba(226, 231, 236, 0.20) !important; }
+
+/* ═══ Colourful icons (2026-11-19, product owner's choice) ════════════════════════
+   Each sidebar link has its own jewel tone: luminous in dark, a deeper shade of the
+   same colour in light (so icons stay clearly visible on ice). The current page's icon
+   glows in its own colour; pointing at a link brightens its glow. Stat tiles cycle
+   through the same set. Status colours (safe, warning, risk) keep their meaning. */
+html[data-palette="arctic-harbor"].dark .velvet-nav.hub-sb {
+  --ic-home: #9EC9FF; --ic-pin: #6EE7F0; --ic-work: #7DB8FF; --ic-health: #6FE3B0;
+  --ic-links: #5EEAD4; --ic-reach: #B9A7FF; --ic-time: #7DD3FC; --ic-trace: #FBC86A;
+  --ic-reports: #A5B4FC; --ic-verify: #86EFAC; --ic-watch: #FDA4AF; --ic-portfolio: #F9A8D4; --ic-certs: #FDE68A;
+}
+html[data-palette="arctic-harbor"]:not(.dark) .velvet-nav.hub-sb {
+  --ic-home: #2B6BD6; --ic-pin: #0E8A99; --ic-work: #2563C9; --ic-health: #1E8A5C;
+  --ic-links: #0F766E; --ic-reach: #6D4FD8; --ic-time: #0369A1; --ic-trace: #B45309;
+  --ic-reports: #4F46E5; --ic-verify: #15803D; --ic-watch: #BE123C; --ic-portfolio: #BE185D; --ic-certs: #A16207;
+}
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/home"] { --ic: var(--ic-home); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/generate"] { --ic: var(--ic-pin); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/vault"] { --ic: var(--ic-work); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/vault-integrity"] { --ic: var(--ic-health); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/access-intelligence"] { --ic: var(--ic-links); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/tracking"] { --ic: var(--ic-reach); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/timeline"] { --ic: var(--ic-time); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/pinit-hub/investigation"] { --ic: var(--ic-trace); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/reports"] { --ic: var(--ic-reports); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/verify-certificate"] { --ic: var(--ic-verify); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/monitoring"] { --ic: var(--ic-watch); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/profile?tab=portfolio"] { --ic: var(--ic-portfolio); }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/certificates"] { --ic: var(--ic-certs); }
+
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href] .hub-sb-tile,
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href] .hub-sb-tile *,
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href] svg {
+  color: var(--ic, currentColor) !important;
+}
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href] svg { filter: none; transition: filter 0.25s ease, transform 0.25s ease; }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href]:hover svg {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ic) 55%, transparent));
+  transform: scale(1.08);
+}
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href].hub-nav-active svg {
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ic) 70%, transparent));
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href]:hover svg { transform: none; }
+}
+
+/* Stat tiles: a soft tint and an icon in the same colour, cycling through the set */
+html[data-palette="arctic-harbor"].dark .hub-main { --t1: #6EE7F0; --t2: #7DB8FF; --t3: #5EEAD4; --t4: #B9A7FF; --t5: #FDA4AF; --t6: #FDE68A; }
+html[data-palette="arctic-harbor"]:not(.dark) .hub-main { --t1: #0E8A99; --t2: #2563C9; --t3: #0F766E; --t4: #6D4FD8; --t5: #BE123C; --t6: #A16207; }
+html[data-palette="arctic-harbor"] .hub-main .grid > :nth-child(6n+1) { --tc: var(--t1); }
+html[data-palette="arctic-harbor"] .hub-main .grid > :nth-child(6n+2) { --tc: var(--t2); }
+html[data-palette="arctic-harbor"] .hub-main .grid > :nth-child(6n+3) { --tc: var(--t3); }
+html[data-palette="arctic-harbor"] .hub-main .grid > :nth-child(6n+4) { --tc: var(--t4); }
+html[data-palette="arctic-harbor"] .hub-main .grid > :nth-child(6n+5) { --tc: var(--t5); }
+html[data-palette="arctic-harbor"] .hub-main .grid > :nth-child(6n+6) { --tc: var(--t6); }
+html[data-palette="arctic-harbor"] .hub-main .grid > * :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg) {
+  color: var(--tc, var(--pt-ink)) !important;
+  background: color-mix(in srgb, var(--tc, var(--pt-ink)) 14%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tc, var(--pt-ink)) 34%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+html[data-palette="arctic-harbor"] .hub-main .grid > :hover :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg) > svg {
+  color: var(--tc) !important;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tc) 55%, transparent));
+}
+
+/* ═══ Bigger, brighter icons and full-strength card edges (2026-11-19) ═════════════ */
+/* Sidebar icons 14px -> 18px in their 26px tile */
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href] .hub-sb-tile svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2.1;
+}
+/* Dark: brighter jewel tones, each with a faint glow of its own colour */
+html[data-palette="arctic-harbor"].dark .velvet-nav.hub-sb {
+  --ic-home: #B8D8FF; --ic-pin: #8FF3FA; --ic-work: #9CCBFF; --ic-health: #8CF0C4;
+  --ic-links: #7FF5E1; --ic-reach: #CDBFFF; --ic-time: #9DE0FF; --ic-trace: #FFD98A;
+  --ic-reports: #BFCBFF; --ic-verify: #A6F7C2; --ic-watch: #FFBAC3; --ic-portfolio: #FFBEE2; --ic-certs: #FFEFA6;
+}
+html[data-palette="arctic-harbor"].dark .velvet-nav.hub-sb .hub-sb-row[href] svg {
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ic) 45%, transparent)) saturate(1.15);
+}
+html[data-palette="arctic-harbor"].dark .velvet-nav.hub-sb .hub-sb-row[href]:hover svg,
+html[data-palette="arctic-harbor"].dark .velvet-nav.hub-sb .hub-sb-row[href].hub-nav-active svg {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ic) 80%, transparent)) saturate(1.2);
+}
+/* Light: a touch more saturated so they read bright on ice */
+html[data-palette="arctic-harbor"]:not(.dark) .velvet-nav.hub-sb .hub-sb-row[href] svg { filter: saturate(1.2); }
+
+/* Stat tile icons a little larger and brighter too */
+html[data-palette="arctic-harbor"] .hub-main .grid > * :is([class*="bg-dna-50"], [class*="bg-dna-500/10"]):is([class*="rounded-lg"], [class*="rounded-xl"]):has(> svg) > svg { width: 16px; height: 16px; }
+html[data-palette="arctic-harbor"].dark .hub-main { --t1: #8FF3FA; --t2: #9CCBFF; --t3: #7FF5E1; --t4: #CDBFFF; --t5: #FFBAC3; --t6: #FFEFA6; }
+
+/* Card edges at full strength: a crisp black rim in dark, a bright silver rim in light */
+html[data-palette="arctic-harbor"].dark:not([data-finish="silver"]) {
+  --lit-ring: linear-gradient(135deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.82) 30%, rgba(0, 0, 0, 0.78) 62%, rgba(0, 0, 0, 1) 100%);
+  --pt-line-accent: rgba(0, 0, 0, 0.9);
+}
+html[data-palette="arctic-harbor"]:not(.dark):not([data-finish="silver"]) {
+  --lit-ring: linear-gradient(135deg, #FFFFFF 0%, #C3CBD3 28%, #9AA4AE 55%, #D9DFE5 80%, #FFFFFF 100%);
+  --pt-line-accent: #9AA4AE;
+}
+html[data-palette="arctic-harbor"].dark:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) {
+  border-color: rgba(0, 0, 0, 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55), var(--pt-shadow) !important;
+}
+html[data-palette="arctic-harbor"]:not(.dark):not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) {
+  border-color: #B4BDC6 !important;
+}
+html[data-palette="arctic-harbor"].dark:not([data-finish="silver"]) .hub-main :is(.pulse-web, section.pulse-dark) { border-color: rgba(0, 0, 0, 0.9) !important; }
+html[data-palette="arctic-harbor"]:not(.dark):not([data-finish="silver"]) .hub-main :is(.pulse-web, section.pulse-dark) { border-color: #B4BDC6 !important; }
+/* The hover light sweep runs over the rim: silver over black in dark, deep steel over silver in light */
+@media (hover: hover) {
+  html[data-palette="arctic-harbor"].dark:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(230, 236, 242, 0.9) 335deg, transparent 360deg), var(--lit-ring) !important;
+  }
+  html[data-palette="arctic-harbor"]:not(.dark):not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .card-hover):not(.absolute):not(.fixed):not(.sticky):hover::before {
+    background: conic-gradient(from var(--fg-sweep), transparent 0deg 290deg, rgba(60, 70, 82, 0.85) 330deg, transparent 360deg), var(--lit-ring) !important;
+  }
+}
+
+/* ═══ Always-on shine on card rims (2026-11-19) ═══════════════════════════════════
+   The rim now carries a permanent metal glint at its corners, visible without hovering.
+   Dark: a black rim catching silver light at top-left and bottom-right.
+   Light: a silver rim with bright white glints. The moving sweep still plays on hover. */
+html[data-palette="arctic-harbor"].dark:not([data-finish="silver"]) {
+  --lit-ring: linear-gradient(135deg,
+    rgba(236, 242, 248, 0.95) 0%, rgba(160, 172, 184, 0.55) 9%, rgba(0, 0, 0, 1) 22%,
+    rgba(0, 0, 0, 0.85) 50%,
+    rgba(0, 0, 0, 1) 78%, rgba(160, 172, 184, 0.5) 91%, rgba(236, 242, 248, 0.85) 100%);
+}
+html[data-palette="arctic-harbor"]:not(.dark):not([data-finish="silver"]) {
+  --lit-ring: linear-gradient(135deg,
+    #FFFFFF 0%, #FFFFFF 7%, #B9C2CB 22%, #8E99A4 45%,
+    #A7B1BB 62%, #D3DAE0 82%, #FFFFFF 93%, #FFFFFF 100%);
+}
+/* A soft light streak across the top edge of each card, like a polished surface */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky) {
+  background-image: linear-gradient(180deg, var(--pt-shine-top) 0%, transparent 18%), var(--fg-card-sheen, none) !important;
+}
+html[data-palette="arctic-harbor"].dark { --pt-shine-top: rgba(220, 230, 240, 0.07); }
+html[data-palette="arctic-harbor"]:not(.dark) { --pt-shine-top: rgba(255, 255, 255, 0.75); }
+
+/* Shine in motion: a slow light sweep travels around every card rim, all the time.
+   One lap every 6s; hovering a card speeds it up. Off with reduced motion. */
+html[data-palette="arctic-harbor"].dark { --pt-sweep-light: rgba(232, 238, 244, 0.9); }
+html[data-palette="arctic-harbor"]:not(.dark) { --pt-sweep-light: rgba(255, 255, 255, 1); }
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky)::before {
+  background: conic-gradient(from var(--fg-sweep), transparent 0deg 296deg, var(--pt-sweep-light) 334deg, transparent 360deg), var(--lit-ring) !important;
+  animation: fg-sweep 6s linear infinite !important;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card):not(.absolute):not(.fixed):not(.sticky):hover::before {
+  animation-duration: 2.6s !important;
+}
+/* Cards start at different points of the lap, so they do not all flash together */
+html[data-palette="arctic-harbor"] .hub-main :is(.card, .glass, .pulse-card, .surface-feature, .tr-card, .tl-card, .sl-card):nth-child(3n+2)::before { animation-delay: -2s !important; }
+html[data-palette="arctic-harbor"] .hub-main :is(.card, .glass, .pulse-card, .surface-feature, .tr-card, .tl-card, .sl-card):nth-child(3n+3)::before { animation-delay: -4s !important; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-palette="arctic-harbor"] .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card)::before { animation: none !important; }
+}
+
+/* ═══ Moving shine across the whole app (2026-11-19) ══════════════════════════════
+   Every card on every page gets the lit rim, and every top-level card gets the moving
+   light sweep (cards inside cards keep a quieter, still rim). Buttons and links are left out. */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  .card-hover, .stat-card, .stat-card-blue, .stat-card-purple, .stat-card-green, .stat-card-orange,
+  .hub-home-panel, .hub-home-hero, .sh-hero,
+  :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]),
+  :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.25rem]"], [class*="rounded-[1.5rem]"]):is([class~="border"], [class*=" border-"])
+):not(button:not(.hub-home-panel)):not(a:not(.hub-home-panel)):not(.rounded-full):not(.absolute):not(.fixed):not(.sticky) {
+  position: relative;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  .card-hover, .stat-card, .stat-card-blue, .stat-card-purple, .stat-card-green, .stat-card-orange,
+  .hub-home-panel, .hub-home-hero, .sh-hero,
+  :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]),
+  :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.25rem]"], [class*="rounded-[1.5rem]"]):is([class~="border"], [class*=" border-"])
+):not(button:not(.hub-home-panel)):not(a:not(.hub-home-panel)):not(.rounded-full):not(.absolute):not(.fixed):not(.sticky)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: var(--lit-ring);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+/* the sweep: top-level cards only (not a card inside another card) */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  .card-hover, .stat-card, .hub-home-panel, .hub-home-hero, .sh-hero,
+  :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-2xl"], [class*="rounded-3xl"]),
+  :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.25rem]"], [class*="rounded-[1.5rem]"]):is([class~="border"], [class*=" border-"])
+):not(button:not(.hub-home-panel)):not(a:not(.hub-home-panel)):not(.rounded-full):not(.absolute):not(.fixed):not(.sticky):not(:is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"]) *)::before {
+  background: conic-gradient(from var(--fg-sweep), transparent 0deg 296deg, var(--pt-sweep-light) 334deg, transparent 360deg), var(--lit-ring) !important;
+  animation: fg-sweep 6s linear infinite !important;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  .card-hover, .stat-card, .hub-home-panel, .hub-home-hero, .sh-hero,
+  :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.25rem]"], [class*="rounded-[1.5rem]"]):is([class~="border"], [class*=" border-"])
+):not(button:not(.hub-home-panel)):not(a:not(.hub-home-panel)):hover::before { animation-duration: 2.6s !important; }
+/* cards inside cards: a still, quieter rim */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"]) :is([class*="rounded-xl"], [class*="rounded-2xl"], .pulse-tile, .card-sm)::before {
+  animation: none !important;
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-palette="arctic-harbor"] .hub-main *::before { animation: none !important; }
+}
+
+/* ═══ Whole-app check fixes (2026-11-19) ═════════════════════════════════════════
+   Selected filter pills: the sliding ink paints the pill, so the label follows the ink's
+   own text colour. Storage banner meta text gets a darker grey in light mode. */
+html[data-palette="arctic-harbor"] .hub-ink--pill .hub-ink-bar { background: var(--pt-action) !important; }
+html[data-palette="arctic-harbor"] .hub-ink--pill > [role="tab"][aria-selected="true"],
+html[data-palette="arctic-harbor"] .hub-ink--pill > [role="tab"][aria-selected="true"] * { color: var(--pt-on-action) !important; }
+html[data-palette="arctic-harbor"]:not(.dark) :is(.hub-quota-meta, .hub-home-meta) { color: #1E3A52 !important; }
+
+
+/* ═══ Neon edge cards (2026-11-20; silver edges from 20 Nov) ══════════════════════
+   One combo for the whole app, on the border only: a cyan → blue → violet gradient
+   running all the way round each card, with a soft glow just outside it. The inside
+   of the card stays plain glass. The moving shine still travels around the rim. */
+html[data-palette="arctic-harbor"].dark {
+  --ne-a: 94, 231, 255; --ne-b: 59, 130, 246; --ne-c: 168, 85, 247;
+  --ne-halo: 0.28; --ne-w: 2px; --ne-glint: 214, 224, 234;
+  /* polished silver: bright highlights and darker bands, like a chrome edge catching light */
+  --ne-silver: linear-gradient(135deg, #FFFFFF 0%, #DDE3E9 10%, #8E99A5 26%, #F4F7FA 42%, #A7B1BC 56%, #6F7A86 70%, #E6EBF0 86%, #FFFFFF 100%);
+}
+html[data-palette="arctic-harbor"]:not(.dark) {
+  --ne-a: 6, 182, 212; --ne-b: 37, 99, 235; --ne-c: 147, 51, 234;
+  --ne-halo: 0.3; --ne-w: 2px; --ne-glint: 0, 0, 0;
+  /* light mode: glossy black, like black chrome catching a little light */
+  --ne-silver: linear-gradient(135deg, #5A626C 0%, #14171B 12%, #000000 28%, #6B737D 42%, #0E1013 56%, #000000 72%, #4A525C 88%, #1C1F23 100%);
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  .card-hover, .stat-card, .hub-home-panel, .hub-home-hero, .sh-hero,
+  :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-2xl"], [class*="rounded-3xl"]),
+  :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.25rem]"], [class*="rounded-[1.5rem]"]):is([class~="border"], [class*=" border-"])
+):not(button:not(.hub-home-panel)):not(a:not(.hub-home-panel)):not(.rounded-full):not(.absolute):not(.fixed):not(.sticky):not(:is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"]) *) {
+  box-shadow: 0 0 14px -3px rgba(var(--ne-glint), var(--ne-halo)), 0 0 30px -10px rgba(var(--ne-glint), calc(var(--ne-halo) * 0.6)) !important;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .table-wrap, .surface-feature, .tr-card, .tl-card, .sl-card,
+  .card-hover, .stat-card, .hub-home-panel, .hub-home-hero, .sh-hero,
+  :is(.bg-white, .bg-bg-card, .bg-bg-elevated, [class*="bg-white/"], [class*="bg-bg-card/"]):is([class*="rounded-2xl"], [class*="rounded-3xl"]),
+  :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.25rem]"], [class*="rounded-[1.5rem]"]):is([class~="border"], [class*=" border-"])
+):not(button:not(.hub-home-panel)):not(a:not(.hub-home-panel)):not(.rounded-full):not(.absolute):not(.fixed):not(.sticky):not(:is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"]) *)::before {
+  padding: var(--ne-w) !important;
+  opacity: 1 !important;
+  background:
+    conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(255, 255, 255, 0.85) 336deg, transparent 360deg),
+    var(--ne-silver) !important;
+}
+
+/* ═══ Neon pill buttons (2026-11-20) ═════════════════════════════════════════════
+   Buttons match the card borders. Main actions: a cyan → blue → violet gradient pill
+   with a soft glow and a glassy top highlight. Secondary actions: a dark glass pill with
+   the same gradient as a thin outline. Icon-only buttons and tabs keep their shape. */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) {
+  --pt-action: linear-gradient(120deg, #0891B2 0%, #2563EB 52%, #7C3AED 100%);
+  --pt-action-hover: linear-gradient(120deg, #06B6D4 0%, #3B82F6 52%, #8B5CF6 100%);
+  --pt-on-action: #FFFFFF;
+  --pt-brand: var(--pt-action);
+  --pt-brand-hover: var(--pt-action-hover);
+  --pt-on-brand: #FFFFFF;
+  --nb-fill: #0D1A2A;
+}
+html[data-palette="arctic-harbor"].dark:not([data-finish="silver"]) {
+  --pt-glow: 0 8px 22px -8px rgba(37, 99, 235, 0.6), 0 0 18px -6px rgba(139, 92, 246, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+html[data-palette="arctic-harbor"]:not(.dark):not([data-finish="silver"]) {
+  --pt-glow: 0 8px 20px -10px rgba(37, 99, 235, 0.45), 0 0 14px -6px rgba(124, 58, 237, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --nb-fill: #F5F8FC;
+}
+/* main actions */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost), .hub-header .nav-cta, .pt-brand-btn, .pt-action-btn, .sl-btn.primary, .tr-btn.primary) {
+  background: var(--pt-action) !important;
+  color: #FFFFFF !important;
+  border-color: transparent !important;
+  border-radius: 999px !important;
+  box-shadow: var(--pt-glow) !important;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease !important;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost), .hub-header .nav-cta, .pt-brand-btn, .pt-action-btn, .sl-btn.primary, .tr-btn.primary) * { color: #FFFFFF !important; }
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) :is(.btn-primary, .pulse-btn-primary, .pa-btn:not(.pa-btn-ghost), .hub-header .nav-cta, .pt-brand-btn, .pt-action-btn, .sl-btn.primary, .tr-btn.primary):hover {
+  background: var(--pt-action-hover) !important;
+  transform: translateY(-1px);
+}
+/* secondary actions: dark pill, gradient outline */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) :is(.btn-secondary, .btn-ghost, .pa-btn-ghost, .sl-btn:not(.primary), .tr-btn:not(.primary), .pulse-btn:not(.pulse-btn-primary)) {
+  border: 1.5px solid transparent !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(var(--nb-fill), var(--nb-fill)) padding-box,
+    linear-gradient(120deg, #22D3EE 0%, #3B82F6 52%, #A855F7 100%) border-box !important;
+  box-shadow: 0 0 14px -6px rgba(59, 130, 246, 0.45) !important;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) :is(.btn-secondary, .btn-ghost, .pa-btn-ghost, .sl-btn:not(.primary), .tr-btn:not(.primary), .pulse-btn:not(.pulse-btn-primary)):hover {
+  box-shadow: 0 0 20px -4px rgba(59, 130, 246, 0.6) !important;
+}
+
+/* ═══ Sidebar edge (2026-11-20) ══════════════════════════════════════════════════
+   The left panel gets the same edge as the cards: polished silver in dark mode, glossy
+   black in light mode, with the moving shine travelling round it. */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-sidebar.velvet-nav.hub-sb {
+  border-color: transparent !important;
+  box-shadow: 0 0 14px -3px rgba(var(--ne-glint), var(--ne-halo)), 0 0 30px -10px rgba(var(--ne-glint), calc(var(--ne-halo) * 0.6)), 0 30px 60px -30px rgba(0, 0, 0, 0.6) !important;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-sidebar.velvet-nav.hub-sb::before {
+  content: "" !important; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  border-radius: inherit; padding: var(--ne-w, 2px);
+  background:
+    conic-gradient(from var(--fg-sweep), transparent 0deg 300deg, rgba(255, 255, 255, 0.85) 336deg, transparent 360deg),
+    var(--ne-silver) !important;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+  animation: fg-sweep 6s linear infinite; animation-delay: -3s;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-palette="arctic-harbor"] .hub-sidebar.velvet-nav.hub-sb::before { animation: none !important; }
+}
+
+/* ═══ Inner tiles: thin blue glow edge (2026-11-20) ══════════════════════════════
+   Tiles and rows inside a card (today's counts, stat tiles, update rows, link rows) get one
+   thin layer: a bright blue hairline edge with a soft blue glow, like a lit glass key.
+   The big outer cards keep their silver / black edge. Buttons, tabs and links are left out. */
+html[data-palette="arctic-harbor"].dark { --in-edge: rgba(96, 165, 250, 0.7); --in-glow: rgba(59, 130, 246, 0.5); --in-top: rgba(191, 219, 254, 0.14); }
+html[data-palette="arctic-harbor"]:not(.dark) { --in-edge: rgba(37, 99, 235, 0.55); --in-glow: rgba(37, 99, 235, 0.28); --in-top: rgba(255, 255, 255, 0.8); }
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .table-wrap, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"])
+  :is(.pulse-tile, .card-sm, .stat-card, :is([class*="rounded-xl"], [class*="rounded-2xl"]):is([class~="border"], [class*="bg-"])):not(button):not(a):not([role="tab"]):not(.rounded-full):not(input):not(select):not(textarea):not(.absolute):not(span):not(p):not(h1):not(h2):not(h3):not(h4):not(h5):not(strong):not(b):not(small):not(label):not([class*=" h-"]):not([class^="h-"]):not([class*=" w-"]):not([class^="w-"]):not([class*="size-"]) {
+  border-color: var(--in-edge) !important;
+  box-shadow: 0 0 12px -4px var(--in-glow), inset 0 1px 0 var(--in-top) !important;
+  transition: box-shadow .25s ease, border-color .25s ease;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .table-wrap, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"])
+  :is(.pulse-tile, .card-sm, .stat-card, :is([class*="rounded-xl"], [class*="rounded-2xl"]):is([class~="border"], [class*="bg-"])):not(button):not(a):not([role="tab"]):not(.rounded-full):not(input):not(select):not(textarea):not(.absolute):not(span):not(p):not(h1):not(h2):not(h3):not(h4):not(h5):not(strong):not(b):not(small):not(label):not([class*=" h-"]):not([class^="h-"]):not([class*=" w-"]):not([class^="w-"]):not([class*="size-"]):hover {
+  box-shadow: 0 0 18px -3px var(--in-glow), inset 0 1px 0 var(--in-top) !important;
+}
+/* the quieter rim that nested tiles had becomes the same thin blue line */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.card, .glass, .pulse-hero, .pulse-card, .pulse-web, .page-band, .surface-feature, .tr-card, .tl-card, .sl-card, .hub-home-panel, .hub-home-hero, .sh-hero, [class*="rounded-2xl"], [class*="rounded-3xl"]) :is([class*="rounded-xl"], [class*="rounded-2xl"], .pulse-tile, .card-sm)::before {
+  background: linear-gradient(135deg, rgba(191, 219, 254, 0.95) 0%, var(--in-edge) 35%, var(--in-edge) 65%, rgba(147, 197, 253, 0.9) 100%) !important;
+  padding: 1px !important; opacity: 1 !important; animation: none !important;
+}
+/* the same thin blue edge on page-specific tiles: Shared Links, Trace, Timeline and the storage banner */
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(
+  .sl-row, .sl-alert, .sl-allclear, .sl-attn-card, .sl-empty-map, .sl-kid, .sl-portfolio, .sl-tree-head,
+  .tl-group, .tl-note,
+  .tr-found, .tr-drop, .tr-case-tile, .tr-change, .tr-clean, .tr-compare, .tr-context, .tr-empty, .tr-error, .tr-facts, .tr-nochange, .tr-probe, .tr-side, .tr-unfinished,
+  .hub-quota-banner
+) {
+  border-color: var(--in-edge) !important;
+  box-shadow: 0 0 12px -4px var(--in-glow), inset 0 1px 0 var(--in-top) !important;
+  transition: box-shadow .25s ease, border-color .25s ease;
+}
+html[data-palette="arctic-harbor"]:not([data-finish="silver"]) .hub-main :is(.sl-row, .sl-attn-card, .sl-kid, .sl-portfolio, .tl-group, .tr-case-tile, .tr-found, .tr-side):hover {
+  box-shadow: 0 0 18px -3px var(--in-glow), inset 0 1px 0 var(--in-top) !important;
+}
+
+/* Scan (PINIT Scan) in the sidebar: its own cyan icon, bright in dark mode, deep in light mode */
+html[data-palette="arctic-harbor"].dark { --ic-scan: #67E8F9; }
+html[data-palette="arctic-harbor"]:not(.dark) { --ic-scan: #0E7490; }
+html[data-palette="arctic-harbor"] .velvet-nav.hub-sb .hub-sb-row[href="/scan"] { --ic: var(--ic-scan); }
+
+/* ── Share secure link dialog: a solid, readable card in both themes ─────────────────────────────────────────────
+   The glass card let the page show through and the title, chips and inputs kept dark-theme colours on a light card
+   (and light fills in dark mode). The dialog gets its own solid surface and explicit text, chip and input colours. */
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) {
+  --sd-card: #FFFFFF; --sd-strong: #0F2235; --sd-muted: #3E5A72; --sd-line: #CFDAE3;
+  --sd-pill-bg: #F3F6F9; --sd-pill-text: #1F3A52; --sd-on-bg: #16314A; --sd-on-text: #FFFFFF;
+  --sd-input-bg: #FFFFFF; --sd-input-text: #0F2235; --sd-placeholder: #6B7F90;
+  background: var(--sd-card) !important;
+  background-image: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.dark[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) {
+  --sd-card: #0F1B26; --sd-strong: #F2F6F8; --sd-muted: #A9BBC9; --sd-line: rgba(255, 255, 255, 0.14);
+  --sd-pill-bg: rgba(255, 255, 255, 0.06); --sd-pill-text: #DCE6EE; --sd-on-bg: #2F6FD6; --sd-on-text: #FFFFFF;
+  --sd-input-bg: rgba(255, 255, 255, 0.05); --sd-input-text: #F2F6F8; --sd-placeholder: #8FA3B3;
+}
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-strong { color: var(--sd-strong) !important; }
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-strong .font-normal,
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-group-label { color: var(--sd-muted) !important; }
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-pill:not(.sd-pill-on),
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-chip:not(.sd-chip-on) {
+  background: var(--sd-pill-bg) !important;
+  border-color: var(--sd-line) !important;
+  color: var(--sd-pill-text) !important;
+}
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-pill.sd-pill-on,
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-chip.sd-chip-on {
+  background: var(--sd-on-bg) !important;
+  border-color: var(--sd-on-bg) !important;
+  color: var(--sd-on-text) !important;
+}
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-input {
+  background: var(--sd-input-bg) !important;
+  border-color: var(--sd-line) !important;
+  color: var(--sd-input-text) !important;
+}
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-input::placeholder { color: var(--sd-placeholder) !important; opacity: 1; }
+html[data-palette] .share-dialog:not(#sd-none):not(#sd-none-2) .sd-input:disabled { opacity: 0.5; }

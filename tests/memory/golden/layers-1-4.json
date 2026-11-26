@@ -1,0 +1,62 @@
+{
+  "tiny-png-64x48": {
+    "layer1": "e4baf7d270740c864752920bfd4bc021af1191420583eba1532704dfe0e1631f",
+    "layer2": "1f09ce254d2798461942712a6f176d661137a1a5a34fc1d1c50ca707a555072d",
+    "layer3": "79a66f936ac5551696cfb4af180b59244dcc5e0cb8b72710785de197822371f0",
+    "layer4": "031cc1704e4c01cbb68dd4721a3a6a6f3c54b034f8cf766aaff0c1521f549b0e",
+    "layer1Success": "true",
+    "layer2Success": "true",
+    "layer3Success": "true",
+    "layer4Success": "true"
+  },
+  "alpha-png-1200x900": {
+    "layer1": "27265783b2b65aebf518c8fc4b65f542e40464681e701d8b37cf326bc152cbe7",
+    "layer2": "4d90845ec6d1dc9f3b8687debb2279cec4e1445da55fbfc3598fdb642c4f5074",
+    "layer3": "34d9e7ceb42bb56b3e2ef96f1f4fadc77139826860aa6635426cf82f50929bcd",
+    "layer4": "43d6132ae4d997b86c54c809ecbe64f0652ce24240a63e9083c163665ad1c001",
+    "layer1Success": "true",
+    "layer2Success": "true",
+    "layer3Success": "true",
+    "layer4Success": "true"
+  },
+  "gray-jpeg-800x600": {
+    "layer1": "18183a7897db98f34e79732c0892356f5bbb89ce5c3863f80b86964e909bd8ee",
+    "layer2": "19f3b9da04c2916681bee87d620920a235820547cd35f8d1d6aee7422cef7275",
+    "layer3": "c312d70db4093b16f3244d94d70b0a577020a05d8f18acd755e44d9b6b64df9a",
+    "layer4": "b0162bc626e70a02ce5e4c60866dbca838111a56d1906be3d289478dd14c84df",
+    "layer1Success": "true",
+    "layer2Success": "true",
+    "layer3Success": "true",
+    "layer4Success": "true"
+  },
+  "photo-jpeg-4000x3000": {
+    "layer1": "888a58ed2f94bad3c6260be3d1e0ac8d77885c3b27570e9b49eebe45af545533",
+    "layer2": "978376e9c526009be1fa317072da784bcfeb8e779f63ccf41a7c248307375404",
+    "layer3": "1308ffa8cc8bd7fb90977a2ed125e4cbf19a99a15b4edab6b48ea0ee39259e8f",
+    "layer4": "9409608eb26f38ee7cc6fe8e0cd7e7b379109ed2aa3cad630aca60d6c99deb2e",
+    "layer1Success": "true",
+    "layer2Success": "true",
+    "layer3Success": "true",
+    "layer4Success": "true"
+  },
+  "exif-rotated-jpeg-1600x1200": {
+    "layer1": "cb8ea5d50b117a6fb3cbc20719971d842c4732d80dead1d1700f642406c6a3ff",
+    "layer2": "fe3728a95a35cbce5f1b33e17a8fd4d23cf655e92cc818ce54995443ade468f5",
+    "layer3": "62f3fcaf111ff7b33c0f06730f651f37ad4c0aefa74798ea6e69d84182c9d225",
+    "layer4": "0b84ca2daec646e315b2873c81c75a1a37b3dff736d4c1afa03aece152343962",
+    "layer1Success": "true",
+    "layer2Success": "true",
+    "layer3Success": "true",
+    "layer4Success": "true"
+  },
+  "png16-500x400": {
+    "layer1": "acaeef750d76a6f01b392504a40cde853e7fe5d64925592dd012d2618d7c686d",
+    "layer2": "a38817a83fe16226b2fd75e04e4494318d436c5e6deb28c2b971bd0b57ff5ade",
+    "layer3": "965c2949ea7268839a6200092af85b7b957f9a3c6e85ac8ff33a1a7c167168c7",
+    "layer4": "f69c966599b944917ac4967fecfdb43b6f181039831ea113fe2bbef33ce6dfb9",
+    "layer1Success": "true",
+    "layer2Success": "true",
+    "layer3Success": "true",
+    "layer4Success": "true"
+  }
+}

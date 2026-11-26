@@ -1,0 +1,169 @@
+/**
+ * Pure checks on the secrets the backend is configured with. No secret value is ever returned, logged or put
+ * in a message: issues name the variable and the kind of problem only.
+ *
+ * What is checked, per variable:
+ *   missing           not set at all
+ *   empty             set to an empty or blank string (the config loader keeps an empty value instead of
+ *                     falling back, so an empty JWT/HMAC secret would really be used as an empty key)
+ *   known_default     equal to one of the fallback strings that are visible in the source repository
+ *   placeholder       looks like a template value ("change_me", "dev_…", "example", "default" …)
+ *   too_short         shorter than MIN_SECRET_LENGTH characters
+ *   low_entropy       fewer than 10 distinct characters (for example "aaaaaaaa…")
+ * Warnings (never block start): surrounding whitespace or control characters in the value, a value reused by
+ * another secret, and the optional secrets that are not set and therefore fall back to another one.
+ *
+ * Compatibility: every derivation in the code (HKDF for vault files, SHA-256 for the biometric key, HMAC for
+ * signatures and share tokens, HS256 for JWTs) accepts any non-empty string, so the 32-character minimum is a
+ * policy, not a library limit. Secrets are used as typed (no trimming, no decoding), so changing how they are
+ * read would change every derived key: this module only inspects, it never alters.
+ */
+
+export const MIN_SECRET_LENGTH = 32;
+
+export type SecretProblem =
+  | 'missing'
+  | 'empty'
+  | 'known_default'
+  | 'placeholder'
+  | 'too_short'
+  | 'low_entropy'
+  | 'surrounding_whitespace'
+  | 'reused'
+  | 'falls_back';
+
+export interface SecretIssue {
+  name: string;
+  problem: SecretProblem;
+  /** Human-readable, contains no secret value. */
+  detail: string;
+}
+
+export interface SecretReport {
+  errors: SecretIssue[];
+  warnings: SecretIssue[];
+}
+
+/** Fallback strings that exist in the repository. A real deployment must never be running on any of them. */
+const KNOWN_DEFAULTS = new Set([
+  'dev_jwt_secret_change_in_prod_min_32_chars_long!!',
+  'dev_vault_secret_change_in_prod',
+  'dev_secret_change_in_prod',
+  'pinit-dna-dev-secret-change-me',
+  'dev_biometric_key_change_in_prod',
+  'dev_dna_vnext_secret',
+  'dev_block_dna_secret_change_in_prod',
+  'dev_spatial_auth_secret_change_in_prod',
+  'pinit-dna-default-secret',
+  'pinit-phase3-dev',
+  'pinit-recovery-dev',
+  'pinit-manifest-dev',
+  'pinit-enrollment',
+  'pinit',
+  'change_me_exchange_bridge_secret_min_32_chars',
+]);
+
+const PLACEHOLDER = /change[_-]?me|change[_-]?in[_-]?prod|replace[_-]?me|(^|[_-])dev([_-]|$)|placeholder|your[_-]?(secret|key)|example|default/i;
+
+/** What each variable protects (shown in the startup log so the impact is clear). */
+const PURPOSE: Record<string, string> = {
+  JWT_SECRET: 'signs every login session; anyone who knows it can act as any account',
+  VAULT_MASTER_SECRET: 'derives the key that decrypts every stored file and signs certificates',
+  LSB_SIGNATURE_SECRET: 'signs ownership watermarks and tracked-export signatures',
+  SHARE_HMAC_SECRET: 'signs share-link tokens',
+  EXCHANGE_BRIDGE_SECRET: 'authenticates Hub to Exchange service calls',
+  ADMIN_BRIDGE_SECRET: 'authenticates the Master Admin handoff',
+  BIOMETRIC_ENCRYPTION_KEY: 'encrypts stored biometric templates (changing it makes them unreadable)',
+  PHASE3_SIGNING_SECRET: 'signs identity tokens, recovery tokens and integrity manifests',
+  TEP_SIGNING_SECRET: 'signs tracked-export packages',
+  TEP_SECRET: 'signs tracked-export packages (older name)',
+  SPATIAL_AUTH_SECRET: 'signs spatial authentication data',
+  BLOCK_DNA_SECRET: 'signs block-level fingerprint data',
+  DNA_VNEXT_SECRET: 'signs the hidden pixel ownership mark and scan challenges',
+};
+
+/** Must be set to something strong in production, or the server refuses to start. */
+export const REQUIRED_SECRETS = ['JWT_SECRET', 'VAULT_MASTER_SECRET', 'LSB_SIGNATURE_SECRET', 'SHARE_HMAC_SECRET'] as const;
+
+/**
+ * Optional: when unset the code falls back to another secret (a warning), when set it must be strong (an
+ * error). `fallsBackTo` is only for the message.
+ */
+export const OPTIONAL_SECRETS: Array<{ name: string; fallsBackTo: string }> = [
+  { name: 'EXCHANGE_BRIDGE_SECRET', fallsBackTo: 'JWT_SECRET' },
+  { name: 'ADMIN_BRIDGE_SECRET', fallsBackTo: 'JWT_SECRET' },
+  { name: 'BIOMETRIC_ENCRYPTION_KEY', fallsBackTo: 'VAULT_MASTER_SECRET' },
+  { name: 'PHASE3_SIGNING_SECRET', fallsBackTo: 'VAULT_MASTER_SECRET' },
+  { name: 'TEP_SIGNING_SECRET', fallsBackTo: 'LSB_SIGNATURE_SECRET' },
+  { name: 'TEP_SECRET', fallsBackTo: 'LSB_SIGNATURE_SECRET' },
+  { name: 'SPATIAL_AUTH_SECRET', fallsBackTo: 'LSB_SIGNATURE_SECRET' },
+  { name: 'BLOCK_DNA_SECRET', fallsBackTo: 'SPATIAL_AUTH_SECRET / LSB_SIGNATURE_SECRET' },
+  { name: 'DNA_VNEXT_SECRET', fallsBackTo: 'BLOCK_DNA_SECRET / SPATIAL_AUTH_SECRET / LSB_SIGNATURE_SECRET' },
+];
+
+const PROBLEM_TEXT: Record<SecretProblem, string> = {
+  missing: 'is not set',
+  empty: 'is set but empty',
+  known_default: 'is a public default value from the source code',
+  placeholder: 'looks like a placeholder or template value',
+  too_short: `is shorter than ${MIN_SECRET_LENGTH} characters`,
+  low_entropy: 'has too few different characters to be random',
+  surrounding_whitespace: 'has leading or trailing whitespace or a control character (usually a copy-paste slip; it is used exactly as typed)',
+  reused: 'has the same value as another secret',
+  falls_back: 'is not set separately',
+};
+
+/** The first blocking problem with a value, or null when it is acceptable. */
+export function blockingProblem(value: string | undefined): SecretProblem | null {
+  if (value === undefined) return 'missing';
+  if (value.trim() === '') return 'empty';
+  if (KNOWN_DEFAULTS.has(value) || KNOWN_DEFAULTS.has(value.trim())) return 'known_default';
+  if (PLACEHOLDER.test(value)) return 'placeholder';
+  if (value.length < MIN_SECRET_LENGTH) return 'too_short';
+  if (new Set(value).size < 10) return 'low_entropy';
+  return null;
+}
+
+function issue(name: string, problem: SecretProblem, extra = ''): SecretIssue {
+  const purpose = PURPOSE[name] ? ` — ${PURPOSE[name]}` : '';
+  return { name, problem, detail: `${name} ${PROBLEM_TEXT[problem]}${extra}${purpose}` };
+}
+
+export function evaluateSecrets(env: NodeJS.ProcessEnv): SecretReport {
+  const errors: SecretIssue[] = [];
+  const warnings: SecretIssue[] = [];
+  const present = new Map<string, string[]>(); // value -> names that have it (kept in memory only, never returned)
+
+  const note = (name: string, value: string | undefined) => {
+    if (value === undefined || value === '') return;
+    present.set(value, [...(present.get(value) ?? []), name]);
+    // eslint-disable-next-line no-control-regex -- intentional: detects control characters in a secret
+    if (/^\s|\s$|[\u0000-\u001f]/.test(value)) warnings.push(issue(name, 'surrounding_whitespace'));
+  };
+
+  for (const name of REQUIRED_SECRETS) {
+    const value = env[name];
+    const problem = blockingProblem(value);
+    if (problem) errors.push(issue(name, problem));
+    note(name, value);
+  }
+
+  for (const { name, fallsBackTo } of OPTIONAL_SECRETS) {
+    const value = env[name];
+    if (value === undefined) {
+      warnings.push(issue(name, 'falls_back', ` (it uses ${fallsBackTo} instead)`));
+      continue;
+    }
+    const problem = blockingProblem(value);
+    if (problem) errors.push(issue(name, problem));
+    note(name, value);
+  }
+
+  for (const names of present.values()) {
+    if (names.length > 1) {
+      for (const name of names) warnings.push(issue(name, 'reused', ` (shared with ${names.filter((n) => n !== name).join(', ')})`));
+    }
+  }
+
+  return { errors, warnings };
+}

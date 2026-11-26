@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#E9EAED" media="(prefers-color-scheme: light)" />
+    <script>
+      // Apply the theme before first paint: the saved choice wins; with none saved, follow the system setting.
+      try {
+        var t = localStorage.getItem('pinit_theme');
+        if (t === 'dark' || (t !== 'light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+      // Palette: Arctic Harbor (chosen 2026-11-19, default). Warm Sand and Navy & Copper are kept:
+      // ?palette=warm-sand, ?palette=navy-copper or ?palette=arctic-harbor switches and remembers.
+      try {
+        var q = new URLSearchParams(location.search).get('palette');
+        var known = { 'arctic-harbor': 1, 'warm-sand': 1, 'navy-copper': 1 };
+        if (known[q]) localStorage.setItem('pinit_palette', q);
+        var saved = localStorage.getItem('pinit_palette');
+        document.documentElement.setAttribute('data-palette', known[saved] ? saved : 'arctic-harbor');
+      } catch (e) { document.documentElement.setAttribute('data-palette', 'arctic-harbor'); }
+      // Finish: the team's navy version by default; ?finish=silver (black and silver) or ?finish=standard switches and remembers.
+      try {
+        var f = new URLSearchParams(location.search).get('finish');
+        if (f === 'silver' || f === 'standard') localStorage.setItem('pinit_finish', f);
+        if (localStorage.getItem('pinit_finish') === 'silver') document.documentElement.setAttribute('data-finish', 'silver');
+      } catch (e) {}
+    </script>
+    <title>PinITHUB</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- app background artwork (forest-glass.css): fetch early so it paints with the first frame, once -->
+    <link rel="preload" href="/bg/arctic-helix-dark.webp" as="image" type="image/webp" fetchpriority="high" />
+    <link rel="preload" href="/bg/arctic-helix-light.webp" as="image" type="image/webp" />
+    <script>
+      if (location.pathname === '/scan' || location.pathname.indexOf('/scan/') === 0) {
+        document.write('<link rel="manifest" href="/scan-manifest.webmanifest">');
+        // Keep the browser's install prompt: it can fire before the page's code has started listening.
+        window.addEventListener('beforeinstallprompt', function (event) {
+          event.preventDefault();
+          window.__pinitInstallPrompt = event;
+          window.dispatchEvent(new Event('pinit-install-ready'));
+        });
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="/static/index-C7rh7ejM.js"></script>
+    <link rel="stylesheet" crossorigin href="/static/index-D0Gy9RqJ.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
