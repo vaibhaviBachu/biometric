@@ -96,57 +96,6 @@ function resolveHubAppUrl(): string {
   return PRODUCTION_HUB_URL;
 }
 
-/** Public marketplace origin used when EXCHANGE_APP_URL is not configured in production. */
-const PRODUCTION_EXCHANGE_URL = 'https://www.pinitexchange.com';
-
-/**
- * Resolve the Exchange app origin.
- *
- * Local dev keeps the localhost default. Production must never emit a
- * localhost SSO link, so an unset value falls back to the public marketplace
- * and logs loudly rather than failing silently.
- */
-function resolveExchangeAppUrl(): string {
-  const explicit = process.env.EXCHANGE_APP_URL?.trim();
-  if (explicit) return explicit.replace(/\/$/, '');
-
-  const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
-  if (!isProd) return 'http://localhost:5174';
-
-  // eslint-disable-next-line no-console
-  console.warn(
-    '[config] EXCHANGE_APP_URL is not set in production — falling back to ' +
-      `${PRODUCTION_EXCHANGE_URL}. Set EXCHANGE_APP_URL explicitly on the backend service.`,
-  );
-  return PRODUCTION_EXCHANGE_URL;
-}
-
-/** Exchange API service used when EXCHANGE_API_URL is not configured in production. */
-const PRODUCTION_EXCHANGE_API_URL = 'https://pinit-exchange-api-sg.onrender.com';
-
-/**
- * Resolve the Exchange API origin — same rule as the app URL above.
- *
- * The localhost default made every server-side Exchange call in production
- * (listed-assets, role, seller desk) quietly fail, so My Assets lost its
- * Exchange tags while localhost — where an Exchange server really does run on
- * :5000 — kept showing them.
- */
-function resolveExchangeApiUrl(): string {
-  const explicit = process.env.EXCHANGE_API_URL?.trim();
-  if (explicit) return explicit.replace(/\/$/, '');
-
-  const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
-  if (!isProd) return 'http://localhost:5000';
-
-  // eslint-disable-next-line no-console
-  console.warn(
-    '[config] EXCHANGE_API_URL is not set in production — falling back to ' +
-      `${PRODUCTION_EXCHANGE_API_URL}. Set EXCHANGE_API_URL explicitly on the backend service.`,
-  );
-  return PRODUCTION_EXCHANGE_API_URL;
-}
-
 export const config = {
   env: optional('NODE_ENV', 'development') as 'development' | 'production' | 'test',
   port: optionalInt('PORT', 4000),
@@ -395,49 +344,8 @@ export const config = {
     testStoragePricePaisePerGb: optionalInt('STRIPE_TEST_STORAGE_PRICE_PAISE_PER_GB', 0),
   },
 
-  /**
-   * Pinit Exchange bridge — marketplace stays a separate app.
-   * Hub owns identity / vault / DNA; Exchange only receives public-safe listing payloads.
-   */
-  exchange: {
-    // The localhost defaults are for local development only. In production an
-    // unset EXCHANGE_APP_URL used to silently produce a localhost SSO link,
-    // which sent every "Exchange" click to a machine the user does not have —
-    // so production falls back to the real marketplace instead, and warns.
-    appUrl: resolveExchangeAppUrl(),
-    apiUrl: resolveExchangeApiUrl(),
-    bridgeSecret: optional(
-      'EXCHANGE_BRIDGE_SECRET',
-      optional('JWT_SECRET', 'dev_jwt_secret_change_in_prod_min_32_chars_long!!'),
-    ),
-    /**
-     * Workstream C key rotation: set during a rotation window so a bridge
-     * secret can be rotated on Hub and Exchange without a moment where every
-     * in-flight request from the side still holding the old value is
-     * rejected. Empty (the default) means no rotation is in progress — only
-     * the current `bridgeSecret` is accepted. Never falls back to JWT_SECRET
-     * or any other secret: an unset previous-key slot must mean "no grace
-     * period," not "accept something else instead."
-     */
-    bridgeSecretPrevious: process.env['EXCHANGE_BRIDGE_SECRET_PREVIOUS'] || '',
-  },
-
   log: {
     level: optional('LOG_LEVEL', 'debug'),
-  },
-
-  /**
-   * PinitHUB Master Admin — a fully separate app (own Vite project, own port),
-   * same split as Exchange. Hub has no password login, so the admin app cannot
-   * run its own sign-in form; instead an already-logged-in Hub user requests a
-   * short-lived signed bridge token and is redirected into the admin app with it.
-   */
-  admin: {
-    appUrl: optional('ADMIN_APP_URL', 'http://localhost:3003').replace(/\/$/, ''),
-    bridgeSecret: optional(
-      'ADMIN_BRIDGE_SECRET',
-      optional('JWT_SECRET', 'dev_jwt_secret_change_in_prod_min_32_chars_long!!'),
-    ),
   },
 } as const;
 

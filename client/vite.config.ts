@@ -20,7 +20,20 @@ function silentProxyErrors(): Plugin {
   };
 }
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => {
+  // Catch a missing backend URL at the BUILD step itself, not just at runtime in the
+  // browser (api.config.ts also throws, but that only fires once the bundle actually
+  // runs client-side — this runs in Node during `vite build` and fails the deploy
+  // outright, which is the earliest and clearest place to catch it).
+  if (command === 'build' && mode === 'production' && !process.env.VITE_API_BASE_URL) {
+    throw new Error(
+      'VITE_API_BASE_URL is not set. Set it in your deployment platform\'s environment ' +
+      'variables (e.g. Vercel project settings) before building — a production build must ' +
+      'know its own backend URL explicitly.',
+    );
+  }
+
+  return {
   plugins: [react(), silentProxyErrors()],
   // Production bundles drop console.log/info/debug (they printed project URLs, timings and user data).
   // console.warn/error stay so real failures are still visible.
@@ -59,4 +72,5 @@ export default defineConfig(({ command }) => ({
       },
     },
   },
-}));
+  };
+});

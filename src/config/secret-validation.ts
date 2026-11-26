@@ -47,20 +47,8 @@ export interface SecretReport {
 /** Fallback strings that exist in the repository. A real deployment must never be running on any of them. */
 const KNOWN_DEFAULTS = new Set([
   'dev_jwt_secret_change_in_prod_min_32_chars_long!!',
-  'dev_vault_secret_change_in_prod',
-  'dev_secret_change_in_prod',
-  'pinit-dna-dev-secret-change-me',
   'dev_biometric_key_change_in_prod',
-  'dev_dna_vnext_secret',
-  'dev_block_dna_secret_change_in_prod',
-  'dev_spatial_auth_secret_change_in_prod',
-  'pinit-dna-default-secret',
-  'pinit-phase3-dev',
-  'pinit-recovery-dev',
-  'pinit-manifest-dev',
-  'pinit-enrollment',
-  'pinit',
-  'change_me_exchange_bridge_secret_min_32_chars',
+  'dev_vault_secret_change_in_prod', // BIOMETRIC_ENCRYPTION_KEY's own fallback chain still passes through this
 ]);
 
 const PLACEHOLDER = /change[_-]?me|change[_-]?in[_-]?prod|replace[_-]?me|(^|[_-])dev([_-]|$)|placeholder|your[_-]?(secret|key)|example|default/i;
@@ -68,38 +56,17 @@ const PLACEHOLDER = /change[_-]?me|change[_-]?in[_-]?prod|replace[_-]?me|(^|[_-]
 /** What each variable protects (shown in the startup log so the impact is clear). */
 const PURPOSE: Record<string, string> = {
   JWT_SECRET: 'signs every login session; anyone who knows it can act as any account',
-  VAULT_MASTER_SECRET: 'derives the key that decrypts every stored file and signs certificates',
-  LSB_SIGNATURE_SECRET: 'signs ownership watermarks and tracked-export signatures',
-  SHARE_HMAC_SECRET: 'signs share-link tokens',
-  EXCHANGE_BRIDGE_SECRET: 'authenticates Hub to Exchange service calls',
-  ADMIN_BRIDGE_SECRET: 'authenticates the Master Admin handoff',
-  BIOMETRIC_ENCRYPTION_KEY: 'encrypts stored biometric templates (changing it makes them unreadable)',
-  PHASE3_SIGNING_SECRET: 'signs identity tokens, recovery tokens and integrity manifests',
-  TEP_SIGNING_SECRET: 'signs tracked-export packages',
-  TEP_SECRET: 'signs tracked-export packages (older name)',
-  SPATIAL_AUTH_SECRET: 'signs spatial authentication data',
-  BLOCK_DNA_SECRET: 'signs block-level fingerprint data',
-  DNA_VNEXT_SECRET: 'signs the hidden pixel ownership mark and scan challenges',
+  BIOMETRIC_ENCRYPTION_KEY: 'encrypts stored biometric (face) templates; changing it makes existing templates unreadable',
 };
 
 /** Must be set to something strong in production, or the server refuses to start. */
-export const REQUIRED_SECRETS = ['JWT_SECRET', 'VAULT_MASTER_SECRET', 'LSB_SIGNATURE_SECRET', 'SHARE_HMAC_SECRET'] as const;
+export const REQUIRED_SECRETS = ['JWT_SECRET', 'BIOMETRIC_ENCRYPTION_KEY'] as const;
 
 /**
  * Optional: when unset the code falls back to another secret (a warning), when set it must be strong (an
  * error). `fallsBackTo` is only for the message.
  */
-export const OPTIONAL_SECRETS: Array<{ name: string; fallsBackTo: string }> = [
-  { name: 'EXCHANGE_BRIDGE_SECRET', fallsBackTo: 'JWT_SECRET' },
-  { name: 'ADMIN_BRIDGE_SECRET', fallsBackTo: 'JWT_SECRET' },
-  { name: 'BIOMETRIC_ENCRYPTION_KEY', fallsBackTo: 'VAULT_MASTER_SECRET' },
-  { name: 'PHASE3_SIGNING_SECRET', fallsBackTo: 'VAULT_MASTER_SECRET' },
-  { name: 'TEP_SIGNING_SECRET', fallsBackTo: 'LSB_SIGNATURE_SECRET' },
-  { name: 'TEP_SECRET', fallsBackTo: 'LSB_SIGNATURE_SECRET' },
-  { name: 'SPATIAL_AUTH_SECRET', fallsBackTo: 'LSB_SIGNATURE_SECRET' },
-  { name: 'BLOCK_DNA_SECRET', fallsBackTo: 'SPATIAL_AUTH_SECRET / LSB_SIGNATURE_SECRET' },
-  { name: 'DNA_VNEXT_SECRET', fallsBackTo: 'BLOCK_DNA_SECRET / SPATIAL_AUTH_SECRET / LSB_SIGNATURE_SECRET' },
-];
+export const OPTIONAL_SECRETS: Array<{ name: string; fallsBackTo: string }> = [];
 
 const PROBLEM_TEXT: Record<SecretProblem, string> = {
   missing: 'is not set',

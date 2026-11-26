@@ -40,7 +40,6 @@
  */
 import { logger } from '../lib/logger';
 import { config } from './index';
-import { dnaVnextConfig } from './dna-vnext';
 import { evaluateSecrets } from './secret-validation';
 
 type Severity = 'critical' | 'high';
@@ -65,56 +64,10 @@ function buildChecks(): SecretCheck[] {
       note: 'Forges a login session for any account.',
     },
     {
-      envVar: 'VAULT_MASTER_SECRET',
-      insecure: config.vault.masterSecret === 'dev_vault_secret_change_in_prod',
+      envVar: 'BIOMETRIC_ENCRYPTION_KEY',
+      insecure: config.biometric.encryptionKey === 'dev_biometric_key_change_in_prod',
       severity: 'critical',
-      note: 'Derives the key that decrypts every stored file. KNOWN OPEN ISSUE — see status report 4.2, needs a migration plan before rotating.',
-    },
-    {
-      envVar: 'LSB_SIGNATURE_SECRET',
-      insecure: config.stego.signatureSecret === 'dev_secret_change_in_prod',
-      severity: 'high',
-      note: 'Forges Layer 6 ownership-watermark signatures and TEP export signatures.',
-    },
-    {
-      // Chained fallback (-> JWT_SECRET), so check env-var presence directly
-      // rather than the resolved value — once JWT_SECRET is real, the
-      // resolved value silently looks "fine" even though this secret was
-      // never independently configured.
-      envVar: 'EXCHANGE_BRIDGE_SECRET',
-      insecure: !process.env['EXCHANGE_BRIDGE_SECRET'],
-      severity: 'high',
-      note: 'Not independently set (borrowing JWT_SECRET via fallback). Authenticates every Hub<->Exchange service call (listing assets, confirming sales, minting licensed shares, silent protect-on-behalf-of). The always-accepted hardcoded-default backdoor in verifyServiceBridgeSecret() was fixed 2026-09-23 — only the real configured secret is now accepted (constant-time compare) — but this must still be independently set (not left on the JWT_SECRET fallback) on both Hub and Exchange in every environment.',
-    },
-    {
-      envVar: 'SHARE_HMAC_SECRET',
-      insecure: config.share.hmacSecret === 'pinit-dna-dev-secret-change-me',
-      severity: 'high',
-      note: 'Signs every Secure Share link token — forgeable by anyone who reads the public default in this repo.',
-    },
-    {
-      envVar: 'SPATIAL_AUTH_SECRET',
-      insecure: !process.env['SPATIAL_AUTH_SECRET'],
-      severity: 'high',
-      note: 'Not independently set — relying on a fallback chain.',
-    },
-    {
-      envVar: 'DNA_VNEXT secret chain (DNA_VNEXT_SECRET / BLOCK_DNA_SECRET / SPATIAL_AUTH_SECRET / LSB_SIGNATURE_SECRET)',
-      insecure: dnaVnextConfig.secret === 'dev_dna_vnext_secret',
-      severity: 'high',
-      note: 'Signs the DNA-B watermark payload — every link in this fallback chain is unset.',
-    },
-    {
-      envVar: 'RAZORPAY_WEBHOOK_SECRET',
-      insecure: Boolean(config.razorpay.keyId) && !config.razorpay.webhookSecret,
-      severity: 'high',
-      note: 'A Razorpay key is configured but no webhook secret is set — the /subscription/webhooks/razorpay route will reject every delivery with 401, so a payment that captures without the browser completing the client-side /verify call (closed tab, crash, dropped network) has no automatic recovery path.',
-    },
-    {
-      envVar: 'STRIPE_WEBHOOK_SECRET',
-      insecure: Boolean(config.stripe.secretKey) && !config.stripe.webhookSecret,
-      severity: 'high',
-      note: 'A Stripe key is configured but no webhook secret is set — the /subscription/webhooks/stripe route will reject every delivery with 401, so a Checkout Session that completes without the browser confirming it has no automatic recovery path.',
+      note: 'Encrypts every stored face template — the most sensitive data this app holds.',
     },
   ];
 }
