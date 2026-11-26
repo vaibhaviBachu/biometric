@@ -1,14 +1,13 @@
-# PINIT-DNA backend — multi-stage build, for ECS Fargate / any container host.
+# PINIT backend — multi-stage build, for Render/any container host.
 #
 # Builds only the API server. The Vercel-hosted frontend (client/) is a
 # separate deploy target and is not baked into this image.
 #
-# Intentionally does NOT run the historical `npm run start:prod` /
-# `render:start` boot chain (26 sequential ensure-*.cjs schema-patch scripts).
-# That chain re-runs on every container start, including every horizontal
-# scale-out event, not just deploys. Real schema changes belong in
-# `npm run db:migrate:prod` (prisma migrate deploy), run once as a pre-deploy
-# step outside this image's boot path — see docs/PINIT-DNA_ECS_Production_Readiness_Audit.pdf, §4.
+# `prisma migrate deploy` runs on every container boot (see CMD below), not as
+# a separate manual/Shell step — Render's free compute plan has no Shell/SSH
+# access at all, so a step that has to be run by hand would never actually run.
+# `migrate deploy` only applies pending migrations (no-op if none) and takes
+# its own advisory lock, so it's safe even if this ever scales to >1 instance.
 
 FROM node:20-slim AS builder
 WORKDIR /app
@@ -61,4 +60,4 @@ RUN mkdir -p ./vault/encrypted ./tmp/uploads && chown -R pinit:pinit /app
 USER pinit
 
 EXPOSE 4000
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
