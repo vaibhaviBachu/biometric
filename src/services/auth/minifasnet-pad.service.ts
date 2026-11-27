@@ -207,7 +207,11 @@ export interface PassiveSummary {
  * the same way the rest of src/config/index.ts's BIOMETRIC_* thresholds are. */
 export function summarisePassive(scores: FrameScore[], opts?: { threshold?: number; minFrames?: number }): PassiveSummary {
   const threshold = opts?.threshold ?? parseFloat(process.env['BIOMETRIC_PASSIVE_PAD_THRESHOLD'] ?? '0.5');
-  const minFrames = opts?.minFrames ?? parseInt(process.env['BIOMETRIC_PASSIVE_PAD_MIN_FRAMES'] ?? '5', 10);
+  // 4, not 5: enrollment now samples roughly every other frame (see lib/face-liveness.ts
+  // client-side) to keep MiniFASNet inference affordable on a single-CPU host, which
+  // yields ~5 scored frames at the capture loop's own 10-sample floor — 4 leaves one
+  // frame of slack rather than requiring every one of those 5 to extract cleanly.
+  const minFrames = opts?.minFrames ?? parseInt(process.env['BIOMETRIC_PASSIVE_PAD_MIN_FRAMES'] ?? '4', 10);
   const valid = scores.filter((s) => s.valid && Number.isFinite(s.pReal)).map((s) => s.pReal);
   if (valid.length < minFrames) {
     return { ok: false, median: NaN, frames: valid.length, reason: 'too_few_frames' };

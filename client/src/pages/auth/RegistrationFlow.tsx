@@ -174,6 +174,17 @@ export function RegistrationFlow() {
               onDone={() => go('success')}
               onError={(m) => setError(m)}
               onDuplicate={() => navigate('/login', { replace: true })}
+              onRetryCapture={() => {
+                // Each liveness challenge token is single-use — resubmitting the same
+                // captured samples (what this used to do) always fails as a replay,
+                // showing a scary "use a live camera" message no matter what the real
+                // problem was. A retry must re-scan from scratch, not resubmit.
+                faceEmbeddingRef.current = null;
+                padEvidenceRef.current = null;
+                samplesRef.current = [];
+                setFaceCaptured(false);
+                go('face');
+              }}
             />
           )}
           {step === 'success'     && (
@@ -253,12 +264,13 @@ function Permissions({ deviceFpRef, onNext }: { deviceFpRef: React.MutableRefObj
 }
 
 function Creating({
-  run, onDone, onError, onDuplicate, error,
+  run, onDone, onError, onDuplicate, onRetryCapture, error,
 }: {
   run: () => Promise<void>;
   onDone: () => void;
   onError: (m: string) => void;
   onDuplicate: () => void;
+  onRetryCapture: () => void;
   error: string;
 }) {
   const INITIAL: CheckItem[] = [
@@ -266,13 +278,12 @@ function Creating({
     { label: 'Saved to Database', done: false },
   ];
   const [items, setItems] = useState<CheckItem[]>(INITIAL);
-  const [tries, setTries] = useState(0);
-  const ranRef = useRef(-1);
+  const ranRef = useRef(false);
   const duplicate = isDuplicateIdentityError(error);
 
   useEffect(() => {
-    if (ranRef.current === tries) return;
-    ranRef.current = tries;
+    if (ranRef.current) return;
+    ranRef.current = true;
     onError('');
     setItems(INITIAL.map((it) => ({ ...it, done: false })));
     INITIAL.slice(0, INITIAL.length - 1).forEach((_, i) =>
@@ -290,7 +301,7 @@ function Creating({
         onError(msg);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tries]);
+  }, []);
 
   return (
     <div className="pa-card">
@@ -309,7 +320,7 @@ function Creating({
               <button className="pa-btn pa-btn-ghost" style={{ marginTop: 10 }} onClick={onDuplicate}>It's my account, sign in</button>
             </>
           ) : (
-            <button className="pa-btn" style={{ marginTop: 12 }} onClick={() => setTries((t) => t + 1)}>Retry</button>
+            <button className="pa-btn" style={{ marginTop: 12 }} onClick={onRetryCapture}>Retry</button>
           )}
         </div>
       )}

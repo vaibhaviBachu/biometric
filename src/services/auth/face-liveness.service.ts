@@ -22,7 +22,12 @@ export const PAD_ACTIONS = ['yaw_left', 'yaw_right', 'pitch_down'] as const;
 export type PadAction = (typeof PAD_ACTIONS)[number];
 export type PadVerdict = 'LIVE' | 'SPOOF' | 'UNKNOWN';
 
-export const PAD_PATCH_SIZE = 48;
+// Was bumped to 48 for sharper texture detail, then reverted: resizing the same face
+// crop into a larger canvas smooths it via interpolation, which lowers the measured
+// sharpness score — the minSharpness threshold below was tuned against 24px patches
+// and a real borderline frame started failing low_sharpness in production that would
+// have passed at 24px. Back to the originally-calibrated size.
+export const PAD_PATCH_SIZE = 24;
 export const PAD_LIMITS = {
   /** Multi-step login (face → passkey → voice → submit) needs headroom past a short scan. */
   challengeTtlMs: 10 * 60_000,

@@ -11,8 +11,9 @@ import { enrollFaceHint } from './enroll-face-quality';
 import { evaluatePadFacePresence, FACE_LOSS_RECOVERY_MS } from './pad-face-presence';
 
 // Keep in sync with the server's PAD_PATCH_SIZE (src/services/auth/face-liveness.service.ts) —
-// both sides must agree on the fixed patch size for decodePadPatch to accept it.
-const PATCH = 48;
+// both sides must agree on the fixed patch size for decodePadPatch to accept it. Reverted
+// from 48 back to 24 — see that file's comment for why (minSharpness was tuned at 24px).
+const PATCH = 24;
 const MIN_SAMPLES = 10;
 const SAMPLE_EVERY_MS = 110;
 const YAW = 0.14;
@@ -351,8 +352,16 @@ export async function runPadCapture(
     });
     patches.push(parsed.b64);
     descriptors.push(det.descriptor);
-    const rgbFrame = extractRgbCrop(video, { x: box.x, y: box.y, width: box.width, height: box.height });
-    if (rgbFrame) rgbPatches.push(rgbFrame);
+    // Enrollment runs 3 full capture rounds; scoring every frame with MiniFASNet made
+    // registration take 13-14s on a single-CPU host (observed in production). Every
+    // other frame still comfortably clears the server's passive-PAD minimum frame
+    // count (5) for enroll's ~10+ samples, while roughly halving the inference cost.
+    // Login's single, shorter capture keeps scoring every frame (too few samples
+    // otherwise to clear the minimum).
+    if (verify || samples.length % 2 === 1) {
+      const rgbFrame = extractRgbCrop(video, { x: box.x, y: box.y, width: box.width, height: box.height });
+      if (rgbFrame) rgbPatches.push(rgbFrame);
+    }
 
     if (!verify) {
       const current = actions[actionIdx];
