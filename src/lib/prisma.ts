@@ -74,23 +74,6 @@ const prismaClient =
     ...(databaseUrl ? { datasources: { db: { url: databaseUrl } } } : {}),
   });
 
-/** DNA records are immutable — hard deletes are blocked application-wide. */
-if (!(globalForPrisma as { dnaGuardInstalled?: boolean }).dnaGuardInstalled) {
-  prismaClient.$use(async (params, next) => {
-    if (
-      params.model === 'DnaRecord'
-      && (params.action === 'delete' || params.action === 'deleteMany')
-    ) {
-      logger.error('Blocked DNA delete attempt', { action: params.action, args: params.args });
-      throw new Error(
-        'DNA_IMMUTABLE: DNA records cannot be deleted. Users may only delete vault files.',
-      );
-    }
-    return next(params);
-  });
-  (globalForPrisma as { dnaGuardInstalled?: boolean }).dnaGuardInstalled = true;
-}
-
 /** Records how long each query takes, for the per-request timing line (lib/request-timing.ts). */
 if (!(globalForPrisma as { timingInstalled?: boolean }).timingInstalled) {
   // PRISMA_SLOW_QUERY_MS (opt-in diagnostic): a query slower than this is logged with the project code that asked for it.

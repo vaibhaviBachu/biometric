@@ -57,7 +57,6 @@ export const authController = {
           isActive: true,
           accountType: true,
           lastActiveShell: true,
-          ownedOrganization: { select: { id: true, setupCompletedAt: true } },
         },
       });
       if (!user || !user.isActive) {
@@ -75,12 +74,6 @@ export const authController = {
           role: user.role,
           accountType,
           lastActiveShell,
-          capabilities: {
-            buyer_enabled: true,
-            can_purchase: true,
-            business: accountType === 'BUSINESS',
-            business_setup_complete: Boolean(user.ownedOrganization?.setupCompletedAt),
-          },
         },
       });
     } catch {
@@ -89,11 +82,6 @@ export const authController = {
         data: {
           ...payload,
           lastActiveShell: payload.lastActiveShell === 'BUSINESS' ? 'BUSINESS' : 'PERSONAL',
-          capabilities: {
-            buyer_enabled: true,
-            can_purchase: true,
-            business: payload.accountType === 'BUSINESS',
-          },
         },
       });
     }

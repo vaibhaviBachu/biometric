@@ -3,11 +3,20 @@
 # Builds only the API server. The Vercel-hosted frontend (client/) is a
 # separate deploy target and is not baked into this image.
 #
-# `prisma migrate deploy` runs on every container boot (see CMD below), not as
-# a separate manual/Shell step — Render's free compute plan has no Shell/SSH
-# access at all, so a step that has to be run by hand would never actually run.
-# `migrate deploy` only applies pending migrations (no-op if none) and takes
-# its own advisory lock, so it's safe even if this ever scales to >1 instance.
+# Schema sync runs on every container boot (see CMD below), not as a separate
+# manual/Shell step — Render's free compute plan has no Shell/SSH access at
+# all, so a step that has to be run by hand would never actually run.
+#
+# Uses `prisma db push`, not `prisma migrate deploy`: this repo's tracked
+# migration history (prisma/migrations/) is incomplete on its own — it assumes
+# a baseline schema that, in the original project's real history, was created
+# by untracked `prisma db push` calls before migrations started being tracked
+# (see the comment in .gitignore). Replaying it from scratch against a
+# genuinely empty database fails on the first migration that references a
+# table (e.g. `users`) no earlier migration ever created. `db push` sidesteps
+# that entirely — it syncs the database directly to the CURRENT schema.prisma
+# in one shot, so a fresh database gets the complete schema with no history to
+# replay. Safe to re-run on every boot: a database already in sync is a no-op.
 
 FROM node:20-slim AS builder
 WORKDIR /app
@@ -60,4 +69,4 @@ RUN mkdir -p ./vault/encrypted ./tmp/uploads && chown -R pinit:pinit /app
 USER pinit
 
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss && node dist/server.js"]

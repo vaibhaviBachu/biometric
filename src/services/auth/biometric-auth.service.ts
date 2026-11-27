@@ -758,7 +758,6 @@ export const biometricAuthService = {
       passkeyPendingToken,
       deviceFingerprint,
       accountType,
-      organizationName,
       ip,
       userAgent,
     } = input;
@@ -887,9 +886,6 @@ export const biometricAuthService = {
           fullName: 'PINIT User',
           accountType: resolvedAccountType,
           lastActiveShell: resolvedAccountType === 'BUSINESS' ? 'BUSINESS' : 'PERSONAL',
-          organization: resolvedAccountType === 'BUSINESS' && organizationName?.trim()
-            ? organizationName.trim()
-            : null,
           faceRegistered: true,
           faceRegisteredAt: new Date(),
           voiceEmbedding: voiceNorm ?? [],
